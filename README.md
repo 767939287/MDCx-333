@@ -5,23 +5,6 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
 ![Crawlers](https://img.shields.io/badge/Sites-52-brightgreen.svg)
 
-<p align="center"><b>如果你觉得不错可否赏我杯奶茶费，谢谢！ 😊</b></p>
-
-<table align="center">
-  <tr>
-    <td align="center"><img src="resources/Img/donate-wechat.jpg" width="180" alt="微信"><br><sub>微信</sub></td>
-    <td width="40"></td>
-    <td align="center"><img src="resources/Img/donate-alipay.jpg" width="180" alt="支付宝"><br><sub>支付宝</sub></td>
-    <td width="40"></td>
-    <td align="center"><img src="resources/Img/donate-alipay-redpacket.jpg" width="180" alt="支付宝红包"><br><sub>支付宝红包</sub></td>
-  </tr>
-</table>
-
-一个功能都没改完就提示token烧完了，没办法了，停止更新了，没钱没token没赞助，一分钱赞助没收到过更新不起了
-
-<img width="1280" height="680" alt="image" src="https://github.com/user-attachments/assets/6e4a9ab3-8c28-4714-af0e-be41d5e71e67" />
-
-
 ## MDCx 是什么
 
 MDCx 是一个桌面工具，自动从 53 个网站抓取视频文件的元数据（标题、演员、封面、简介等），生成标准的 .nfo 文件和整理好的文件夹，给 Emby、Jellyfin、Kodi 这类媒体服务器直接用。
