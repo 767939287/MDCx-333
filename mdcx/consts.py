@@ -11,7 +11,7 @@ VERSION_NAME = "v3.0"  # 展示用版本名: 平时只用于显示, 更新检查
 # Windows 打包(windowed)下每次调用会闪黑色控制台窗口。platform.uname() 无此问题。
 SYSTEM_INFO = platform.uname().system or "Unknown"
 
-GITHUB_REPO = "z291173301/MDCx"
+GITHUB_REPO = "767939287/MDCx-333"
 GITHUB_RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases"
 GITHUB_RELEASES_API_LATEST = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 GITHUB_RELEASES_API_LIST = f"https://api.github.com/repos/{GITHUB_REPO}/releases?per_page=10"

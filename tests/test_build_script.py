@@ -64,8 +64,8 @@ def test_build_py_run_command_returns_stdout_text():
     assert "中文" in out and "✅" in out
 
 
-def test_linux_build_omits_macos_only_icon(monkeypatch):
-    """Linux 的 PyInstaller 不应接收 macOS 专用的 .icns 图标参数。"""
+def test_linux_build_uses_png_icon(monkeypatch):
+    """Linux 使用 PNG（运行时 QIcon 读取）而不是 macOS 专用的 .icns。"""
     from scripts.build import BuildManager
 
     mgr = BuildManager(app_name="t", app_version="1", create_dmg=False, debug=False)
@@ -73,4 +73,4 @@ def test_linux_build_omits_macos_only_icon(monkeypatch):
     monkeypatch.setattr(mgr, "is_mac", False)
     monkeypatch.setattr(mgr, "is_linux", True)
 
-    assert mgr._app_icon_path() is None
+    assert mgr._app_icon_path() == "resources/Img/MDCx.png"

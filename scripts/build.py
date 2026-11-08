@@ -81,7 +81,9 @@ class BuildManager:
             return "resources/Img/MDCx.ico"
         if self.is_mac:
             return "resources/Img/MDCx.icns"
-        return None
+        # Linux 的 ELF 不从 --icon 取图标，运行时靠 QApplication.setWindowIcon
+        # 读这张 PNG；同时它会被 --add-data resources 一并打进 onefile 包。
+        return "resources/Img/MDCx.png"
 
     def run(self):
         """运行构建流程"""
@@ -188,7 +190,9 @@ class BuildManager:
             "./mdcx",
             "--add-data",
             f"resources{os.pathsep}resources",
-            *(["--icon", icon_path] if (icon_path := self._app_icon_path()) else []),
+            # Linux 的 ELF 不消费 --icon（窗口图标由运行时 QIcon 读取打包内的 PNG），
+            # 仅在 Windows/macOS 传给 PyInstaller，避免无意义的平台警告。
+            *(["--icon", icon_path] if (icon_path := self._app_icon_path()) and not self.is_linux else []),
             "--hidden-import",
             "_cffi_backend",
             # Emby 演员管理器(延迟导入, 需显式打包, 否则运行时报 ModuleNotFound 崩溃)

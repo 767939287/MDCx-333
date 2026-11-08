@@ -175,7 +175,9 @@ class Resources:
         self.info_db_backup_path = self.r("userdata/info_database.xlsx")  # 内置信息映射数据库 xlsx
         self.tmdb_query_cache_path = self.u("actor_tmdb_query_cache.json")  # TMDB 查询缓存（与 actor_database 同目录）
 
-        self.icon_ico = self.qtr("Img/MDCx.ico")  # 任务栏图标
+        # 任务栏/窗口图标：Linux 用 PNG（.ico 在部分发行版的 Qt 图像插件里不可用），
+        # Windows 继续用 ICO；属性名 icon_ico 保留，避免改动各调用点。
+        self.icon_ico = self.qtr("Img/MDCx.png") if sys.platform.startswith("linux") else self.qtr("Img/MDCx.ico")
         self.right_menu = self.qtr("Img/menu.svg")  # 主界面菜单按钮
         self.play_icon = self.qtr("Img/play.svg")  # 主界面播放按钮
         self.open_folder_icon = self.qtr("Img/folder.svg")  # 主界面打开文件夹按钮

@@ -16,6 +16,7 @@ from ..config.enums import EmbyAction, Language
 from ..config.manager import manager
 from ..config.models import Translator
 from ..config.resources import resources
+from ..consts import GITHUB_REPO
 from ..log_console import log_console
 from ..manual import ManualConfig
 from ..models.emby import EMbyActressInfo
@@ -25,7 +26,7 @@ from ..utils.language import is_english
 # 「未识别」档（10 req/min），带项目地址的 UA 归入「仅 User-Agent」档
 # （200 req/min）。配合 web_async 中 wikidata/wikipedia 域名的独立限速，
 # 避免批量补全演员信息时触发 429（议题 #125）。
-_WIKI_USER_AGENT = "MDCx/2.1 (https://github.com/z291173301/MDCx) mediawiki-client"
+_WIKI_USER_AGENT = f"MDCx/2.1 (https://github.com/{GITHUB_REPO}) mediawiki-client"
 
 
 def _wiki_headers() -> dict[str, str]:

@@ -15,6 +15,11 @@
 
 - 新增 `tests/test_actor_info_switches.py`；`tests/test_wiki_rate_limit.py` 补共享限速桶与 UA 用例；`tests/test_emby_actor_manager.py`、`tests/test_emby_local_backfill.py` 适配新维基入口。
 
+### 打包与版本
+
+- Linux 构建纳入 `resources/Img/MDCx.png`，运行时窗口图标改用 PNG，避免部分发行版 Qt 读不了 `.ico`。
+- 版本检查、下载、反馈与使用说明页的仓库地址改为本 fork（`767939287/MDCx-333`），Release 不再指向原作者。
+
 ## 2026-10-24
 
 ### JavBus 四条线路一律改用 www 入口：网络检测不再误报「Cookie 可能无效」

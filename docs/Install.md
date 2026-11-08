@@ -8,7 +8,7 @@
 
 ## 方法一：用 Release 包（推荐）
 
-去 [GitHub Releases](https://github.com/z291173301/MDCx/releases) 下载最新版：
+去 [GitHub Releases](https://github.com/767939287/MDCx-333/releases) 下载最新版：
 
 | 系统 | 下载什么 |
 |------|---------|
@@ -37,7 +37,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # 3. 下载代码
-git clone https://github.com/z291173301/MDCx.git
+git clone https://github.com/767939287/MDCx-333.git
 cd mdcx-diy
 
 # 4. 安装锁定版本的依赖

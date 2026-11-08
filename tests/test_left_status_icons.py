@@ -30,7 +30,7 @@ UI_PATH = REPO / "mdcx" / "views" / "MDCx.ui"
 PY_PATH = REPO / "mdcx" / "views" / "MDCx.py"
 
 # 自有仓库（版本检查跳转、下载链接、Issue 反馈、使用说明页统一指向它）。
-OWN_REPO = "z291173301/MDCx"
+OWN_REPO = "767939287/MDCx-333"
 OLD_REPO = "cdlongbow/mdcx-diy"
 
 # show_scrape_info / new_version 中必须逐字存在的图标行（删任一即报红）。
