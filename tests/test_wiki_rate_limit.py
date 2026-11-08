@@ -1,8 +1,9 @@
 """议题 #125/#137：MediaWiki（Wikidata/Wikipedia）请求限速与合规 User-Agent 回归测试。
 
 维基媒体按客户端类型限速（未识别 10 req/min、仅合规 User-Agent 200 req/min）。
-#125 曾对 wiki 域名单独限速 1 req/s 并改用可识别 UA；#137 放宽为「双桶」——
-每秒 5 req/s 突发 + 每分钟 180 req/min 总量，等效持续约 3/s。
+#125 曾对 wiki 域名单独限速 1 req/s 并改用可识别 UA；#137 放宽为「双桶」；
+现在进一步改为 2 req/s + 180 req/min，且所有 Wikimedia 子域共用一个桶——
+语言子域各建一个 180/min 桶会让总速率叠到官方限额以上。
 """
 
 import asyncio
@@ -23,7 +24,7 @@ from mdcx.web_async import (
 
 
 def test_mediawiki_hosts_use_dual_bucket_limiter():
-    """wiki 域名须使用「5 req/s + 180 req/min」双桶限速；其它域名保持通用 8 req/s。"""
+    """wiki 域名须使用「2 req/s + 180 req/min」双桶限速；其它域名保持通用 8 req/s。"""
     limiters = AsyncWebLimiters()
     for host in _MEDIAWIKI_HOSTS:
         limiter = limiters.get(host)
@@ -35,6 +36,21 @@ def test_mediawiki_hosts_use_dual_bucket_limiter():
         }, f"{host} 双桶参数不符: {buckets}"
     # 非 wiki 域名仍是单个 8 req/s 限速器
     assert limiters.get("example.com").max_rate == 8
+
+
+def test_all_wikimedia_subdomains_share_one_bucket():
+    """任意语言子域 / commons / upload 都命中同一组桶，不能各自叠加额度。"""
+    limiters = AsyncWebLimiters()
+    shared = limiters.get("ja.wikipedia.org")
+    assert isinstance(shared, _CompositeLimiter)
+    for host in (
+        "zh.wikipedia.org",
+        "en.wikipedia.org",
+        "zh.m.wikipedia.org",
+        "upload.wikimedia.org",
+        "commons.wikimedia.org",
+    ):
+        assert limiters.get(host) is shared, f"{host} 未复用同一个 Wikimedia 限速桶"
 
 
 @pytest.mark.asyncio
@@ -99,3 +115,25 @@ async def test_search_wiki_sends_identifiable_user_agent(monkeypatch):
     ua = captured["headers"]["User-Agent"]
     assert "Mozilla" not in ua
     assert GITHUB_REPO in ua
+
+
+@pytest.mark.asyncio
+async def test_fetch_wiki_actor_sends_identifiable_user_agent(monkeypatch):
+    """移植后的 fetch_wiki_actor 每次 Wikidata 请求也必须带合规 UA。"""
+    from mdcx.tools import wiki_actor
+
+    captured: list[dict] = []
+
+    async def fake_get_json(url, *, headers=None, **kwargs):
+        captured.append(headers or {})
+        return {"search": []}, ""
+
+    monkeypatch.setattr(manager.computed.async_client, "get_json", fake_get_json)
+    monkeypatch.setattr(wiki_actor.resources, "get_actor_data", lambda name: {"has_name": False})
+
+    assert await wiki_actor.fetch_wiki_actor("测试演员") is None
+    assert captured
+    for headers in captured:
+        ua = headers["User-Agent"]
+        assert "Mozilla" not in ua
+        assert GITHUB_REPO in ua

@@ -4971,6 +4971,13 @@ IMAGE_SOURCE_NAMES = source_catalog.IMAGE_SOURCE_NAMES
 INFO_SOURCE_NAMES = source_catalog.INFO_SOURCE_NAMES
 """数据源展示名目录，见 :mod:`mdcx.tools.emby_actor_source_catalog`。"""
 
+# 维基百科词条语言预设：检索语言固定 ja → zh → en，这里只决定正文取哪一版。
+WIKI_LANGUAGE_PRESETS: tuple[tuple[str, list[str]], ...] = (
+    ("简体中文 → 日文 → 英文", ["zh", "ja", "en"]),
+    ("日文 → 简体中文 → 英文", ["ja", "zh", "en"]),
+    ("英文 → 日文 → 简体中文", ["en", "ja", "zh"]),
+)
+
 
 class _SourceQuickSettingsPanel(QGroupBox):
     """快速设置面板：头像/信息数据源拖拽排序，改动即自动保存。
@@ -4990,11 +4997,25 @@ class _SourceQuickSettingsPanel(QGroupBox):
         self.image_list.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
         self._fill_list(self.image_list, manager.config.actor_image_sources, IMAGE_SOURCE_NAMES)
         layout.addWidget(self.image_list)
-        layout.addWidget(QLabel("信息数据源（拖拽排序）:"))
+        layout.addWidget(QLabel("信息数据源（拖拽排序，勾选=启用）:"))
         self.info_list = QListWidget()
         self.info_list.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
-        self._fill_list(self.info_list, manager.config.actor_info_sources, INFO_SOURCE_NAMES)
+        self._fill_list(
+            self.info_list,
+            manager.config.actor_info_sources,
+            INFO_SOURCE_NAMES,
+            checkable=True,
+            disabled=set(getattr(manager.config, "actor_info_disabled", ()) or ()),
+        )
         layout.addWidget(self.info_list)
+        layout.addWidget(QLabel("维基词条语言:"))
+        self.wiki_language_combo = QComboBox()
+        current_languages = list(getattr(manager.config, "actor_wiki_languages", None) or ["zh", "ja", "en"])
+        for index, (label, languages) in enumerate(WIKI_LANGUAGE_PRESETS):
+            self.wiki_language_combo.addItem(label, list(languages))
+            if languages == current_languages:
+                self.wiki_language_combo.setCurrentIndex(index)
+        layout.addWidget(self.wiki_language_combo)
         layout.addStretch()
         self._lists_expanded = False
 
@@ -5004,6 +5025,8 @@ class _SourceQuickSettingsPanel(QGroupBox):
         info_model = self.info_list.model()
         if info_model:
             info_model.rowsMoved.connect(self._save)
+        self.info_list.itemChanged.connect(self._save)
+        self.wiki_language_combo.currentIndexChanged.connect(self._save)
 
     def set_lists_expanded(self, expanded: bool) -> None:
         """最大化时头像/信息两列表 1:1 分配面板纵向富余高度；还原时恢复默认效果。
@@ -5027,11 +5050,23 @@ class _SourceQuickSettingsPanel(QGroupBox):
             pass
 
     @staticmethod
-    def _fill_list(list_widget: QListWidget, sources: list[str], names: dict[str, str]):
+    def _fill_list(
+        list_widget: QListWidget,
+        sources: list[str],
+        names: dict[str, str],
+        *,
+        checkable: bool = False,
+        disabled: set[str] | None = None,
+    ):
+        disabled = disabled or set()
         list_widget.clear()
         for src in sources:
             item = QListWidgetItem(names.get(src, src) or src)
             item.setData(Qt.ItemDataRole.UserRole, src)
+            if checkable:
+                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                item.setCheckState(Qt.CheckState.Unchecked if src in disabled else Qt.CheckState.Checked)
+                item.setToolTip("勾选=启用该信息源；取消勾选=停用。拖拽可调整优先级。")
             list_widget.addItem(item)
 
     def _save(self, *args):
@@ -5042,6 +5077,12 @@ class _SourceQuickSettingsPanel(QGroupBox):
         cfg.actor_info_sources = [
             self.info_list.item(i).data(Qt.ItemDataRole.UserRole) for i in range(self.info_list.count())
         ]
+        cfg.actor_info_disabled = [
+            self.info_list.item(i).data(Qt.ItemDataRole.UserRole)
+            for i in range(self.info_list.count())
+            if self.info_list.item(i).checkState() != Qt.CheckState.Checked
+        ]
+        cfg.actor_wiki_languages = list(self.wiki_language_combo.currentData() or ["zh", "ja", "en"])
         # 本地头像目录由各窗口自建的输入框保存（数据源测试窗 / 演员详情窗），
         # 面板只改数据源顺序，原样带回当前值，不覆盖。
         cfg.actor_photo_folder = manager.config.actor_photo_folder
@@ -5112,14 +5153,27 @@ class EmbyActorSettingsDialog(QDialog):
             self.image_list.addItem(item)
         layout.addWidget(self.image_list)
 
-        layout.addWidget(QLabel("信息数据源优先级（拖拽排序，上=优先）:"))
+        layout.addWidget(QLabel("信息数据源优先级（拖拽排序，勾选=启用）:"))
         self.info_list = QListWidget()
         self.info_list.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+        disabled_info = set(getattr(manager.config, "actor_info_disabled", ()) or ())
         for src in manager.config.actor_info_sources:
             item = QListWidgetItem(INFO_SOURCE_NAMES.get(src, src) or src)
             item.setData(Qt.ItemDataRole.UserRole, src)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(Qt.CheckState.Unchecked if src in disabled_info else Qt.CheckState.Checked)
+            item.setToolTip("勾选=启用该信息源；取消勾选=停用。拖拽可调整优先级。")
             self.info_list.addItem(item)
         layout.addWidget(self.info_list)
+
+        layout.addWidget(QLabel("维基百科词条语言（按顺序回退）:"))
+        self.wiki_language_combo = QComboBox()
+        current_languages = list(getattr(manager.config, "actor_wiki_languages", None) or ["zh", "ja", "en"])
+        for index, (label, languages) in enumerate(WIKI_LANGUAGE_PRESETS):
+            self.wiki_language_combo.addItem(label, list(languages))
+            if languages == current_languages:
+                self.wiki_language_combo.setCurrentIndex(index)
+        layout.addWidget(self.wiki_language_combo)
 
         self.export_folder_edit = QLineEdit(getattr(manager.config, "actor_export_folder", "") or "")
         layout.addLayout(
@@ -5165,6 +5219,12 @@ class EmbyActorSettingsDialog(QDialog):
         cfg = manager.config.model_copy(deep=True)
         cfg.actor_image_sources = image_sources
         cfg.actor_info_sources = info_sources
+        cfg.actor_info_disabled = [
+            self.info_list.item(i).data(Qt.ItemDataRole.UserRole)
+            for i in range(self.info_list.count())
+            if self.info_list.item(i).checkState() != Qt.CheckState.Checked
+        ]
+        cfg.actor_wiki_languages = list(self.wiki_language_combo.currentData() or ["zh", "ja", "en"])
         cfg.actor_filter_only = self.filter_only_check.isChecked()
         cfg.actor_deduplicate = self.deduplicate_check.isChecked()
         cfg.actor_photo_folder = self.photo_folder_edit.text().strip()
@@ -5279,12 +5339,17 @@ async def _actor_source_test_execute(
                 logs.append(f"{_IMAGE_RESULT_NAMES.get(src, src)}: ❌ 未命中")
 
     if need_info:
+        disabled_info = set(getattr(manager.config, "actor_info_disabled", ()) or ())
         for src in manager.config.actor_info_sources:
+            _display_name = _INFO_RESULT_NAMES.get(src, src)
+            if src in disabled_info:
+                logs.append(f"{_display_name}: ⏭️ 已停用")
+                continue
             _report(_INFO_PROGRESS.get(src, f"正在从{src}获取信息"))
             try:
                 ok, desc, data = await fetch_actor_info_from_source(actor, src)
             except Exception as e:
-                logs.append(f"{_INFO_RESULT_NAMES.get(src, src)}: ❌ 异常 {e}")
+                logs.append(f"{_display_name}: ❌ 异常 {e}")
                 continue
             _display = _INFO_RESULT_NAMES.get(src, src)
             if ok:

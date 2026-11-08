@@ -252,11 +252,11 @@ def _join_attempt_errors(attempt_errors: list[str], error_msg: str, body_preview
 
 
 # 维基媒体（Wikidata/Wikipedia）按客户端类型限速：未识别 10 req/min、
-# 仅合规 User-Agent 200 req/min。通用 8 req/s 远高于其限额，批量补全演员信息
-# 时会触发 429。现对 wiki 域名用「双桶」限速（议题 #137，取代 #125 的 1 req/s）：
-#   · 每秒桶 5 req/s：允许短时突发；
+# 仅合规 User-Agent 200 req/min。现对 wiki 域名用「双桶」限速（议题 #137，取代 #125 的 1 req/s）：
+#   · 每秒桶 2 req/s：不追求突发，批量补全演员信息时更稳；
 #   · 每分钟桶 180 req/min：滚动 60s 总量上限（贴官方 200/min 并留余量）。
-# 两者同时生效，等效持续速率 = min(5/s, 180/60s) ≈ 3/s，突发可达 5/s。
+# 所有 Wikimedia host 共用同一组桶：语言子域（ja/zh/en）、wikidata、commons/upload 都记在
+# 同一个客户端额度上，分开建桶会让多语言抓取把总速率叠到官方限额以上。
 _MEDIAWIKI_HOSTS = (
     "wikidata.org",
     "www.wikidata.org",
@@ -268,9 +268,21 @@ _MEDIAWIKI_HOSTS = (
     "zh.m.wikipedia.org",
     "ja.wikipedia.org",
     "ja.m.wikipedia.org",
+    "en.wikipedia.org",
+    "en.m.wikipedia.org",
+    "commons.wikimedia.org",
+    "upload.wikimedia.org",
+    "www.mediawiki.org",
 )
-_MEDIAWIKI_RATE_PER_SEC = 5  # req/s（突发上限）
+_MEDIAWIKI_HOST_SUFFIXES = ("wikipedia.org", "wikidata.org", "wikimedia.org", "mediawiki.org")
+_MEDIAWIKI_RATE_PER_SEC = 2  # req/s（持续上限）
 _MEDIAWIKI_RATE_PER_MIN = 180  # req/min（滚动总量上限）
+
+
+def _is_mediawiki_host(host: str) -> bool:
+    """按域名后缀判定 Wikimedia 站点，覆盖任意语言子域（ja/zh/en/...）。"""
+    normalized = (host or "").strip().lower().split(":", 1)[0]
+    return any(normalized == suffix or normalized.endswith("." + suffix) for suffix in _MEDIAWIKI_HOST_SUFFIXES)
 
 
 class _CompositeLimiter:
@@ -301,15 +313,19 @@ class AsyncWebLimiters:
             "127.0.0.1": AsyncLimiter(300, 1),
             "localhost": AsyncLimiter(300, 1),
         }
-        # 预置 wiki 域名限速器：get() 走 setdefault，命中此处即用 wiki 双桶档
+        # Wikimedia 的所有 host 共用一组桶（客户端额度按 IP 计，不按子域计）。
+        self._mediawiki_limiter = _CompositeLimiter(
+            AsyncLimiter(_MEDIAWIKI_RATE_PER_SEC, 1),
+            AsyncLimiter(_MEDIAWIKI_RATE_PER_MIN, 60),
+        )
+        # 保留预置条目，兼容直接读取 limiters 的旧调用；get() 对任意语言子域同样命中。
         for host in _MEDIAWIKI_HOSTS:
-            self.limiters[host] = _CompositeLimiter(
-                AsyncLimiter(_MEDIAWIKI_RATE_PER_SEC, 1),
-                AsyncLimiter(_MEDIAWIKI_RATE_PER_MIN, 60),
-            )
+            self.limiters[host] = self._mediawiki_limiter
 
     def get(self, key: str, rate: float = 8, period: float = 1) -> AsyncLimiter | _CompositeLimiter:
-        """默认对所有域名启用 8 req/s 的速率限制"""
+        """Wikimedia 站点统一走共享双桶；其余域名默认 8 req/s。"""
+        if _is_mediawiki_host(key):
+            return self._mediawiki_limiter
         return self.limiters.setdefault(key, AsyncLimiter(rate, period))
 
     def remove(self, key: str):

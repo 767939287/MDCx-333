@@ -40,7 +40,8 @@ from .emby_shared import (  # noqa: F401
     _upload_actor_photo,
 )
 from .minnano_crawler import get_minnano_info
-from .wiki import get_detail, search_wiki
+from .wiki import _process_translation
+from .wiki_actor import WikiSourceError, apply_wiki_profile, fetch_wiki_actor
 
 _BIO_TAG_PATTERNS = (
     (r"身高:\s*([0-9.]+)\s*cm", "身高: {0}cm"),
@@ -53,6 +54,17 @@ _BIO_TAG_PATTERNS = (
 
 # 同步并发上限：Emby/Jellyfin 无速率压力，但图片上传 body 较大，4 并发平衡带宽
 SYNC_CONCURRENCY = 4
+
+
+def enabled_actor_info_sources() -> list[str]:
+    """按配置顺序返回启用的演员信息源。
+
+    ``actor_info_sources`` 负责顺序，``actor_info_disabled`` 负责开关；
+    未配置禁用项时全部启用，新加入的数据源也不会因旧配置被静默关掉。
+    """
+    disabled = set(getattr(manager.config, "actor_info_disabled", ()) or ())
+    sources = list(getattr(manager.config, "actor_info_sources", ()) or ())
+    return [source for source in sources if source not in disabled]
 
 
 def _extract_bio_tags(bio: str) -> list[str]:
@@ -1118,11 +1130,20 @@ async def fetch_actor_info_from_source(actor: ActorInfo, source: str) -> tuple[b
                 )
         return False, "本地演员库未命中", info
     if source == "wiki":
-        res_wiki, _ = await search_wiki(info)
-        if res_wiki:
-            result_wiki, _ = await get_detail(res_wiki, "", info)
-            if result_wiki and info.overview:
-                return True, f"维基百科命中（简介 {len(info.overview)} 字）", info
+        try:
+            profile = await fetch_wiki_actor(info.name)
+        except WikiSourceError as e:
+            return False, f"维基百科请求失败: {e}", info
+        if profile is not None:
+            apply_wiki_profile(info, profile)
+            info.overview = await _process_translation(
+                info,
+                info.overview,
+                profile.language == "ja",
+                manager.config.emby_on,
+            )
+        if profile is not None and (info.overview or info.birthday or info.taglines):
+            return True, f"维基百科命中（简介 {len(info.overview or '')} 字）", info
         return False, "维基百科未命中", info
     if source == "minnano":
         res, _ = await get_minnano_info(info)
@@ -1145,6 +1166,7 @@ async def fill_actor_info_from_sources(
 ) -> tuple[dict[str, bool | int], list[str]]:
     """从本地→wiki→minnano→db 链路补全演员信息到 info 对象（原地修改）。
 
+    ``config.actor_info_disabled`` 里的数据源会被整段跳过（UI 上的勾选开关）。
     供内置补全和管理器工具共用。
 
     Args:
@@ -1158,62 +1180,85 @@ async def fill_actor_info_from_sources(
         logs: 日志列表
     """
     logs: list[str] = []
+    enabled = set(enabled_actor_info_sources())
+    if not enabled:
+        logs.append("演员信息源均已停用，本次不补全")
     local_found = False
     local_birth_set = False
     local_overview = ""
 
     # 0) 本地演员库命中回填（最优先，离线可用）
-    try:
-        local_data = resources.get_actor_data(info.name)
-        if local_data.get("has_name"):
-            bd = (local_data.get("birth_date") or "").strip()
-            bio = (local_data.get("bio") or "").strip()
-            if bd:
-                info.birthday = bd
-                info.year = bd[:4]
-                local_birth_set = True
-            if bio:
-                local_overview = bio.replace("\n", "<br/>")
-                info.overview = local_overview
-                for tag in _extract_bio_tags(bio):
-                    if tag not in info.tags:
-                        info.tags.append(tag)
-            if not info.locations:
-                info.locations = ["日本"]
-            local_found = True
-            msg_local = f"本地库命中: {info.name}"
-            if bd:
-                msg_local += f", 出生日期 {bd}"
-            if bio:
-                msg_local += f", 简介 {len(bio)} 字"
-            logs.append(msg_local)
-    except Exception:
-        local_found = False
+    if "local" in enabled:
+        try:
+            local_data = resources.get_actor_data(info.name)
+            if local_data.get("has_name"):
+                bd = (local_data.get("birth_date") or "").strip()
+                bio = (local_data.get("bio") or "").strip()
+                if bd:
+                    info.birthday = bd
+                    info.year = bd[:4]
+                    local_birth_set = True
+                if bio:
+                    local_overview = bio.replace("\n", "<br/>")
+                    info.overview = local_overview
+                    for tag in _extract_bio_tags(bio):
+                        if tag not in info.tags:
+                            info.tags.append(tag)
+                if not info.locations:
+                    info.locations = ["日本"]
+                local_found = True
+                msg_local = f"本地库命中: {info.name}"
+                if bd:
+                    msg_local += f", 出生日期 {bd}"
+                if bio:
+                    msg_local += f", 简介 {len(bio)} 字"
+                logs.append(msg_local)
+        except Exception:
+            local_found = False
 
     wiki_found = False
     minnano_found = False
+    minnano_ok = False
     db_exist = 0
 
     # 本地命中且简介非空：完全采用本地数据，跳过外部网络来源
     if not (local_found and local_overview):
-        # wiki
+        # wiki：一次完成 Wikidata 检索 + 维基百科正文/信息框解析。
+        # 词条语言由 config.actor_wiki_languages 决定（zh / ja / en 顺序回退）。
         wiki_intro = ""
-        res_wiki, msg_wiki = await search_wiki(info)
-        logs.append(msg_wiki)
-        if res_wiki is not None:
-            result_wiki, _ = await get_detail(res_wiki, msg_wiki, info)
-            if result_wiki:
+        if "wiki" in enabled:
+            profile = None
+            try:
+                profile = await fetch_wiki_actor(info.name)
+            except WikiSourceError as e:
+                logs.append(f"维基百科请求失败: {e}")
+            except Exception as e:
+                # 维基只是信息源之一，任何意外都不应打断后续 minnano / 本地库链路。
+                logs.append(f"维基百科处理异常: {e!s}")
+            if profile is not None:
+                apply_wiki_profile(info, profile)
+                # 老口径保留：日文词条按「翻译演员信息」开关翻译；中文词条只做繁简转换。
+                info.overview = await _process_translation(
+                    info,
+                    info.overview,
+                    profile.language == "ja",
+                    manager.config.emby_on,
+                )
                 wiki_intro = info.overview or ""
                 wiki_found = True
+                logs.append(f"维基百科命中: {profile.source_url} ({profile.language or 'wikidata'})")
+            elif not logs or not logs[-1].startswith("维基百科"):
+                logs.append("维基百科暂未收录")
 
         # minnano
-        minnano_ok, msg = await get_minnano_info(info, wiki_intro)
-        logs.append(msg)
-        if minnano_ok:
-            minnano_found = True
+        if "minnano" in enabled:
+            minnano_ok, msg = await get_minnano_info(info, wiki_intro)
+            logs.append(msg)
+            if minnano_ok:
+                minnano_found = True
 
         # db（仅当 minnano 和 wiki 均未命中时）
-        if manager.config.use_database and not minnano_ok and not wiki_found:
+        if "database" in enabled and manager.config.use_database and not minnano_ok and not wiki_found:
             if skip_db_if_marker and "数据库补全" in existing_overview:
                 db_exist = 0
                 logs.append(f"{info.name}: 已有数据库信息")

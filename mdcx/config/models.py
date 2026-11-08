@@ -792,6 +792,37 @@ class Config(BaseModel):
         valid_values = {HDPicSource.AMAZON.value}
         return [item for item in items if (item.value if isinstance(item, HDPicSource) else str(item)) in valid_values]
 
+    @field_validator("actor_wiki_languages", mode="before")
+    @classmethod
+    def normalize_actor_wiki_languages(cls, v):
+        """只保留 zh / ja / en，去重保序；空值回退默认优先级。"""
+        if v is None:
+            return ["zh", "ja", "en"]
+        if isinstance(v, str):
+            items = [part.strip() for part in v.replace("，", ",").split(",")]
+        elif isinstance(v, (list, tuple)):
+            items = [str(part).strip() for part in v]
+        else:
+            return ["zh", "ja", "en"]
+        ordered = list(dict.fromkeys(part.lower() for part in items if part))
+        allowed = [lang for lang in ordered if lang in ("zh", "ja", "en")]
+        return allowed or ["zh", "ja", "en"]
+
+    @field_validator("actor_info_disabled", mode="before")
+    @classmethod
+    def normalize_actor_info_disabled(cls, v):
+        """只保留已知信息源 ID，去重保序；非法条目直接丢弃。"""
+        if v is None:
+            return []
+        if isinstance(v, str):
+            items = [part.strip() for part in v.replace("，", ",").split(",")]
+        elif isinstance(v, (list, tuple)):
+            items = [str(part).strip() for part in v]
+        else:
+            return []
+        known = {"local", "wiki", "minnano", "database"}
+        return [source for source in dict.fromkeys(items) if source in known]
+
     # region: Website Settings
     website_disabled: list[Website] = Field(default_factory=list, title="已禁用网站")
     website_single: Website = Field(default=Website.AIRAV_CC, title="单个网站")  # todo 移除
@@ -1023,6 +1054,16 @@ class Config(BaseModel):
     actor_info_sources: list[str] = Field(
         default_factory=lambda: ["local", "wiki", "minnano", "database"],
         title="演员信息数据源优先级",
+    )
+    actor_info_disabled: list[str] = Field(
+        default_factory=list,
+        title="已禁用的演员信息数据源",
+        description="信息源开关：取消勾选的数据源不参与演员信息补全；未列出的数据源默认启用。",
+    )
+    actor_wiki_languages: list[str] = Field(
+        default_factory=lambda: ["zh", "ja", "en"],
+        title="维基百科词条语言优先级",
+        description="按顺序取第一个存在的维基词条正文，可选 zh / ja / en。检索语言固定 ja → zh → en。",
     )
     actor_filter_only: bool = Field(default=True, title="只获取演员类型")
     actor_deduplicate: bool = Field(default=True, title="重复演员去重")

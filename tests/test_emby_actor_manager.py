@@ -325,8 +325,8 @@ def test_actress_db_does_not_pollute_javdb_provider_id(tmp_path: Path):
 async def test_search_actor_info_reads_dump_pascalcase_keys(monkeypatch: pytest.MonkeyPatch):
     import mdcx.tools.emby_actor_manager as em
 
-    async def _no_wiki(info):
-        return None, ""
+    async def _no_wiki(name: str):
+        return None
 
     async def _fill_minnano(info, wiki_intro: str = ""):
         info.overview = "测试简介"
@@ -335,8 +335,10 @@ async def test_search_actor_info_reads_dump_pascalcase_keys(monkeypatch: pytest.
         info.locations = ["日本"]
         return True, ""
 
-    monkeypatch.setattr(em, "search_wiki", _no_wiki)
+    monkeypatch.setattr(em, "fetch_wiki_actor", _no_wiki)
     monkeypatch.setattr(em, "get_minnano_info", _fill_minnano)
+    monkeypatch.setattr(em.manager.config, "actor_info_sources", ["local", "wiki", "minnano", "database"])
+    monkeypatch.setattr(em.manager.config, "actor_info_disabled", [])
     actor = ActorInfo(name="Test", actor_id="id1", server_id="srv1")
 
     found = await search_actor_info(actor)

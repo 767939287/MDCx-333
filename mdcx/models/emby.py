@@ -144,6 +144,10 @@ class EMbyActressInfo:
     provider_ids: dict = field(default_factory=dict)
     taglines_translate: bool = False
     locations: list = field(default_factory=list)
+    # 维基词条给出的头像原图与词条地址；Emby/Jellyfin 的 dump() 不写这两个字段，
+    # 只供头像下载流程与数据源测试展示使用。
+    avatar_url: str = ""
+    source_url: str = ""
 
     def dump(self) -> dict:
         # 此处生成的 json 符合 emby/jellyfin 规范；

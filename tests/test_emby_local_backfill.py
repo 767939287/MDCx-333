@@ -30,12 +30,9 @@ def _mock_env(monkeypatch, local_data, post_ok=True):
     def fake_generate_server_url(actor):
         return ("http://home", "", "", "", "", "http://update")
 
-    async def fake_search_wiki(ai):
+    async def fake_fetch_wiki(name: str):
         state["wiki"] += 1
-        return None, "wiki-none"
-
-    async def fake_get_detail(res, msg, ai):
-        return None, ""
+        return None
 
     async def fake_get_minnano(ai, wiki_intro=""):
         state["minnano"] += 1
@@ -67,9 +64,12 @@ def _mock_env(monkeypatch, local_data, post_ok=True):
     monkeypatch.setattr(emby_actor_info, "_generate_server_url", fake_generate_server_url)
     # 议题 #56: emby_actor_info 改为无条件 _build_jellyfin_headers(), 不再有 _is_jellyfin_server 分支
     monkeypatch.setattr(emby_actor_info, "_build_jellyfin_headers", fake_headers)
-    monkeypatch.setattr(emby_actor_manager, "search_wiki", fake_search_wiki)
-    monkeypatch.setattr(emby_actor_manager, "get_detail", fake_get_detail)
+    monkeypatch.setattr(emby_actor_manager, "fetch_wiki_actor", fake_fetch_wiki)
     monkeypatch.setattr(emby_actor_manager, "get_minnano_info", fake_get_minnano)
+    from mdcx.config.manager import manager
+
+    monkeypatch.setattr(manager.config, "actor_info_sources", ["local", "wiki", "minnano", "database"])
+    monkeypatch.setattr(manager.config, "actor_info_disabled", [])
     monkeypatch.setattr(emby_actor_manager.ActressDB, "update_actor_info_from_db", staticmethod(fake_db))
     monkeypatch.setattr(emby_actor_manager.resources, "get_actor_data", lambda name: local_data)
     monkeypatch.setattr(emby_actor_manager.manager, "acquire_computed", lambda: _Ctx())

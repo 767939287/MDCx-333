@@ -104,6 +104,8 @@ MVC 分层：UI → 控制器 → 核心业务 → 爬虫框架 → 基础设施
 
 - `emby_shared.py` 提供 `_generate_server_url` / `_build_jellyfin_headers` / `_is_jellyfin_server` / `_append_query` / `_upload_actor_photo`。
 - manager 提供 `get_gfriends_index` / `_parse_graphis_html` / `fill_actor_info_from_sources`（local→wiki→minnano→db）/ `build_local_avatar_index` / `search_actor_info` / `from_graphis`。
+- 信息源开关：`config.actor_info_disabled` 记录被停用的源，`enabled_actor_info_sources()` 按 `actor_info_sources` 顺序过滤；UI 勾选框与主补全链路共用这一口径。
+- 维基信息源在 `tools/wiki_actor.py`：Wikidata 检索 → 实体校验 → 按 `config.actor_wiki_languages` 取词条正文/信息框；解析出 `WikiActorProfile` 后再映射到 `EMbyActressInfo`。所有 Wikimedia 子域共用 `web_async` 的 2 req/s + 180 req/min 共享双桶限速，请求带可识别 User-Agent。
 - `Minnano-av.com` 品牌显示名首字母大写（6 处），代理域名一律全小写。
 
 ### 3.7 补全模式下方选项（2026-10-23 收敛后）

@@ -2,6 +2,19 @@
 
 按日期分段记录（`## YYYY-MM-DD`，新 → 旧）。每条只写「做了什么 / 改了什么 / 修了什么」，原因与排查过程见 `docs/Development.md` 与 `DADA/MEMORY.md`。
 
+## 2026-11-08
+
+### 演员信息源支持逐项开关与维基词条语言选择
+
+- Emby 演员设置窗口与演员详情 / 数据源测试的「快速设置」面板改为勾选式信息源列表：勾选启用、取消停用，配置落盘 `actor_info_disabled`；主补全链路与数据源测试都会跳过停用源。
+- 维基演员信息源移植 amane 实现（`mdcx/tools/wiki_actor.py`）：Wikidata 检索 → 实体校验 → 按 `actor_wiki_languages` 取词条正文 / 信息框；UI 提供简中 / 日文 / 英文三档优先级。
+- 维基检索名回退到本地 `actor_database.xlsx` 的日文名、繁中名、简中名与别名；简介保留信息框字段（血型 / 职业等）及身高 / 三围 / 罩杯。
+- MediaWiki 限速改为所有 Wikimedia 子域共用 2 req/s + 180 req/min，并继续使用可识别 User-Agent。
+
+### 测试
+
+- 新增 `tests/test_actor_info_switches.py`；`tests/test_wiki_rate_limit.py` 补共享限速桶与 UA 用例；`tests/test_emby_actor_manager.py`、`tests/test_emby_local_backfill.py` 适配新维基入口。
+
 ## 2026-10-24
 
 ### JavBus 四条线路一律改用 www 入口：网络检测不再误报「Cookie 可能无效」
