@@ -66,7 +66,9 @@ _RELEASE_STEP_COUNT = 3
 _MATRIX_ITEMS = (
     '{"build": "macos", "os": "macos-latest", "arch": "aarch64"}',
     '{"build": "windows", "os": "windows-2025", "arch": "x86_64"}',
-    '{"build": "linux", "os": "ubuntu-latest", "arch": "x86_64"}',
+    # Linux 必须固定 22.04：ubuntu-latest 滚到 26.04 后，产物依赖 GLIBC_2.43，
+    # 在 22.04/24.04 上无法启动。
+    '{"build": "linux", "os": "ubuntu-22.04", "arch": "x86_64"}',
 )
 
 # 2026-10-20 删除的 macOS Intel 腿留下的三处痕迹，任一处复活即说明没删干净。

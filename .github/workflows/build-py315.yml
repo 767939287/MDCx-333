@@ -60,7 +60,10 @@ jobs:
           # 退役），再编一份 x86_64 dmg 只是白烧 runner 时间。
           items+=('{"build": "macos", "os": "macos-latest", "arch": "aarch64"}')
           items+=('{"build": "windows", "os": "windows-2025", "arch": "x86_64"}')
-          items+=('{"build": "linux", "os": "ubuntu-latest", "arch": "x86_64"}')
+          # Linux 固定 22.04（glibc 2.35）构建：ubuntu-latest 已滚到 26.04（glibc 2.43），
+          # 产物在 Ubuntu 22.04/24.04 上会报 `GLIBC_2.43 not found`。22.04 构建可向下兼容，
+          # 且 actions/python-versions 提供 Python 3.15 的 linux-22.04 构建。
+          items+=('{"build": "linux", "os": "ubuntu-22.04", "arch": "x86_64"}')
 
           # 合并items到json数组
           matrix="matrix=["
