@@ -429,6 +429,43 @@ def _parse_tags_from_table(table_or_tagarea) -> list[str]:
     return tags
 
 
+def _clean_wiki_text(node) -> str:
+    """`<p class="wiki">` 正文：反转义后的 `<br />` 按换行处理，逐行收拢行内空白。
+
+    minnano 的资料块是用户编辑的原始 wiki 文本，换行在源码里是**转义后的**
+    `<br />`（`&lt;br /&gt;`，页面上直接显示成字面文本），bs4 取文本时已反转义，
+    这里再把它变回换行；其余残留标签（链接/强调等）一并剥除。
+    """
+    text = node.get_text("")
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = re.sub(r"</?[A-Za-z][A-Za-z0-9]*(?:\s[^<>]*)?/?>", "", text)
+    lines = [re.sub(r"[ \t\u3000]+", " ", line).strip() for line in text.split("\n")]
+    return "\n".join(line for line in lines if line)
+
+
+def _parse_wiki_profile(soup) -> str:
+    """解析 `#profile-data` 维基资料块 → 「===== 节标题 ===== + 正文」多行文本。
+
+    minnano 详情页的「○○プロフィールデータ」是维基式资料（人物 / 来歴・略歴 /
+    エピソード / AV以外への出演・掲載），由 `<h4>` 标题 + `<p class="wiki">` 正文组成。
+    绝大多数演员只有一两节有内容，空节直接丢弃、节之间空一行。保留换行与节标题，
+    写库时由 `to_emby_overview` 统一转成 `<br/>`（服务器端按行渲染）。
+    """
+    box = soup.find(id="profile-data")
+    if box is None:
+        return ""
+    sections: list[str] = []
+    for h4 in box.find_all("h4"):
+        # 标题里嵌着「編集」按钮（未登录时是灰的 span），不属于正文
+        title = re.sub(r"\s*編集\s*$", "", h4.get_text(" ", strip=True)).strip()
+        body = h4.find_next_sibling("p", class_="wiki")
+        text = _clean_wiki_text(body) if body is not None else ""
+        if not text:
+            continue
+        sections.append(f"===== {title} =====\n{text}" if title else text)
+    return "\n\n".join(sections)
+
+
 def parse_minnano_page(html: str, minnano_id: str) -> dict[str, Any] | None:
     """
     解析みんなのAV 演员页面，返回结构化数据。
@@ -513,6 +550,10 @@ def parse_minnano_page(html: str, minnano_id: str) -> dict[str, Any] | None:
     tagarea = soup.find("div", class_="tagarea")
     if tagarea:
         result["tags"] = _parse_tags_from_table(tagarea)
+
+    # 维基资料块（人物 / 来歴・略歴 / エピソード / AV以外への出演・掲載）：
+    # 有内容的节才写入，全部为空时保持 ""，调用方回退到「出道作品」
+    result["wiki"] = _parse_wiki_profile(soup)
 
     # 如果名字还没解析出来，从页面标题或 h2 中找
     if not result["name"]:

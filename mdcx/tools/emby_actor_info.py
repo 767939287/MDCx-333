@@ -19,7 +19,7 @@ from ..config.enums import EmbyAction
 from ..config.extend import get_movie_path_setting
 from ..config.manager import manager
 from ..config.resources import resources
-from ..models.emby import EMbyActressInfo
+from ..models.emby import EMbyActressInfo, to_emby_overview
 from ..signals import signal
 from ..utils import get_used_time
 from ..utils.file import copy_file_async
@@ -218,9 +218,13 @@ async def _process_actor_async(actor: dict, emby_on: list[EmbyAction]) -> tuple[
         if minnano_found or db_exist or wiki_found or javdb_found or local_applied:
             # 议题 #56(图2): Emby/Jellyfin 都需要鉴权头, 否则 POST /Items/{id} 故 server 401
             headers = _build_jellyfin_headers()
+            # 简介换行统一整形：维基正文与「个人资料」段在这里改写为 <br/> 分行，
+            # 否则服务器端把裸 \n 折叠成空格，简介整段挤成一行（与管理器同步出口同口径）。
+            payload = actor_info.dump()
+            payload["Overview"] = to_emby_overview(actor_info.overview)
             async with manager.acquire_computed() as computed:
                 post_res, error = await computed.async_client.post_text(
-                    update_url, json_data=actor_info.dump(), headers=headers, use_proxy=False
+                    update_url, json_data=payload, headers=headers, use_proxy=False
                 )
             _raise_if_stop_requested()
             if post_res is not None:

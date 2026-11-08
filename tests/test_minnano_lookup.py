@@ -199,6 +199,64 @@ def test_parse_minnano_page_accepts_4row_profile_table(monkeypatch):
     assert parsed["hip"] == "87"
 
 
+def test_parse_minnano_page_reads_wiki_profile_block():
+    """minnano 的「○○プロフィールデータ」维基块要写进 wiki 字段，且按行保留换行。
+
+    实测（2026-11-08，远程 CDP 打开 minnano 详情页）：资料块是
+    `<div id="profile-data">` + `<h4>节标题</h4><p class="wiki">正文</p>`，
+    换行在源码里是转义后的 `&lt;br /&gt;`，标题里还嵌着「編集」按钮文本。
+    """
+    html = """
+    <html><head><title>桃愛ゆえ（ももあゆえ）AV女優プロフィール</title></head>
+    <body>
+    <table>
+      <tr><td><h2>桃愛ゆえ （ももあゆえ / ）</h2></td></tr>
+      <tr><td><span>サイズ</span><p>T163 / B91(Fカップ) / W60 / H88 / S</p></td></tr>
+      <tr><td><span>タグ</span><p>ハーフ、豊胸</p></td></tr>
+    </table>
+    <div id="profile-data">
+      <h3 class="profile-title">桃愛ゆえプロフィールデータ</h3>
+      <h4>人物<span class="tip"><span class="btnlnk smbtn off">編集</span></span></h4>
+      <p class="wiki"></p>
+      <h4>来歴・略歴</h4>
+      <p class="wiki">「のあういか」[AttractiveLLC]→(2022年3月29日)→「桃愛ゆえ」[不明]&lt;br /&gt;
+      豊胸後に改名&lt;br /&gt;2022年から企画単体</p>
+      <h4>エピソード</h4>
+      <p class="wiki"></p>
+    </div>
+    </body></html>
+    """
+    parsed = minnano_crawler.parse_minnano_page(html, "334377")
+    assert parsed is not None
+    assert parsed["wiki"] == (
+        "===== 来歴・略歴 =====\n"
+        "「のあういか」[AttractiveLLC]→(2022年3月29日)→「桃愛ゆえ」[不明]\n"
+        "豊胸後に改名\n"
+        "2022年から企画単体"
+    )
+    assert "編集" not in parsed["wiki"]
+    assert "<br" not in parsed["wiki"]
+
+
+def test_parse_minnano_page_wiki_block_empty_stays_blank():
+    """资料块全是空节（实测多数演员如此）时不写 wiki，调用方回退到「出道作品」。"""
+    html = """
+    <html><head><title>乙アリス（おつありす）AV女優プロフィール</title></head>
+    <body>
+    <div id="profile-data">
+      <h3 class="profile-title">乙アリスプロフィールデータ</h3>
+      <h4>人物</h4><p class="wiki"></p>
+      <h4>来歴・略歴</h4><p class="wiki">  </p>
+      <h4>エピソード</h4><p class="wiki"></p>
+      <h4>AV以外への出演・掲載</h4><p class="wiki"></p>
+    </div>
+    </body></html>
+    """
+    parsed = minnano_crawler.parse_minnano_page(html, "273627")
+    assert parsed is not None
+    assert parsed["wiki"] == ""
+
+
 def test_extract_bio_fields_from_free_text():
     """reformat_minnano 从自由中文简介抽字段，多种格式都能识别。"""
     from mdcx.tools.actor_db_tool import _build_bio_line, _extract_bio_fields

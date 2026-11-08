@@ -40,9 +40,7 @@ class ActorInfoMixin:
     # 设置-演员-补全演员信息：本地/维基/JavDB/Minnano checkbox 变更后立即落盘
     def _on_actor_info_source_toggled(self, *_args):
         checks = getattr(self, "_actor_info_source_checks", {})
-        disabled = [
-            source for source, checkbox in checks.items() if not checkbox.isChecked()
-        ]
+        disabled = [source for source, checkbox in checks.items() if not checkbox.isChecked()]
         if hasattr(self.Ui, "checkBox_actor_db") and not self.Ui.checkBox_actor_db.isChecked():
             disabled.append("database")
         manager.config.actor_info_disabled = list(dict.fromkeys(disabled))

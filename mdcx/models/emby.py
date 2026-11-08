@@ -130,6 +130,20 @@ def clean_overview_text(value: object) -> str:
     return _OVERVIEW_PLACEHOLDER_RE.sub("", value)
 
 
+def to_emby_overview(value: object) -> str:
+    """写入 Emby/Jellyfin 前的简介整形：清洗噪声 + 裸换行一律转 ``<br/>``。
+
+    Emby 4.8+ 把 Overview 当 HTML 渲染，裸 ``\\n`` 会被折叠成空格：维基正文的段落、
+    以及「个人资料」段的每一行（生日/别名…）会并成一整行，看起来完全没有换行。
+    服务器端要求以 ``<br>`` 分行（议题 #180），因此所有写库出口都必须先过这一步。
+    已有的 ``<br>`` 变体原样保留（议题 #171），只把剩下的裸换行补成 ``<br/>``。
+    """
+    text = clean_overview_text(value)
+    if not text:
+        return ""
+    return text.replace("\r\n", "\n").replace("\r", "\n").replace("\n", "<br/>")
+
+
 @dataclass
 class EMbyActressInfo:
     name: str

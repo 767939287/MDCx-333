@@ -22,9 +22,9 @@ from ..crawlers.javdb_app import JavdbActorInfo, _split_aliases, fetch_javdb_act
 from ..log_console import log_console
 from ..models.emby import (
     EMbyActressInfo,
-    clean_overview_text,
     normalize_premiere_date,
     normalize_production_year,
+    to_emby_overview,
 )
 from ..utils import executor
 from ..utils.file import write_file_atomic_async
@@ -831,7 +831,8 @@ async def update_person_info(actor: ActorInfo) -> tuple[bool, str]:
         {"Name": actor.name, "Id": actor.actor_id, "ServerId": actor.server_id}
     )
     # 议题 #149: 简介出口统一清洗(段落标题/<br>/占位文案), 存量脏数据随下次同步自愈
-    overview = clean_overview_text((actor.new_overview or actor.existing_overview or "").replace("\n", "<br/>"))
+    # 换行整形与内置补全共用 to_emby_overview: 裸 \n 在 Emby 端会被折叠成空格(无换行)
+    overview = to_emby_overview(actor.new_overview or actor.existing_overview or "")
     # Genres/Tags/ProviderIds 必须恒为集合：Emby/Jellyfin 的 UpdateItem 会直接
     # Distinct()/ToList() 反序列化后的字段，缺省为 null 时抛 ArgumentNullException
     # （"Value cannot be null. (Parameter 'source')"）导致 HTTP 400（议题 #148）。
@@ -896,7 +897,8 @@ async def clean_actor_data(
         "ProviderIds": {k: v for k, v in (actor.existing_provider_ids or {}).items() if v},
     }
     if new_overview != (actor.existing_overview or ""):
-        payload["Overview"] = new_overview
+        # 与同步出口同口径：裸换行补成 <br/>，否则服务器端会把行并成一行
+        payload["Overview"] = to_emby_overview(new_overview)
     if new_taglines is not None and new_taglines != list(actor.existing_taglines or []):
         payload["Taglines"] = list(new_taglines)
     if fix_birth:

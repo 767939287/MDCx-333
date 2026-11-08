@@ -374,6 +374,19 @@ async def parse_detail(
         return False, f"处理维基百科页面内容时发生异常: {e!s}"
 
 
+def _block_text(node: bs4.Tag) -> str:
+    """段落 / 列表项文本：`<br>` 视为换行，其余内联标签不补分隔。
+
+    维基正文常在一个段落里用 `<br>` 分行（作品列表、逐条履历），旧实现
+    `get_text("", strip=True)` 会把它们并成一整行——网页上分行、刮下来没有换行。
+    逐行 strip 后丢空行；行内空白原样保留（与 `get_text("", strip=True)` 同口径）。
+    """
+    for br in node.find_all("br"):
+        br.replace_with("\n")
+    lines = [line.strip() for line in node.get_text("").split("\n")]
+    return "\n".join(line for line in lines if line)
+
+
 def _extract_introduction(actor_output: bs4.Tag) -> str:
     """提取开头简介"""
     actor_introduce_0 = actor_output.find(id="mf-section-0")
@@ -384,8 +397,9 @@ def _extract_introduction(actor_output: bs4.Tag) -> str:
     begin_intro = actor_introduce_0.find_all("p")
     for each in begin_intro:
         if isinstance(each, bs4.Tag):
-            info = each.get_text("", strip=True)
-            overview += info + "\n"
+            info = _block_text(each)
+            if info:
+                overview += info + "\n"
     return overview
 
 
@@ -517,8 +531,9 @@ def _extract_section_content(
     actor_1 = ff.find_all(["p", "li"])
     for each in actor_1:
         if isinstance(each, bs4.Tag):
-            info = each.get_text("", strip=True)
-            content += info + "\n"
+            info = _block_text(each)
+            if info:
+                content += info + "\n"
 
     return content
 

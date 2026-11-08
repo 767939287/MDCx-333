@@ -140,11 +140,31 @@ _REF_MARKER_RE = re.compile(r"[\ue000-\uf8ff↑]")
 _EMPTY_BRACKET_RE = re.compile(r"\s*[（(〔]\s*[）)〕]")
 _TIDY_PUNCT_RE = re.compile(r"([。．.！!？?])\1+|[、,，]\s*(?=[。．.、,，；;：:]|$)|[。．.、,，](?=[。．.、,，；;：:])")
 
-# 简介上限：段落级拼装，放不下的那一段截到句末；剩余空间不足 _MIN_TAIL_CHARS 就不再续接。
-_OVERVIEW_MAX_CHARS = 1500
-_MIN_TAIL_CHARS = 30
-_PARAGRAPH_SEP = "\n\n"
-_SENTENCE_ENDS = "。．.！!？?…"
+# 章节分类：正文段落排成「导语 → 人物类 → 经历类 → 其它白名单章节」。
+# 关键字存简体形态；比对前先做与 _is_section 相同的折叠。
+_PERSON_SECTIONS: tuple[str, ...] = (
+    "人物",
+    "简介",
+    "私生活",
+    "个人生活",
+    "背景",
+    "生い立ち",
+    "プロフィール",
+    "early life",
+    "personal life",
+    "background",
+)
+_HISTORY_SECTIONS: tuple[str, ...] = (
+    "简历",
+    "经历",
+    "履历",
+    "略历",
+    "来历",
+    "生涯",
+    "生平",
+    "career",
+    "biography",
+)
 
 _AV_OCCUPATIONS: frozenset[str] = frozenset(
     {
@@ -171,9 +191,53 @@ _PROVIDER_KEY_MAP: dict[str, str] = {
     "twitter": "Twitter",
     "instagram": "Instagram",
     "fanza": "Fanza",
+    "xhamster": "xHamster",
 }
 
-_PROFILE_BLOCK_TITLE = "===== 个人资料 ====="
+# 简介分段的标题按目标语言取：日文模式下与维基日文词条一致（個人情報 / 外部リンク）。
+_SECTION_TITLES: dict[str, tuple[str, str]] = {
+    "zh-cn": ("个人资料", "外部链接"),
+    "zh-hant": ("個人資料", "外部連結"),
+    "ja": ("個人情報", "外部リンク"),
+}
+
+# 资料段里的字段名：词条信息框缺失、只能由 Wikidata 拼时使用（日文模式不出现中文标签）。
+_PROFILE_LABELS: dict[str, dict[str, str]] = {
+    "zh-cn": {
+        "birthday": "生日",
+        "birthplace": "出生地",
+        "height": "身高",
+        "sizes": "三围",
+        "cup": "罩杯",
+        "alias": "别名",
+    },
+    "zh-hant": {
+        "birthday": "生日",
+        "birthplace": "出生地",
+        "height": "身高",
+        "sizes": "三圍",
+        "cup": "罩杯",
+        "alias": "別名",
+    },
+    "ja": {
+        "birthday": "生年月日",
+        "birthplace": "出身地",
+        "height": "身長",
+        "sizes": "スリーサイズ",
+        "cup": "ブラサイズ",
+        "alias": "別名",
+    },
+}
+
+# 外部链接段：顺序与老实现（tools/wiki.py 的 url_log）一致，链接模板取各站的标准人页地址。
+_PROVIDER_LINKS: tuple[tuple[str, str, str], ...] = (
+    ("tmdb", "TheMovieDb", "https://www.themoviedb.org/person/{}"),
+    ("imdb", "IMDb", "https://www.imdb.com/name/{}"),
+    ("twitter", "Twitter", "https://twitter.com/{}"),
+    ("instagram", "Instagram", "https://www.instagram.com/{}"),
+    ("fanza", "Fanza", "https://actress.dmm.co.jp/-/detail/=/actress_id={}"),
+    ("xhamster", "xHamster", "https://xhamster.com/pornstars/{}"),
+)
 
 
 class WikiSourceError(Exception):
@@ -203,6 +267,9 @@ class WikiActorProfile:
     # 信息框原始行（label: value），保留血型/职业等结构化外的字段；
     # 有正文时由 apply_wiki_profile 拼进「个人资料」段。
     infobox: list[str] = field(default_factory=list)
+    # 本次实际命中的检索名（可能是别名/旧名，与词条名不一定相同）；
+    # 用于在简介「別名」行里同时体现旧名与新名。
+    searched_name: str = ""
 
     @property
     def has_data(self) -> bool:
@@ -268,7 +335,7 @@ async def fetch_wiki_actor(
             if entity is None:
                 continue
             if _is_av_entity(entity) and _name_matches_any(entity, search_names):
-                profile = await _build_profile(qid, entity, desc, entry_languages)
+                profile = await _build_profile(qid, entity, desc, entry_languages, searched_name=search_name)
                 if profile.has_data:
                     return profile
     return None
@@ -283,12 +350,18 @@ def apply_wiki_profile(
     """把档案写进 ``EMbyActressInfo``（原地修改）。
 
     只写「维基给出了值」的字段；姓名始终保留 Emby 侧原值，不因词条语言改名。
-    身高/三围/罩杯等 Emby 没有对应字段的信息，按老实现拼进简介的「个人资料」段。
+    简介按老实现的版式拼三段：``===== 个人资料 =====`` → ``===== 外部链接 =====`` →
+    词条正文（人物 / 履历段落）。段标题与拼装字段名跟随目标语言，日文模式下即
+    维基日文词条的「個人情報 / 外部リンク」。身高/三围/罩杯等 Emby 没有对应字段的
+    信息一并进「个人资料」段。
     """
     from ..config.enums import EmbyAction
 
     actions = list(emby_on or manager.config.emby_on)
     target_lang = "zh-hant" if EmbyAction.ACTOR_INFO_ZH_TW in actions else "zh-cn"
+    # 段标题与拼装字段名跟随目标语言：日文模式下即维基日文词条的「個人情報 / 外部リンク」。
+    # 正文本身仍是词条原文（日文模式不翻译），故这里只管分段的标题与标签。
+    section_lang = "ja" if EmbyAction.ACTOR_INFO_JA in actions else target_lang
 
     if profile.birthday:
         actor_info.birthday = profile.birthday
@@ -322,11 +395,21 @@ def apply_wiki_profile(
     elif profile.language == "zh" and actor_info.taglines:
         actor_info.taglines = [zhconv.convert(str(actor_info.taglines[0]), target_lang)]
 
-    profile_lines = _profile_lines(profile)
-    overview = (profile.overview or "").strip()
+    profile_lines = _profile_lines(profile, section_lang)
+    link_lines = _external_link_lines(profile)
+    profile_title, link_title = _SECTION_TITLES.get(section_lang, _SECTION_TITLES["zh-cn"])
+    blocks: list[str] = []
     if profile_lines:
-        block = _PROFILE_BLOCK_TITLE + "\n" + "\n".join(profile_lines)
-        overview = f"{block}\n\n{overview}" if overview else block
+        blocks.append(f"===== {profile_title} =====\n" + "\n".join(profile_lines))
+    if link_lines:
+        blocks.append(f"===== {link_title} =====\n" + "\n".join(link_lines))
+    overview = (profile.overview or "").strip()
+    head = "\n\n".join(blocks)
+    if head and overview:
+        # 正文（人物 / 履历）永远排在这两段下面
+        overview = f"{head}\n\n{overview}"
+    elif head:
+        overview = head
     if overview:
         actor_info.overview = overview
 
@@ -502,6 +585,7 @@ async def _build_profile(
     entity: dict[str, Any],
     tagline: str | None,
     languages: tuple[str, ...],
+    searched_name: str = "",
 ) -> WikiActorProfile:
     labels_raw = entity.get("labels")
     labels: dict[str, Any] = labels_raw if isinstance(labels_raw, dict) else {}
@@ -560,6 +644,7 @@ async def _build_profile(
         source_url=source_url,
         language=page_language,
         infobox=infobox,
+        searched_name=searched_name,
     )
 
 
@@ -753,6 +838,7 @@ def _provider_ids(qid: str, entity: dict[str, Any]) -> dict[str, str]:
         "P2002": "twitter",
         "P2003": "instagram",
         "P9781": "fanza",
+        "P8720": "xhamster",
     }
     for pid, key in mapping.items():
         entries = claims.get(pid)
@@ -777,7 +863,7 @@ def _provider_ids(qid: str, entity: dict[str, Any]) -> dict[str, str]:
 
 def _parse_wiki_page(url: str, language: str, html_text: str) -> _WikiPage:
     html = Selector(text=html_text)
-    overview = _clip_blocks(_overview_blocks(html)) or None
+    overview = "\n\n".join(_overview_blocks(html)) or None
     birthplace, birthday, figure, infobox = _parse_infobox(html)
     return _WikiPage(
         url=url,
@@ -794,8 +880,17 @@ def _overview_blocks(html: Selector) -> list[str]:
     """导语段落 + 白名单章节的段落与列表；表格内的段落（信息框 / 导航框）不取。
 
     标题层级决定归属：白名单章节层级以下的子章节同属该章节，遇到同级或更高级标题才退出。
+    输出顺序固定为「导语 → 人物类章节 → 经历类章节 → 其它白名单章节」，同类内保持
+    原文顺序（用户 2026-11-08：正文要包含人物与经历，且先人物再经历）。
     """
-    blocks: list[str] = []
+    collected: list[tuple[int, int, str]] = []
+    seq = 0
+
+    def add(text: str) -> None:
+        nonlocal seq
+        collected.append((_section_group(headings), seq, text))
+        seq += 1
+
     headings: list[tuple[int, str]] = []
     selected = True
     for node in html.css(_PARSER_OUTPUT).xpath(_CONTENT_NODES):
@@ -819,14 +914,15 @@ def _overview_blocks(html: Selector) -> list[str]:
                 continue
             text = _clean_text(node)
             if text:
-                blocks.append(text)
+                add(text)
             continue
         if _has_ancestor(node.root, _LIST_TAGS):
             continue
         items = [text for text in (_clean_text(item) for item in node.xpath("./li")) if text]
         if items:
-            blocks.append("\n".join(items))
-    return blocks
+            add("\n".join(items))
+    collected.sort(key=lambda item: (item[0], item[1]))
+    return [text for _group, _seq, text in collected]
 
 
 def _heading_text(node: Selector) -> str:
@@ -835,13 +931,71 @@ def _heading_text(node: Selector) -> str:
 
 
 def _is_section(title: str) -> bool:
-    folded = zhconv.convert(title, "zh-cn").translate(_JA_HEADING_FOLD).lower()
+    folded = _section_fold(title)
     return any(keyword in folded for keyword in _SECTION_KEYWORDS)
 
 
+def _section_fold(title: str) -> str:
+    """章节标题折叠：中文繁体转简体 + 日文汉字归一 + 小写，供关键字比对。"""
+    return zhconv.convert(title, "zh-cn").translate(_JA_HEADING_FOLD).lower()
+
+
+def _section_group(headings: list[tuple[int, str]]) -> int:
+    """段落归属分组：0=导语（无标题）、1=人物类、2=经历类、3=其它白名单章节。
+
+    取**最内层**的白名单标题作为归属：`== 人物 ==` 下的 `=== 略歴 ===` 归经历，
+    同一章节下再分的子章节各自按自己的标题归类。
+    """
+    section = next((name for _level, name in reversed(headings) if _is_section(name)), None)
+    if section is None:
+        return 3 if headings else 0
+    folded = _section_fold(section)
+    if any(keyword in folded for keyword in _PERSON_SECTIONS):
+        return 1
+    if any(keyword in folded for keyword in _HISTORY_SECTIONS):
+        return 2
+    return 3
+
+
+_TEXT_SKIP_TAGS = frozenset({"style", "script"})
+# 列表项在维基里靠 CSS 生成分隔符（hlist 模板），取文本时要自己断行
+_TEXT_BREAK_TAGS = frozenset({"br", "li", "dd", "dt"})
+
+
+def _iter_text_parts(root: Any):
+    """按文档序产出文本片段：`<br>` / 列表项处产出换行，`<style>`/`<script>` 内容丢弃。
+
+    维基的 hlist 模板会把 `display:inline` 的样式表一并写进单元格，直接拼
+    `.//text()` 会把整段 CSS 当成字段值（实测音琴るい词条的「専属契約」）。
+    parsel 的 text() 结果未必带 `getparent()`，这里直接用 lxml 元素树遍历并在源头跳过。
+    """
+    if not isinstance(root.tag, str) or root.tag in _TEXT_SKIP_TAGS:
+        return
+    if root.tag in _TEXT_BREAK_TAGS:
+        yield "\n"
+    if root.text:
+        yield root.text
+    for child in root:
+        if not isinstance(child.tag, str):
+            if child.tail:
+                yield child.tail
+            continue
+        yield from _iter_text_parts(child)
+        if child.tail:
+            yield child.tail
+
+
 def _clean_text(node: Selector) -> str:
-    """节点文本：取真实文本（不按子节点补空格），去引用标记并收拢空白。"""
-    return _clean_inline("".join(node.xpath(".//text()").getall()))
+    """节点文本：`<br>` 与列表项一律断行，去引用标记并收拢每行内的空白。
+
+    维基正文常把一个段落里的多行（作品列表、逐条履历）用 `<br>` 分隔，直接拼接
+    `.//text()` 会把它们并成一整行——页面上明明分行，刮下来的简介却没有换行。
+    因此按「文本 / `<br>` / 列表项」文档序逐个收集，断行处插入换行，再逐行收拢空白；
+    行内空白仍压成一个空格（与 `_clean_inline` 同口径），空行直接丢弃。
+    """
+    text = _strip_archive_notes(_CITATION_RE.sub("", "".join(_iter_text_parts(node.root))))
+    lines = [re.sub(r"\s+", " ", line).strip() for line in text.split("\n")]
+    return "\n".join(line for line in lines if line)
 
 
 def _clean_inline(text: str) -> str:
@@ -889,39 +1043,26 @@ def _has_ancestor(node: Any, tags: frozenset[str]) -> bool:
     return False
 
 
-def _clip_blocks(blocks: list[str]) -> str:
-    out = ""
-    for block in blocks:
-        sep = _PARAGRAPH_SEP if out else ""
-        room = _OVERVIEW_MAX_CHARS - len(out) - len(sep)
-        if len(block) <= room:
-            out = f"{out}{sep}{block}"
-            continue
-        if room >= _MIN_TAIL_CHARS:
-            out = f"{out}{sep}{_cut_at_sentence(block, room)}"
-        break
-    return out
-
-
-def _cut_at_sentence(text: str, limit: int) -> str:
-    """截到句末并为省略号留位，保证结果不超过 limit。"""
-    head = text[: limit - 1]
-    cut = max((head.rfind(end) for end in _SENTENCE_ENDS), default=-1)
-    if cut >= 0:
-        head = head[: cut + 1]
-    return f"{head.rstrip()}…"
-
-
 # 标签随词条语言一套：中文（简体）与日文。繁体渲染只出现在 zh-tw 变体，而中文词条固定取 zh-cn，因此不收。
 _HEIGHT_LABELS: tuple[str, ...] = ("身長", "身高")
 _SIZES_LABELS: tuple[str, ...] = ("スリーサイズ", "三围")
 _CUP_LABELS: tuple[str, ...] = ("ブラサイズ", "罩杯")
+# 识别「人物信息框」用的行标签：词条里可能同时有 YouTube 频道 / 歌手 等其它 infobox。
+_BIRTH_LABELS: tuple[str, ...] = ("生年月日", "生年", "生誕", "出生")
+_ALIAS_LABELS: tuple[str, ...] = ("別名", "别名", "愛称", "爱称", "ニックネーム", "昵称")
+# 「別名」类标签：搜索名 / 词条名要补进这一行（愛称不加）
+_ALIAS_NAME_LABELS: tuple[str, ...] = ("別名", "别名")
+_PLACE_LABELS: tuple[str, ...] = ("出身地", "出生地")
 # 信息框底部的「计量单位换算 / 英米単位系」折叠块渲染出同名的英制行（5英尺3英寸 / 32 - 23 - 34 英寸）。
 # 单位不可省：只认公制，否则英寸会被当厘米写进身高与三围。
 _METRIC = r"(?:cm|厘米)"
 _CM = r"(\d{2,3}(?:\.\d+)?)"
 _HEIGHT_RE = re.compile(rf"^{_CM}\s*{_METRIC}")
 _SIZES_RE = re.compile(rf"^{_CM}\s*-\s*{_CM}\s*-\s*{_CM}\s*{_METRIC}")
+# 英制行（5 ft 3 in / 32 - 23 - 33 in / ― lb）只在「表示英米単位系」折叠块里出现，
+# 展开后是身長/体重、スリーサイズ 的重复行；简介里同名字段一律保留公制那一条。
+_IMPERIAL_LABEL = "単位系"
+_IMPERIAL_VALUE_RE = re.compile(r"\d\s*(?:ft|in)\b|\blb\b|フィート|インチ", re.IGNORECASE)
 # 罩杯是字母加可选下标：C / C70 / C-65（下标为下胸围）。
 _CUP_RE = re.compile(r"^([A-Za-z]{1,2})\s*-?\s*\d{0,3}$")
 
@@ -957,6 +1098,53 @@ def _extract_text(node: Selector, xpath: str) -> str:
     return values[0] if values else ""
 
 
+def _cell_text(row: Selector, tag: str) -> str:
+    """单元格文本：把 `<br>` 当行分隔。
+
+    信息框里多个值常用 `<br />` 分行（如別名：`上村陽菜（…）<br />CHIAKI／Chiaki（…）`），
+    旧的 `string(.//td)` 直接把各行粘在一起，既没分隔也读不出来。这里逐个收集
+    「文本 / `<br>`」，`<br>` 处输出 `\n`，交给下游按行清洗后拼成一行。
+    """
+    cells = row.xpath(f"./{tag}") or row.xpath(f".//{tag}")
+    if not cells:
+        return ""
+    return "".join(_iter_text_parts(cells[0].root)).strip()
+
+
+def _join_cell_lines(value: str) -> str:
+    """单元格里的多行合成一行：逐行清洗后用「、」分隔（去重、去空、去多余顿号）。
+
+    以括号开头的行是上一项的补充（维基习惯 `S1 NO.1 STYLE<br>（2014年7月 - 2020年3月）`），
+    直接接到上一项后面，不加顿号。
+    """
+    parts: list[str] = []
+    for line in value.split("\n"):
+        text = _clean_inline(line)
+        if not text:
+            continue
+        if parts and text[0] in "（(":
+            if not parts[-1].endswith(text):
+                parts[-1] = f"{parts[-1]}{text}"
+            continue
+        if text not in parts:
+            parts.append(text)
+    return re.sub(r"、{2,}", "、", "、".join(parts)).strip("、 ")
+
+
+def _main_infobox(html: Selector) -> Selector | None:
+    """取人物信息框：优先「含生年/別名/出身地」的第一个 infobox。
+
+    词条常带多个 infobox（人物 + YouTube 频道 + 歌手），全收会把订阅数、唱片公司
+    之类的无关行塞进「个人资料」段（实测天使もえ词条 30 行、其中一半是别的表）。
+    """
+    tables = [table for table in html.css("table.infobox") if isinstance(table.root.tag, str)]
+    for table in tables:
+        labels = " ".join(table.xpath(".//th//text()").getall())
+        if any(key in labels for key in (*_BIRTH_LABELS, *_ALIAS_LABELS, *_PLACE_LABELS)):
+            return table
+    return tables[0] if tables else None
+
+
 def _parse_infobox(html: Selector) -> tuple[str | None, str | None, _Figure, list[str]]:
     """信息框的出身地、出生日期、身材与原始行；与词条语言无关，命中即取。"""
     birthplace = None
@@ -964,13 +1152,33 @@ def _parse_infobox(html: Selector) -> tuple[str | None, str | None, _Figure, lis
     figure = _NO_FIGURE
     rows: list[str] = []
     seen_rows: set[str] = set()
-    for row in html.css("table.infobox tr, .infobox tr"):
-        label = (_extract_text(row, "string(./th)") or _extract_text(row, "string(.//th)") or "").strip()
-        value = (_extract_text(row, "string(./td)") or _extract_text(row, "string(.//td)") or "").strip()
+    seen_labels: set[str] = set()
+    box = _main_infobox(html)
+    if box is None:
+        return birthplace, birthday, figure, rows
+    for row in box.css("tr"):
+        # 主信息框里常嵌着别的 infobox（如YouTube频道：登録者数/総再生回数），
+        # 只取「最近祖先表就是主信息框」的行，嵌套表的行一律跳过
+        owner = next(iter(row.root.iterancestors("table")), None)
+        if owner is not box.root:
+            continue
+        label = re.sub(r"\s+", " ", _cell_text(row, "th")).strip()
+        value = _cell_text(row, "td")
         if not label or not value:
             continue
-        clean_value = _clean_inline(value)
-        # 日文 infobox 会把 <span class="bday"> 的 ISO 日期再渲染一遍：\n        # 「(1971-01-19)1971年1月19日（55歳）」，去掉括号里的重复 ISO 日期。\n        clean_value = re.sub(r\"^\\s*[（(]\\d{4}-\\d{2}-\\d{2}[）)]\\s*\", \"\", clean_value)\n        line = f\"{label}: {clean_value}\"
+        # 「表示英米単位系」折叠块及其展开后的英制同名行（5 ft 3 in / 32 - 23 - 33 in）
+        # 不是新字段，简介里同名字段保留公制那一条
+        if _IMPERIAL_LABEL in label:
+            continue
+        # 同名字段只留第一次出现的（现名在前、内嵌模板在后）
+        if label in seen_labels:
+            continue
+        seen_labels.add(label)
+        clean_value = _join_cell_lines(value)
+        # 日文 infobox 会把 <span class="bday"> 的 ISO 日期再渲染一遍：
+        # 「(1971-01-19)1971年1月19日（55歳）」，去掉括号里的重复 ISO 日期。
+        clean_value = re.sub(r"^\s*[（(]\d{4}-\d{2}-\d{2}[）)]\s*", "", clean_value)
+        line = f"{label}: {clean_value}"
         if line not in seen_rows:
             seen_rows.add(line)
             rows.append(line)
@@ -1040,24 +1248,97 @@ def _normalize_birthplace(value: str) -> str:
     return place
 
 
-def _profile_lines(profile: WikiActorProfile) -> list[str]:
+def _alias_key(value: str) -> str:
+    """名字去重键：NFKC + 去空白 + 只看括号前的名字主体（括号里是读音/罗马音）。"""
+    text = unicodedata.normalize("NFKC", value)
+    text = re.split(r"[(（]", text, maxsplit=1)[0]
+    return re.sub(r"\s+", "", text).casefold()
+
+
+def _extra_alias_names(profile: WikiActorProfile) -> list[str]:
+    """需要补进「別名」行的名字：搜索名与词条名不同时，两个都算该演员用过的名字。
+
+    搜别名命中现名词条（のあういか → 桃愛ゆえ）→ 补现名；
+    词条仍是旧名（桃愛ゆえ → のあういか）→ 补搜索名。两边都不同则都补。
+    """
+    searched = (profile.searched_name or "").strip()
+    entry = (profile.name or "").strip()
+    if not searched or not entry or _alias_key(searched) == _alias_key(entry):
+        return []
+    return [searched, entry]
+
+
+def _merge_alias_value(value: str, extra: list[str], drop: str = "") -> str:
+    """在「A、B、C」形式的別名值上补名字，并去掉与搜索名同形的项。
+
+    `drop` 是本次检索用的名字：用户按 A 搜的，A 再列进「別名」纯属重复。
+    """
+    parts = [part.strip() for part in value.split("、") if part.strip()]
+    if drop:
+        parts = [part for part in parts if _alias_key(part) != drop]
+    seen = {_alias_key(part) for part in parts}
+    for name in extra:
+        key = _alias_key(name)
+        if key and key != drop and key not in seen:
+            seen.add(key)
+            parts.append(name)
+    return "、".join(parts)
+
+
+def _profile_lines(profile: WikiActorProfile, lang: str = "zh-cn") -> list[str]:
+    """「个人资料」段的每行一个字段；词条有信息框时直接沿用原文行（日文词条即日文标签）。
+
+    多值字段（別名 / 愛称）保持一行，值之间用「、」分隔（在 `_join_cell_lines` 里拼好）。
+    「別名」行额外补上搜索名/词条名：信息框常只列旧名，现名（词条名）反而不在里面。
+    """
+    labels = _PROFILE_LABELS.get(lang, _PROFILE_LABELS["zh-cn"])
+    alias_label = labels["alias"]
+    extra = _extra_alias_names(profile)
+    drop = _alias_key(profile.searched_name) if profile.searched_name else ""
     if profile.infobox:
-        lines = list(profile.infobox)
-        if profile.aliases and not any("别名" in line for line in lines):
-            lines.append(f"别名: {'、'.join(profile.aliases)}")
+        lines: list[str] = []
+        for line in profile.infobox:
+            label, sep, value = line.partition(": ")
+            if sep and label in _ALIAS_NAME_LABELS:
+                merged = _merge_alias_value(value, extra, drop)
+                if not merged:
+                    continue
+                line = f"{label}: {merged}"
+            lines.append(line)
+        if profile.aliases and not any(line.partition(": ")[0] in _ALIAS_NAME_LABELS for line in lines):
+            names = [name for name in dict.fromkeys(list(profile.aliases) + extra) if _alias_key(name) != drop]
+            if names:
+                lines.append(f"{alias_label}: {'、'.join(names)}")
         return lines
-    lines: list[str] = []
+    lines = []
     if profile.birthday:
-        lines.append(f"生日: {profile.birthday}")
+        lines.append(f"{labels['birthday']}: {profile.birthday}")
     if profile.birthplace:
-        lines.append(f"出生地: {profile.birthplace}")
+        lines.append(f"{labels['birthplace']}: {profile.birthplace}")
     if profile.height:
-        lines.append(f"身高: {profile.height}cm")
+        lines.append(f"{labels['height']}: {profile.height}cm")
     sizes = [value for value in (profile.bust, profile.waist, profile.hip) if value]
     if sizes:
-        lines.append(f"三围: {'/'.join(str(value) for value in sizes)}")
+        lines.append(f"{labels['sizes']}: {' - '.join(str(value) for value in sizes)}")
     if profile.cup:
-        lines.append(f"罩杯: {profile.cup}")
-    if profile.aliases:
-        lines.append(f"别名: {'、'.join(profile.aliases)}")
+        lines.append(f"{labels['cup']}: {profile.cup}")
+    names = [name for name in dict.fromkeys(list(profile.aliases) + extra) if _alias_key(name) != drop]
+    if names:
+        lines.append(f"{alias_label}: {'、'.join(names)}")
+    return lines
+
+
+def _external_link_lines(profile: WikiActorProfile) -> list[str]:
+    """「外部链接」段的每行一条：Wikidata 给的外部 ID + 词条本身地址。
+
+    与老实现（``tools/wiki.py`` 的 url_log）同序同格式；没有的 ID 直接跳过，
+    一条都没有且没有词条地址时返回空列表（整段不写）。
+    """
+    lines: list[str] = []
+    for key, label, template in _PROVIDER_LINKS:
+        value = (profile.provider_ids or {}).get(key)
+        if isinstance(value, str) and value:
+            lines.append(f"{label}: {template.format(value)}")
+    if profile.source_url:
+        lines.append(f"Wikipedia: {profile.source_url}")
     return lines

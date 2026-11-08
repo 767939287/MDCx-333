@@ -106,8 +106,13 @@ MVC 分层：UI → 控制器 → 核心业务 → 爬虫框架 → 基础设施
 - manager 提供 `get_gfriends_index` / `_parse_graphis_html` / `fill_actor_info_from_sources`（local→wiki→javdb→minnano→db）/ `build_local_avatar_index` / `search_actor_info` / `from_graphis`。
 - 信息源开关：`config.actor_info_disabled` 记录被停用的源，`enabled_actor_info_sources()` 按 `actor_info_sources` 顺序过滤；UI 勾选框与主补全链路共用这一口径。JavDB 请求量较大，默认停用。
 - 维基信息源在 `tools/wiki_actor.py`：Wikidata 检索 → 实体校验 → 按 `config.actor_wiki_languages` 取词条正文/信息框；解析出 `WikiActorProfile` 后再映射到 `EMbyActressInfo`。所有 Wikimedia 子域共用 `web_async` 的 2 req/s + 180 req/min 共享双桶限速，请求带可识别 User-Agent。
+- 简介行结构两处口径（「刮下来的简介和 wiki 网页排版不一致 / 挤成一行」都出自这里）：① 正文解析按「文本 / `<br>`」文档序收集，维基段落内用 `<br>` 分的行逐行保留，段落之间用空行；② 写库统一走 `models/emby.py::to_emby_overview`（清洗 + 裸换行转 `<br/>`）——服务器端按 HTML 渲染 Overview，裸 `\n` 会被折叠成空格。`update_person_info` / `clean_actor_data` / 内置补全的直发 `dump()` 三处出口都不许绕过它。
+- 维基简介版式（`apply_wiki_profile`）：`===== 个人资料/個人情報 =====` → `===== 外部链接/外部リンク =====` → 词条正文，段标题与拼装字段名按目标语言取（`_SECTION_TITLES` / `_PROFILE_LABELS`），外链由 `_PROVIDER_LINKS` 按 Wikidata claims 拼（与老 `tools/wiki.py` 的 `url_log` 同序）。信息框的「表示英米単位系」与英制同名行在 `_parse_infobox` 里过滤掉。
+- 正文不截断，段序固定为「导语 → 人物类 → 经历类 → 其它」：`_overview_blocks` 按 `_section_group()` 分组后稳定排序，章节标题先按 `_section_fold()`（繁转简 + `経→经` + 小写）折叠再比对 `_PERSON_SECTIONS` / `_HISTORY_SECTIONS`；归属取最内层白名单标题。
+- 维基「別名」行的补名规则：`fetch_wiki_actor` 把实际命中的检索名记进 `profile.searched_name`，`_extra_alias_names()` 在「搜索名 ≠ 词条名」时返回两个名字，由 `_merge_alias_value()` 按名字主体（NFKC、去空白、取括号前）去重后并入信息框的別名行。搜别名 → 补现名；词条仍是旧名 → 补搜索名；搜词条名则不动。合并后 `_merge_alias_value()` 还会剔除与搜索名同形的项（值全被剔掉时整行省略）。
 - JavDB 信息源不在 `tools/` 另起解析器，直接复用 `crawlers/javdb_app.py` 的移动端 API：搜索 → 前 5 部影片详情匹配演员 → 演员详情取 `name/name_zht/other_name`（别名拆分与组合名过滤复用 `_split_aliases`），并写入 `ProviderIds.JavDB` 与头像地址；不提供简介/生日。
 - `Minnano-av.com` 品牌显示名首字母大写（6 处），代理域名一律全小写。
+- minnano 详情页的「○○プロフィールデータ」（`#profile-data` 下 `<h4>` 标题 + `<p class="wiki">` 正文）由 `minnano_crawler._parse_wiki_profile` 解析进缓存 `wiki` 列：空节丢弃、节之间空一行、转义后的 `<br />` 转回换行。多数演员只有一两节有内容。
 
 ### 3.7 补全模式下方选项（2026-10-23 收敛后）
 
