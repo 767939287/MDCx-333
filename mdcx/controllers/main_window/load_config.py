@@ -899,9 +899,9 @@ def load_config(self: MyMAinWindow):
             checkbox.setChecked(source not in disabled_sources)
             checkbox.blockSignals(False)
         # 演员数据库（use_database 与 actor_info_disabled 双重口径）
-        self.Ui.checkBox_actor_db.setChecked(
-            manager.config.use_database and "database" not in disabled_sources
-        )
+        self.Ui.checkBox_actor_db.setChecked(manager.config.use_database and "database" not in disabled_sources)
+        # 演员信息补全并发数（1 = 单线程）；旧配置缺字段时由模型默认值 10 兜底
+        self.Ui.spinBox_actor_info_concurrency.setValue(int(manager.config.actor_info_concurrency))
         # endregion
 
         # region mark

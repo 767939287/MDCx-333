@@ -51,6 +51,40 @@ async def test_update_emby_actor_info_stops_and_cancels_pending_tasks(monkeypatc
 
 
 @pytest.mark.asyncio
+async def test_update_emby_actor_info_logs_stop_when_coroutine_cancelled(monkeypatch: pytest.MonkeyPatch):
+    """主界面「停止」走 executor.cancel_async()，取消协程时也必须留下停止日志。
+
+    回归：此前只捕获 ActorTaskStopped，CancelledError 会静默穿透，日志停在
+    「连接成功」后没有任何说明，用户会以为任务消失且没有回写服务器。
+    """
+    logs: list[str] = []
+    started = asyncio.Event()
+
+    async def fake_get_actor_list():
+        return [{"Name": "演员甲", "Id": "1"}]
+
+    async def fake_process_actor(actor: dict, emby_on):
+        started.set()
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(manager.config, "server_type", "emby")
+    monkeypatch.setattr(manager.config, "emby_on", [])
+    monkeypatch.setattr(emby_actor_info, "_get_emby_actor_list", fake_get_actor_list)
+    monkeypatch.setattr(emby_actor_info, "_process_actor_async", fake_process_actor)
+    monkeypatch.setattr(emby_actor_info.signal, "change_buttons_status", type("", (), {"emit": lambda self: None})())
+    monkeypatch.setattr(emby_actor_info.signal, "reset_buttons_status", type("", (), {"emit": lambda self: None})())
+    monkeypatch.setattr(emby_actor_info.signal, "show_log_text", logs.append)
+
+    task = asyncio.create_task(emby_actor_info.update_emby_actor_info())
+    await asyncio.wait_for(started.wait(), timeout=2)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    assert "⛔️ 演员信息补全已手动停止！" in logs
+
+
+@pytest.mark.asyncio
 async def test_update_emby_actor_photo_stops_before_execute(monkeypatch: pytest.MonkeyPatch):
     logs: list[str] = []
     executed = False

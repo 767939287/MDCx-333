@@ -10505,6 +10505,21 @@ class Ui_MDCx(object):
         self.checkBox_actor_info_photo.setSizePolicy(sizePolicy)
         self.checkBox_actor_info_photo.setMinimumSize(QtCore.QSize(0, 30))
         self.checkBox_actor_info_photo.setObjectName("checkBox_actor_info_photo")
+        self.label_actor_info_concurrency = QtWidgets.QLabel(parent=self.groupBox_64)
+        self.label_actor_info_concurrency.setGeometry(QtCore.QRect(20, 320, 56, 40))
+        self.label_actor_info_concurrency.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignTrailing
+            | QtCore.Qt.AlignmentFlag.AlignVCenter
+        )
+        self.label_actor_info_concurrency.setObjectName("label_actor_info_concurrency")
+        self.spinBox_actor_info_concurrency = QtWidgets.QSpinBox(parent=self.groupBox_64)
+        self.spinBox_actor_info_concurrency.setGeometry(QtCore.QRect(80, 326, 70, 28))
+        self.spinBox_actor_info_concurrency.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.spinBox_actor_info_concurrency.setMinimum(1)
+        self.spinBox_actor_info_concurrency.setMaximum(50)
+        self.spinBox_actor_info_concurrency.setProperty("value", 10)
+        self.spinBox_actor_info_concurrency.setObjectName("spinBox_actor_info_concurrency")
         self.groupBox_68 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_yanyuan)
         self.groupBox_68.setGeometry(QtCore.QRect(30, 1290, 701, 191))
         self.groupBox_68.setMinimumSize(QtCore.QSize(200, 0))
@@ -14415,6 +14430,11 @@ class Ui_MDCx(object):
         self.radioButton_actor_info_miss.setText(_translate("MDCx", "仅缺少信息的演员"))
         self.label_299.setText(_translate("MDCx", "补全范围："))
         self.checkBox_actor_info_photo.setText(_translate("MDCx", "补全完成后自动补全演员头像"))
+        self.label_actor_info_concurrency.setText(_translate("MDCx", "并发数："))
+        self.spinBox_actor_info_concurrency.setToolTip(
+            _translate("MDCx", "同时处理的演员数量。1 = 单线程（逐个处理），默认 10。")
+        )
+        self.spinBox_actor_info_concurrency.setSpecialValueText(_translate("MDCx", "单线程"))
         self.groupBox_68.setTitle(_translate("MDCx", "补全Kodi/Plex/Jvedio演员头像"))
         self.pushButton_add_actor_pic_kodi.setText(_translate("MDCx", "开始补全"))
         self.label_414.setText(

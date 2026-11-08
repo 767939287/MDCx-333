@@ -1060,6 +1060,13 @@ class Config(BaseModel):
         title="已禁用的演员信息数据源",
         description="信息源开关：取消勾选的数据源不参与演员信息补全；未列出的数据源默认启用。JavDB 默认关闭。",
     )
+    actor_info_concurrency: int = Field(
+        default=10,
+        ge=1,
+        le=50,
+        title="演员信息补全并发数",
+        description="同时处理的演员数量：1 = 单线程（逐个处理），默认 10，上限 50。",
+    )
     actor_wiki_languages: list[str] = Field(
         default_factory=lambda: ["zh", "ja", "en"],
         title="维基百科词条语言优先级",

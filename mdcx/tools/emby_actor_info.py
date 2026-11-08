@@ -38,6 +38,25 @@ from .minnano_crawler import load_cache
 class ActorTaskStopped(Exception): ...
 
 
+# 内置补全的并发数由配置 actor_info_concurrency 提供（1~50，1 = 单线程）。
+# Emby/Jellyfin 侧没有速率压力，但每个演员会串行请求维基/Minnano/JavDB/本地库；
+# 9922 个演员一次性全部开跑会同时压满网络栈，且每个演员只在整条链路跑完后
+# 才输出一行，表现为「日志长时间空白」。默认 10 并发让结果稳定地逐条冒出来。
+ACTOR_INFO_CONCURRENCY_DEFAULT = 10
+ACTOR_INFO_CONCURRENCY_MAX = 50
+# 每完成多少个演员输出一次进度（逐人结果已经单独输出，这里只防「看起来卡死」）。
+ACTOR_INFO_PROGRESS_STEP = 50
+
+
+def _actor_info_concurrency() -> int:
+    """读取配置里的演员信息补全并发数，夹到 1~50；配置异常时回退默认值。"""
+    try:
+        value = int(getattr(manager.config, "actor_info_concurrency", ACTOR_INFO_CONCURRENCY_DEFAULT))
+    except TypeError, ValueError:
+        return ACTOR_INFO_CONCURRENCY_DEFAULT
+    return max(1, min(value, ACTOR_INFO_CONCURRENCY_MAX))
+
+
 def _is_stop_requested() -> bool:
     return stop_requested()
 
@@ -88,18 +107,33 @@ async def update_emby_actor_info() -> None:
         actor_list = await _get_emby_actor_list()
         _raise_if_stop_requested()
 
+        # 开局先把「处理谁、多少人、什么范围」说清楚：内置补全逐个演员输出结果，
+        # 某个人整条链路跑完之前日志是空白的，9922 人时很容易被误认为卡死。
+        concurrency = _actor_info_concurrency()
+        scope = "仅缺少信息的演员" if EmbyAction.ACTOR_INFO_MISS in emby_on else "所有演员"
+        signal.show_log_text(
+            f"📋 待处理演员 {len(actor_list)} 个（{scope}），并发 {concurrency}，每个演员处理完会立即输出一行结果..."
+        )
+
+        sem = asyncio.Semaphore(concurrency)
+
+        async def _run_one(actor: dict) -> tuple[int, str]:
+            async with sem:
+                return await _process_actor_async(actor, emby_on)
+
         for actor in actor_list:
             _raise_if_stop_requested()
             actor_name = actor.get("Name")
             if not isinstance(actor_name, str):
                 continue
-            task = asyncio.create_task(_process_actor_async(actor, emby_on))
+            task = asyncio.create_task(_run_one(actor))
             tasks.append(task)
 
         db = 0
         wiki = 0
         local = 0
         updated = 0
+        completed = 0
         for done_task in asyncio.as_completed(tasks):
             _raise_if_stop_requested()
             flag, msg = await done_task
@@ -108,7 +142,10 @@ async def update_emby_actor_info() -> None:
             wiki += flag & 1
             db += (flag >> 1) & 3
             local += (flag >> 3) & 1
+            completed += 1
             signal.show_log_text(msg)
+            if completed % ACTOR_INFO_PROGRESS_STEP == 0:
+                signal.show_log_text(f"⏳ 处理进度: {completed}/{len(tasks)}")
 
         signal.show_log_text(
             f"\n🎉🎉🎉 补全完成！！！ 用时 {get_used_time(start_time)} 秒 共更新: {updated} Minnano: {sum(1 for t in tasks if t.done() and (t.result()[0] & 4))} Wiki: {wiki} DB: {db} Local: {local}"
@@ -125,6 +162,13 @@ async def update_emby_actor_info() -> None:
             signal.reset_buttons_status.emit()
     except ActorTaskStopped:
         signal.show_log_text("⛔️ 演员信息补全已手动停止！")
+    except asyncio.CancelledError:
+        # 主界面「停止」走 executor.cancel_async() 直接取消本协程，不会抛
+        # ActorTaskStopped（后者只在协程内部轮询到停止标记时才触发）。
+        # 不在这里补一行日志的话，用户看到的日志会停在「连接成功」后突然结束，
+        # 像是任务凭空消失、也没回写服务器。
+        signal.show_log_text("⛔️ 演员信息补全已手动停止！")
+        raise
     finally:
         for task in tasks:
             if not task.done():

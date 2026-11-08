@@ -12,6 +12,13 @@
 - 新增 JavDB 演员信息源：复用 `crawlers/javdb_app.py` 移动端 API，补中文名 / 繁体名 / 别名、`ProviderIds.JavDB` 与头像地址；别名拆分复用 `_split_aliases` 过滤双人组合名。JavDB 请求量较大，默认关闭，可在主界面或演员设置窗口勾选。
 - MediaWiki 限速改为所有 Wikimedia 子域共用 2 req/s + 180 req/min，并继续使用可识别 User-Agent。
 
+### 演员信息补全支持自定义并发数
+
+- 设置 → 演员 →「补全Emby/Jellyfin演员信息」新增「并发数：」输入框：范围 1~50，值为 1 时显示「单线程」，默认 10；配置落盘 `actor_info_concurrency`。
+- 内置补全按该值用 `asyncio.Semaphore` 限流（此前对全部演员一次性建任务，9922 人时日志长时间空白、形似卡死）；开局打印待处理数量/范围/并发数，每完成 50 个输出一次进度。
+- 主界面「停止」会经 `executor.cancel_async()` 直接取消补全协程，现补捕获 `asyncio.CancelledError` 并输出「⛔️ 演员信息补全已手动停止！」，不再无提示中断。
+- 新增 `tests/test_actor_info_concurrency.py`（1/3 并发峰值断言、越界配置钳制）；`tests/test_actor_stop.py` 增加取消协程时留日志的回归用例。
+
 ### 测试
 
 - 新增 `tests/test_actor_info_switches.py`（含 JavDB 信息应用/链路用例）；`tests/test_wiki_rate_limit.py` 补共享限速桶与 UA 用例；`tests/crawlers/test_javdb_app.py` 补演员 ID/头像字段断言；`tests/test_emby_actor_manager.py`、`tests/test_emby_local_backfill.py` 适配新维基入口。
