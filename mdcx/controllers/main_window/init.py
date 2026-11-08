@@ -9,6 +9,7 @@ from PyQt6.QtGui import QAction, QColor, QIcon, QPainter, QPixmap, QScreen
 from PyQt6.QtWidgets import (
     QAbstractItemView,
     QApplication,
+    QCheckBox,
     QComboBox,
     QLabel,
     QListView,
@@ -1332,6 +1333,25 @@ def Init_Singal(self: MyMAinWindow):
     self.Ui.label_download_actor_db.mousePressEvent = lambda ev: n(
         webbrowser.open(f"{GITHUB_RELEASES_URL}/tag/actor_info_database")
     )
+
+    # 「补全 Emby/Jellyfin 演员信息」分组的信息源开关。四项与数据库 checkbox 共用
+    # actor_info_disabled：演员管理器设置窗、数据源测试与主界面补全看到的是同一份状态。
+    actor_source_label = QLabel("信息源:", self.Ui.gridLayoutWidget_14)
+    actor_source_label.setObjectName("label_actor_info_sources")
+    self.Ui.horizontalLayout_160.addWidget(actor_source_label)
+    self._actor_info_source_checks: dict[str, QCheckBox] = {}
+    for source, text, tip in (
+        ("local", "本地", "本地演员名数据表"),
+        ("wiki", "维基", "维基百科 / Wikidata"),
+        ("javdb", "JavDB", "JavDB 演员资料（中文名/别名/演员 ID）"),
+        ("minnano", "Minnano", "Minnano-av.com"),
+    ):
+        checkbox = QCheckBox(text, self.Ui.gridLayoutWidget_14)
+        checkbox.setObjectName(f"checkBox_actor_info_source_{source}")
+        checkbox.setToolTip(tip)
+        checkbox.toggled.connect(self._on_actor_info_source_toggled)
+        self.Ui.horizontalLayout_160.addWidget(checkbox)
+        self._actor_info_source_checks[source] = checkbox
 
     # 日志窗口链接仅外部打开，避免 QTextBrowser 内部跳转导致日志页变空
     self.Ui.textBrowser_log_main.setOpenLinks(False)

@@ -523,11 +523,23 @@ def _actor_name_matches(target: str, candidate: str) -> bool:
 
 @dataclass
 class JavdbActorInfo:
-    """JavDB 演员详情（仅包含可用的名字相关字段）."""
+    """JavDB 演员详情。"""
 
     name: str = ""  # JavDB 数据库里的 name 字段（可能是日文原名或正式中文名）
     name_zht: str = ""  # 繁体名（可能为空）
     other_name: str = ""  # 别名字段（逗号分隔，可能含日文原名与其他别名）
+    actor_id: str = ""  # JavDB 演员 ID（用于 ProviderIds / 演员页地址）
+    avatar_url: str = ""  # 演员头像地址（API 未返回时为空）
+    gender: str = ""  # 性别字段（API 未返回时为空）
+
+
+def _first_text(data: dict, *keys: str) -> str:
+    """按顺序取第一个非空字符串字段。"""
+    for key in keys:
+        value = data.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
 
 
 async def fetch_javdb_actor_info(actor_name: str) -> JavdbActorInfo | None:
@@ -607,6 +619,10 @@ async def fetch_javdb_actor_info(actor_name: str) -> JavdbActorInfo | None:
                     name=(actor_data.get("name") or "").strip(),
                     name_zht=(actor_data.get("name_zht") or "").strip(),
                     other_name=(actor_data.get("other_name") or "").strip(),
+                    actor_id=str(actor_id),
+                    # 不同版本 API 的头像字段名不一致，按常见键兜底。
+                    avatar_url=_first_text(actor_data, "avatar_url", "image_url", "avatar", "image", "thumb_url"),
+                    gender=_first_text(actor_data, "gender", "sex"),
                 )
         return None
     except Exception:

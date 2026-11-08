@@ -9,11 +9,12 @@
 - Emby 演员设置窗口与演员详情 / 数据源测试的「快速设置」面板改为勾选式信息源列表：勾选启用、取消停用，配置落盘 `actor_info_disabled`；主补全链路与数据源测试都会跳过停用源。
 - 维基演员信息源移植 amane 实现（`mdcx/tools/wiki_actor.py`）：Wikidata 检索 → 实体校验 → 按 `actor_wiki_languages` 取词条正文 / 信息框；UI 提供简中 / 日文 / 英文三档优先级。
 - 维基检索名回退到本地 `actor_database.xlsx` 的日文名、繁中名、简中名与别名；简介保留信息框字段（血型 / 职业等）及身高 / 三围 / 罩杯。
+- 新增 JavDB 演员信息源：复用 `crawlers/javdb_app.py` 移动端 API，补中文名 / 繁体名 / 别名、`ProviderIds.JavDB` 与头像地址；别名拆分复用 `_split_aliases` 过滤双人组合名。JavDB 请求量较大，默认关闭，可在主界面或演员设置窗口勾选。
 - MediaWiki 限速改为所有 Wikimedia 子域共用 2 req/s + 180 req/min，并继续使用可识别 User-Agent。
 
 ### 测试
 
-- 新增 `tests/test_actor_info_switches.py`；`tests/test_wiki_rate_limit.py` 补共享限速桶与 UA 用例；`tests/test_emby_actor_manager.py`、`tests/test_emby_local_backfill.py` 适配新维基入口。
+- 新增 `tests/test_actor_info_switches.py`（含 JavDB 信息应用/链路用例）；`tests/test_wiki_rate_limit.py` 补共享限速桶与 UA 用例；`tests/crawlers/test_javdb_app.py` 补演员 ID/头像字段断言；`tests/test_emby_actor_manager.py`、`tests/test_emby_local_backfill.py` 适配新维基入口。
 
 ### 打包与版本
 

@@ -462,6 +462,7 @@ async def test_fetch_javdb_actor_info_returns_full_fields(monkeypatch):
                                 "name": "桐谷茉莉",
                                 "name_zht": "桐谷茉莉",
                                 "other_name": "桐谷まつり",
+                                "avatar_url": "https://example.com/actor.jpg",
                             }
                         }
                     },
@@ -486,6 +487,8 @@ async def test_fetch_javdb_actor_info_returns_full_fields(monkeypatch):
     assert info.name == "桐谷茉莉"
     assert info.name_zht == "桐谷茉莉"
     assert info.other_name == "桐谷まつり"
+    assert info.actor_id == "a1"
+    assert info.avatar_url == "https://example.com/actor.jpg"
 
 
 @pytest.mark.asyncio

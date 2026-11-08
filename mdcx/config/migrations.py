@@ -107,6 +107,24 @@ def _migrate_strm_overwrite_linkage(data: dict[str, Any]) -> None:
         data["separate_generate_strm"] = True
 
 
+def _migrate_actor_info_sources(data: dict[str, Any]) -> None:
+    """存量配置的演员信息源列表补入 JavDB，供 UI 显示开关。
+
+    只补优先级列表，不改 ``actor_info_disabled``：新数据源是否启用由开关决定，
+    默认关闭时 Pydantic 会用 ``actor_info_disabled`` 的默认值兜底。
+    """
+    value = data.get("actor_info_sources")
+    if not isinstance(value, list) or "javdb" in value:
+        return
+    sources = [str(item) for item in value]
+    try:
+        position = sources.index("wiki") + 1
+    except ValueError:
+        position = len(sources)
+    sources.insert(position, "javdb")
+    data["actor_info_sources"] = sources
+
+
 def _migrate_actor_clean_rules(data: dict[str, Any]) -> None:
     """从存量配置的生效规则/默认规则里摘掉两条已退役的 minnano 占位规则。"""
     for key in ("actor_clean_rules", "actor_clean_rules_default"):
@@ -588,6 +606,7 @@ def migrate_config_data(data: dict[str, Any]) -> list[str]:
         warnings.append("[迁移] 已移除配置项「严格校验 Amazon 图片」：ASIN 库命中即信任，软校验仅用于新 ASIN 入库")
     _migrate_builtin_naming_templates(data)
     _migrate_removed_hd_pic_sources(data)
+    _migrate_actor_info_sources(data)
     _migrate_actor_clean_rules(data)
     # 补全模式选项与 NFO 合并策略精简（2026-10-23）：删掉的两个 read_mode 值、
     # 两个合并策略都在这里清理/映射，必须在 Pydantic 强校验之前完成，

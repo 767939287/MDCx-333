@@ -892,8 +892,16 @@ def load_config(self: MyMAinWindow):
         self.Ui.lineEdit_actor_photo_folder.setText(manager.config.actor_photo_folder)
         # 演员数据库路径
         self.Ui.lineEdit_actor_db_path.setText(manager.config.info_database_path)
-        # 演员数据库
-        self.Ui.checkBox_actor_db.setChecked(manager.config.use_database)
+        # 演员信息源开关：本地 / 维基 / JavDB / Minnano / 数据库
+        disabled_sources = set(getattr(manager.config, "actor_info_disabled", ()) or ())
+        for source, checkbox in getattr(self, "_actor_info_source_checks", {}).items():
+            checkbox.blockSignals(True)
+            checkbox.setChecked(source not in disabled_sources)
+            checkbox.blockSignals(False)
+        # 演员数据库（use_database 与 actor_info_disabled 双重口径）
+        self.Ui.checkBox_actor_db.setChecked(
+            manager.config.use_database and "database" not in disabled_sources
+        )
         # endregion
 
         # region mark

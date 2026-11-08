@@ -19,6 +19,46 @@ def test_enabled_actor_info_sources_defaults_to_all(monkeypatch):
     assert emby_actor_manager.enabled_actor_info_sources() == ["local", "wiki", "minnano", "database"]
 
 
+def test_apply_javdb_actor_info_fills_provider_aliases_and_avatar():
+    from mdcx.crawlers.javdb_app import JavdbActorInfo
+
+    info = EMbyActressInfo(name="桐谷まつり")
+    data = JavdbActorInfo(
+        name="桐谷茉莉",
+        name_zht="桐谷茉莉",
+        other_name="桐谷まつり, 桐谷まり",
+        actor_id="a1",
+        avatar_url="https://example.com/a.jpg",
+    )
+
+    assert emby_actor_manager.apply_javdb_actor_info(info, data) is True
+    assert info.provider_ids["JavDB"] == "a1"
+    assert info.avatar_url == "https://example.com/a.jpg"
+    assert info.taglines == ["桐谷茉莉", "桐谷まり"]
+
+
+@pytest.mark.asyncio
+async def test_fill_actor_info_javdb_applies_aliases(monkeypatch):
+    from mdcx.crawlers.javdb_app import JavdbActorInfo
+
+    async def fake_javdb(name: str):
+        assert name == "桐谷まつり"
+        return JavdbActorInfo(name="桐谷茉莉", other_name="桐谷まつり", actor_id="a1")
+
+    monkeypatch.setattr(emby_actor_manager, "fetch_javdb_actor_info", fake_javdb)
+    monkeypatch.setattr(emby_actor_manager.resources, "get_actor_data", lambda name: {"has_name": False})
+    monkeypatch.setattr(manager.config, "use_database", False)
+    monkeypatch.setattr(manager.config, "actor_info_sources", ["local", "wiki", "javdb", "minnano", "database"])
+    monkeypatch.setattr(manager.config, "actor_info_disabled", ["wiki", "minnano", "database"])
+
+    info = EMbyActressInfo(name="桐谷まつり", server_id="", id="")
+    sources, _logs = await emby_actor_manager.fill_actor_info_from_sources(info)
+
+    assert sources["javdb"] is True
+    assert info.provider_ids["JavDB"] == "a1"
+    assert info.taglines == ["桐谷茉莉"]
+
+
 @pytest.mark.asyncio
 async def test_fill_actor_info_skips_disabled_sources(monkeypatch):
     calls: list[str] = []

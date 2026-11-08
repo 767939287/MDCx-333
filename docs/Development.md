@@ -103,9 +103,10 @@ MVC 分层：UI → 控制器 → 核心业务 → 爬虫框架 → 基础设施
 四模块单向依赖：`emby_shared.py` ← `emby_actor_manager.py` ← `emby_actor_image.py` / `emby_actor_info.py`。
 
 - `emby_shared.py` 提供 `_generate_server_url` / `_build_jellyfin_headers` / `_is_jellyfin_server` / `_append_query` / `_upload_actor_photo`。
-- manager 提供 `get_gfriends_index` / `_parse_graphis_html` / `fill_actor_info_from_sources`（local→wiki→minnano→db）/ `build_local_avatar_index` / `search_actor_info` / `from_graphis`。
-- 信息源开关：`config.actor_info_disabled` 记录被停用的源，`enabled_actor_info_sources()` 按 `actor_info_sources` 顺序过滤；UI 勾选框与主补全链路共用这一口径。
+- manager 提供 `get_gfriends_index` / `_parse_graphis_html` / `fill_actor_info_from_sources`（local→wiki→javdb→minnano→db）/ `build_local_avatar_index` / `search_actor_info` / `from_graphis`。
+- 信息源开关：`config.actor_info_disabled` 记录被停用的源，`enabled_actor_info_sources()` 按 `actor_info_sources` 顺序过滤；UI 勾选框与主补全链路共用这一口径。JavDB 请求量较大，默认停用。
 - 维基信息源在 `tools/wiki_actor.py`：Wikidata 检索 → 实体校验 → 按 `config.actor_wiki_languages` 取词条正文/信息框；解析出 `WikiActorProfile` 后再映射到 `EMbyActressInfo`。所有 Wikimedia 子域共用 `web_async` 的 2 req/s + 180 req/min 共享双桶限速，请求带可识别 User-Agent。
+- JavDB 信息源不在 `tools/` 另起解析器，直接复用 `crawlers/javdb_app.py` 的移动端 API：搜索 → 前 5 部影片详情匹配演员 → 演员详情取 `name/name_zht/other_name`（别名拆分与组合名过滤复用 `_split_aliases`），并写入 `ProviderIds.JavDB` 与头像地址；不提供简介/生日。
 - `Minnano-av.com` 品牌显示名首字母大写（6 处），代理域名一律全小写。
 
 ### 3.7 补全模式下方选项（2026-10-23 收敛后）

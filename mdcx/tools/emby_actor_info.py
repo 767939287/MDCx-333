@@ -155,7 +155,7 @@ async def _process_actor_async(actor: dict, emby_on: list[EmbyAction]) -> tuple[
         actor_info = EMbyActressInfo(name=actor_name, server_id=server_id, id=actor_id)
         _raise_if_stop_requested()
 
-        # 共用数据源链路：本地→wiki→minnano→db
+        # 共用数据源链路：本地→wiki→javdb→minnano→db
         sources, logs = await fill_actor_info_from_sources(
             actor_info,
             existing_overview=overview,
@@ -164,13 +164,14 @@ async def _process_actor_async(actor: dict, emby_on: list[EmbyAction]) -> tuple[
         _raise_if_stop_requested()
 
         wiki_found = int(sources["wiki"])
+        javdb_found = int(sources.get("javdb", 0))
         db_exist = sources["db"]
         minnano_found = int(sources["minnano"])
         local_applied = sources["local_applied"]
 
         # summary
         summary = "\n    " + "\n".join(logs) if logs else ""
-        if minnano_found or db_exist or wiki_found or local_applied:
+        if minnano_found or db_exist or wiki_found or javdb_found or local_applied:
             # 议题 #56(图2): Emby/Jellyfin 都需要鉴权头, 否则 POST /Items/{id} 故 server 401
             headers = _build_jellyfin_headers()
             async with manager.acquire_computed() as computed:
@@ -180,7 +181,11 @@ async def _process_actor_async(actor: dict, emby_on: list[EmbyAction]) -> tuple[
             _raise_if_stop_requested()
             if post_res is not None:
                 return (
-                    (8 if local_applied else 0) + wiki_found + (db_exist << 1) + (minnano_found << 2),
+                    (8 if local_applied else 0)
+                    + (wiki_found << 0)
+                    + (db_exist << 1)
+                    + (minnano_found << 2)
+                    + (javdb_found << 4),
                     f"✅ {actor_name} 更新成功.{summary}\n主页: {actor_homepage}",
                 )
             return 0, f"🔴 {actor_name} 更新失败: {error}{summary}"

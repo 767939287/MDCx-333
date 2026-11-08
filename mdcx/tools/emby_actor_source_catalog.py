@@ -20,6 +20,7 @@ IMAGE_SOURCE_NAMES: Final[dict[str, str]] = {
 INFO_SOURCE_NAMES: Final[dict[str, str]] = {
     "local": "本地演员名数据表",
     "wiki": "维基百科",
+    "javdb": "JavDB",
     "minnano": "Minnano-av.com",
     "database": "本地已保存数据库",
 }
@@ -35,6 +36,7 @@ INFO_PROGRESS: Final[dict[str, str]] = {
     "minnano": "正在从Minnano-av.com获取信息",
     "local": "正在从本地演员名数据表获取信息",
     "wiki": "正在从维基百科获取信息",
+    "javdb": "正在从JavDB获取演员信息",
     "database": "正在从本地已保存数据库获取信息",
 }
 
@@ -49,5 +51,6 @@ INFO_RESULT_NAMES: Final[dict[str, str]] = {
     "minnano": "Minnano-av.com",
     "local": "本地演员名数据表",
     "wiki": "维基百科",
+    "javdb": "JavDB",
     "database": "本地已保存数据库",
 }

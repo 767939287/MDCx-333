@@ -674,7 +674,7 @@ async def test_emby_actor_info_update_sends_auth_header_for_emby(monkeypatch: py
 
     async def fake_fill(info, **kwargs):
         info.new_overview = "x"
-        return {"wiki": 1, "db": 0, "minnano": 0, "local_applied": 0}, ["wiki 命中"]
+        return {"wiki": 1, "javdb": 0, "db": 0, "minnano": 0, "local_applied": 0}, ["wiki 命中"]
 
     monkeypatch.setattr(emby_actor_info, "fill_actor_info_from_sources", fake_fill)
     monkeypatch.setattr(emby_actor_info, "_is_stop_requested", lambda: False)

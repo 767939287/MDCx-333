@@ -18,6 +18,7 @@ from parsel import Selector
 from ..base.web import download_file_with_filepath
 from ..config.manager import manager
 from ..config.resources import resources
+from ..crawlers.javdb_app import JavdbActorInfo, _split_aliases, fetch_javdb_actor_info
 from ..log_console import log_console
 from ..models.emby import (
     EMbyActressInfo,
@@ -59,12 +60,53 @@ SYNC_CONCURRENCY = 4
 def enabled_actor_info_sources() -> list[str]:
     """按配置顺序返回启用的演员信息源。
 
-    ``actor_info_sources`` 负责顺序，``actor_info_disabled`` 负责开关；
-    未配置禁用项时全部启用，新加入的数据源也不会因旧配置被静默关掉。
+    ``actor_info_sources`` 负责顺序，``actor_info_disabled`` 负责开关。
+    JavDB 请求量较大，Config 默认把它放进禁用列表，由 UI 勾选启用。
     """
     disabled = set(getattr(manager.config, "actor_info_disabled", ()) or ())
     sources = list(getattr(manager.config, "actor_info_sources", ()) or ())
     return [source for source in sources if source not in disabled]
+
+
+def _javdb_actor_names(info: EMbyActressInfo, data: JavdbActorInfo) -> list[str]:
+    """提取 JavDB 返回的异名（中文名/繁体名/other_name 别名），排除 Emby 当前名。
+
+    别名拆分复用 ``javdb_app._split_aliases``：与「JavDB 补别名」工具同一口径，
+    会过滤 ``A・B`` 形式的双人组合名，避免把组合条目当成演员别名。
+    """
+    candidates = [data.name, *_split_aliases(data.other_name, data.name_zht, info.name, data.name)]
+    names: list[str] = []
+    for raw in candidates:
+        part = raw.strip()
+        if part and part != info.name and part not in names:
+            names.append(part)
+    return names
+
+
+def apply_javdb_actor_info(info: EMbyActressInfo, data: JavdbActorInfo) -> bool:
+    """把 JavDB 演员资料并入 Emby 演员信息，返回是否有字段变化。
+
+    JavDB 不提供简介/生日，主要价值是中文名/别名、演员 ID 与头像地址：
+    - ProviderIds.JavDB：演员页唯一 ID
+    - AvatarUrl：API 返回头像时补上（后续图源/预览可直接使用）
+    - Taglines：中文名与别名（最多补到 5 条，已有同值不重复）
+    """
+    changed = False
+    if data.actor_id and not info.provider_ids.get("JavDB"):
+        info.provider_ids["JavDB"] = data.actor_id
+        changed = True
+    if data.avatar_url and not info.avatar_url:
+        info.avatar_url = data.avatar_url
+        changed = True
+    if info.taglines is None:
+        info.taglines = []
+    for name in _javdb_actor_names(info, data):
+        if len(info.taglines) >= 5:
+            break
+        if name not in info.taglines:
+            info.taglines.append(name)
+            changed = True
+    return changed
 
 
 def _extract_bio_tags(bio: str) -> list[str]:
@@ -1145,6 +1187,15 @@ async def fetch_actor_info_from_source(actor: ActorInfo, source: str) -> tuple[b
         if profile is not None and (info.overview or info.birthday or info.taglines):
             return True, f"维基百科命中（简介 {len(info.overview or '')} 字）", info
         return False, "维基百科未命中", info
+    if source == "javdb":
+        try:
+            javdb_data = await fetch_javdb_actor_info(info.name)
+        except Exception as e:
+            return False, f"JavDB 请求失败: {e}", info
+        if javdb_data is not None and apply_javdb_actor_info(info, javdb_data):
+            names = "、".join(info.taglines[:3])
+            return True, f"JavDB 命中（{names or '演员资料'}）", info
+        return False, "JavDB 未命中", info
     if source == "minnano":
         res, _ = await get_minnano_info(info)
         if res and (info.overview or info.birthday or info.taglines):
@@ -1164,7 +1215,7 @@ async def fill_actor_info_from_sources(
     existing_overview: str = "",
     skip_db_if_marker: bool = False,
 ) -> tuple[dict[str, bool | int], list[str]]:
-    """从本地→wiki→minnano→db 链路补全演员信息到 info 对象（原地修改）。
+    """从本地→wiki→javdb→minnano→db 链路补全演员信息到 info 对象（原地修改）。
 
     ``config.actor_info_disabled`` 里的数据源会被整段跳过（UI 上的勾选开关）。
     供内置补全和管理器工具共用。
@@ -1176,7 +1227,7 @@ async def fill_actor_info_from_sources(
 
     Returns:
         (sources, logs)
-        sources: {"local", "local_applied", "wiki", "minnano", "db"}
+        sources: {"local", "local_applied", "wiki", "javdb", "minnano", "db"}
         logs: 日志列表
     """
     logs: list[str] = []
@@ -1217,6 +1268,7 @@ async def fill_actor_info_from_sources(
             local_found = False
 
     wiki_found = False
+    javdb_found = False
     minnano_found = False
     minnano_ok = False
     db_exist = 0
@@ -1250,6 +1302,19 @@ async def fill_actor_info_from_sources(
             elif not logs or not logs[-1].startswith("维基百科"):
                 logs.append("维基百科暂未收录")
 
+        # javdb：移动端 API，补中文名/别名、演员 ID 与头像地址（无简介/生日）
+        if "javdb" in enabled:
+            try:
+                javdb_data = await fetch_javdb_actor_info(info.name)
+            except Exception as e:
+                logs.append(f"JavDB 处理异常: {e!s}")
+            else:
+                if javdb_data is not None and apply_javdb_actor_info(info, javdb_data):
+                    javdb_found = True
+                    logs.append(f"JavDB 命中: {'、'.join(info.taglines[:3]) or '演员资料'}")
+                else:
+                    logs.append("JavDB 暂未收录")
+
         # minnano
         if "minnano" in enabled:
             minnano_ok, msg = await get_minnano_info(info, wiki_intro)
@@ -1270,6 +1335,7 @@ async def fill_actor_info_from_sources(
         "local": local_found,
         "local_applied": local_found and (bool(local_overview) or local_birth_set),
         "wiki": wiki_found,
+        "javdb": javdb_found,
         "minnano": minnano_found,
         "db": db_exist,
     }

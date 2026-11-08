@@ -594,6 +594,14 @@ def save_config(self: MyMAinWindow):
             signal_qt.show_log_text("⚠️ 请设置 Gfriends 本地仓库路径或网络仓库地址")
     manager.config.info_database_path = self.Ui.lineEdit_actor_db_path.text()  # 信息数据库
     manager.config.use_database = self.Ui.checkBox_actor_db.isChecked()
+    # 数据库 checkbox 同时是信息源开关：关闭时写入 actor_info_disabled，
+    # 避免「use_database=True 但设置窗里数据库仍处于停用」的两套状态。
+    actor_info_disabled = [
+        source for source in (manager.config.actor_info_disabled or []) if source != "database"
+    ]
+    if not manager.config.use_database:
+        actor_info_disabled.append("database")
+    manager.config.actor_info_disabled = actor_info_disabled
     if manager.config.use_database:
         ActressDB.init_db()
 

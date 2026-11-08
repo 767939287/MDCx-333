@@ -820,7 +820,7 @@ class Config(BaseModel):
             items = [str(part).strip() for part in v]
         else:
             return []
-        known = {"local", "wiki", "minnano", "database"}
+        known = {"local", "wiki", "javdb", "minnano", "database"}
         return [source for source in dict.fromkeys(items) if source in known]
 
     # region: Website Settings
@@ -1052,13 +1052,13 @@ class Config(BaseModel):
         title="演员头像数据源优先级",
     )
     actor_info_sources: list[str] = Field(
-        default_factory=lambda: ["local", "wiki", "minnano", "database"],
+        default_factory=lambda: ["local", "wiki", "javdb", "minnano", "database"],
         title="演员信息数据源优先级",
     )
     actor_info_disabled: list[str] = Field(
-        default_factory=list,
+        default_factory=lambda: ["javdb"],
         title="已禁用的演员信息数据源",
-        description="信息源开关：取消勾选的数据源不参与演员信息补全；未列出的数据源默认启用。",
+        description="信息源开关：取消勾选的数据源不参与演员信息补全；未列出的数据源默认启用。JavDB 默认关闭。",
     )
     actor_wiki_languages: list[str] = Field(
         default_factory=lambda: ["zh", "ja", "en"],
