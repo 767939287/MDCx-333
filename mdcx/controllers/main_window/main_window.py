@@ -479,7 +479,6 @@ class MyMAinWindow(
         self.preview_image_loader.loaded.connect(self._apply_preview_images)
         self.Init_Singal()  # 信号连接
         self.Init_Ui()  # 设置Ui初始状态
-        self._init_donate_widgets()  # 侧栏「使用说明」下方加收款码 + [赞助作者] 链接
         self.load_config()  # 加载配置
         self._setup_name_template_preview()
         self._setup_cf_bypass_hosts_check()
@@ -852,8 +851,6 @@ class MyMAinWindow(
         ui.stackedWidget.setGeometry(210, 6, max(width - 210 - 2, 400), max(height - 8, 300))
         ui.progressBar_scrape.setGeometry(209, -1, max(width - 211, 100), 7)
         self._sync_page_layouts()  # 同步动态页面的内部尺寸
-
-    # endregion 侧栏收款码
 
     # 设计态宽度上限（.ui 声明的 maximumSize 宽 = 16000），首次进入时记下，
     # 「读数无意义」分支据此原样交回布局。None = 尚未记下。

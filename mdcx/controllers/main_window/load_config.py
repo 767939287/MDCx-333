@@ -1005,6 +1005,10 @@ def load_config(self: MyMAinWindow):
         self.Ui.comboBox_cf_bypass_backend.setCurrentIndex(backend_index if backend_index >= 0 else 0)
         # Cloudfleare 校验服务
         self.Ui.lineEdit_cf_bypass_trusted_hosts.setText(manager.config.cf_bypass_trusted_hosts)
+        # 走 Solver 的站点（留空=只对命中过 CF 的站点生效）
+        self.Ui.lineEdit_cf_solver_sites.setText(manager.config.cf_solver_sites)
+        # Solver 优先：触发过 CF 的站点后续直接走外部 CF 服务
+        self.Ui.checkBox_cf_solver_first.setChecked(bool(manager.config.cf_solver_first))
         # HTTPS 证书校验
         self.Ui.checkBox_verify_ssl.setChecked(manager.config.verify_ssl)
         # 使用代理的网站

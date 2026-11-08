@@ -11192,6 +11192,40 @@ class Ui_MDCx(object):
         self.label_cf_bypass_trusted_hosts_check.setWordWrap(True)
         self.label_cf_bypass_trusted_hosts_check.setObjectName("label_cf_bypass_trusted_hosts_check")
         self.gridLayout_9.addWidget(self.label_cf_bypass_trusted_hosts_check, 13, 1, 1, 3)
+        self.label_cf_solver_sites = QtWidgets.QLabel(parent=self.gridLayoutWidget_9)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_cf_solver_sites.sizePolicy().hasHeightForWidth())
+        self.label_cf_solver_sites.setSizePolicy(sizePolicy)
+        self.label_cf_solver_sites.setMinimumSize(QtCore.QSize(130, 0))
+        self.label_cf_solver_sites.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
+        self.label_cf_solver_sites.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignTrailing
+            | QtCore.Qt.AlignmentFlag.AlignVCenter
+        )
+        self.label_cf_solver_sites.setObjectName("label_cf_solver_sites")
+        self.gridLayout_9.addWidget(self.label_cf_solver_sites, 14, 0, 1, 1)
+        self.lineEdit_cf_solver_sites = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_9)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_cf_solver_sites.sizePolicy().hasHeightForWidth())
+        self.lineEdit_cf_solver_sites.setSizePolicy(sizePolicy)
+        self.lineEdit_cf_solver_sites.setMinimumSize(QtCore.QSize(300, 30))
+        self.lineEdit_cf_solver_sites.setStyleSheet(
+            ' font: "Courier New";\n'
+            "                                border: 1px solid rgba(0,0,0, 50);\n"
+            "                                border-radius: 15px;\n"
+            ""
+        )
+        self.lineEdit_cf_solver_sites.setObjectName("lineEdit_cf_solver_sites")
+        self.gridLayout_9.addWidget(self.lineEdit_cf_solver_sites, 14, 1, 1, 1)
+        self.checkBox_cf_solver_first = QtWidgets.QCheckBox(parent=self.gridLayoutWidget_9)
+        self.checkBox_cf_solver_first.setChecked(True)
+        self.checkBox_cf_solver_first.setObjectName("checkBox_cf_solver_first")
+        self.gridLayout_9.addWidget(self.checkBox_cf_solver_first, 15, 1, 1, 3)
         self.label_65 = QtWidgets.QLabel(parent=self.gridLayoutWidget_9)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -14524,6 +14558,13 @@ class Ui_MDCx(object):
             )
         )
         self.label_cf_bypass_trusted_hosts_check.setText(_translate("MDCx", "状态：留空不校验（默认）"))
+        self.label_cf_solver_sites.setText(_translate("MDCx", "走Solver的站点："))
+        self.lineEdit_cf_solver_sites.setPlaceholderText(
+            _translate("MDCx", "留空=只对命中过CF的站点生效；逗号分隔，支持*.example.com")
+        )
+        self.checkBox_cf_solver_first.setText(
+            _translate("MDCx", "Solver 优先：触发过 CF 的站点后续直接走 Solver，不再先试直连")
+        )
         self.label_65.setText(_translate("MDCx", "重试次数："))
         self.label_64.setText(_translate("MDCx", "代理地址："))
         self.label_verify_ssl.setText(_translate("MDCx", "HTTPS 证书校验："))

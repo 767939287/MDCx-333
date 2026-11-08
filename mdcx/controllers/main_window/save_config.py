@@ -710,6 +710,8 @@ def save_config(self: MyMAinWindow):
     manager.config.cf_bypass_trusted_hosts = (
         self.Ui.lineEdit_cf_bypass_trusted_hosts.text().strip()
     )  # Cloudfleare 校验服务
+    manager.config.cf_solver_sites = self.Ui.lineEdit_cf_solver_sites.text().strip()  # 走 Solver 的站点
+    manager.config.cf_solver_first = self.Ui.checkBox_cf_solver_first.isChecked()  # Solver 优先
     manager.config.verify_ssl = self.Ui.checkBox_verify_ssl.isChecked()  # HTTPS 证书校验
     manager.config.proxy_sites = normalize_site_list(
         self.Ui.lineEdit_no_proxy_sites.text()

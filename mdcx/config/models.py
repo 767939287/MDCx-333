@@ -1192,6 +1192,18 @@ class Config(BaseModel):
         description="JavLibrary 遇 Cloudflare 时自动用 Selenium+Edge headless 过 CF。"
         "需要 Windows 10/11 + Edge 浏览器，首次使用自动安装 selenium。",
     )
+    cf_solver_first: bool = Field(
+        default=True,
+        title="Solver 优先",
+        description="命中过 Cloudflare 挑战的站点，后续请求直接交给外部 CF 服务（TRAWL/FlareSolverr），"
+        "不再先试直连。关闭后恢复「直连 → 挑战 → solver」的老顺序。",
+    )
+    cf_solver_sites: str = Field(
+        default="",
+        title="走 Solver 的站点",
+        description="逗号分隔的目标域名（支持 *.example.com 子域通配），列出的站点跳过直连、直接走外部 CF 服务；"
+        "留空表示只对「命中过 CF 挑战」的站点生效。",
+    )
     verify_ssl: bool = Field(default=True, title="HTTPS证书校验（关闭仅用于自签名代理/MITM调试）")
     timeout: int = Field(default=30, title="超时")
     retry: int = Field(default=3, title="重试")

@@ -22,7 +22,7 @@
 | 4 | 视图层反向依赖控制器层 | `views/nfo_preview_window.py` 引用 `MyMAinWindow` | ✅ **已修复** |
 | 5 | 全局事件总线把 Qt 传染给整个业务层 | `mdcx/signals.py` 顶层 `class Signals(QObject)`；`base` / `core` / `crawlers` / `tools` 为了 `add_log` 一行日志而被迫加载 PyQt6 | ✅ **已修复** |
 | 6 | 主窗口单文件承载全部关注点 | `controllers/main_window/main_window.py` 12,596 行 / 387 方法 / 221 个类常量 / 49 个 `pyqtSignal`，布局、导航、刮削控制、结果树、设置、托盘、网络检测全部混在一起 | ✅ **已修复** |
-| 7 | **主题/调色板住在控制器包里**（第二轮） | `controllers/main_window/style.py` 里的 token / QSS 生成器被 `views/donate_window.py`、`controllers/cut_window.py`、`tools/emby_actor_manager_ui.py`、`main.py` 引用 | ✅ **已修复** |
+| 7 | **主题/调色板住在控制器包里**（第二轮） | `controllers/main_window/style.py` 里的 token / QSS 生成器被 `controllers/cut_window.py`、`tools/emby_actor_manager_ui.py`、`main.py` 引用 | ✅ **已修复** |
 | 8 | **配置层反向依赖 CF 绕过层**（第二轮） | `config/migrations.py`、`core/network_check.py` 运行时 `from ..cf_bypass.trawl_adapter import normalize_trawl_url`，只读配置时把 `httpx` 一起拖进来 | ✅ **已修复** |
 | 9 | **停机判定散落 7 份**（第二轮） | `signal.stop or Flags.stop_requested` 在 `emby_actor_manager.py` / `emby_actor_info.py` / `emby_actor_image.py` / `actor_db_tool.py` 各写一遍 | ✅ **已修复** |
 | 10 | **演员管理窗口 UI / 数据 / 服务三层同文件 + 20 处重复**（第二轮） | `tools/emby_actor_manager_ui.py` 5,310 行；`_center_on_screen` 6 份、头像来源分派 3 份、config 持久化样板 8 份；`ActorDetailDialog._run_sync` 绕过整套线程框架 | ✅ **已修复**（见 3.6） |
@@ -338,7 +338,7 @@ main_window.py      717 行   ← 只剩：导入、_NET_SEP_* 常量、类声�
 
 | 引用方 | 原导入 | 现导入 |
 |---|---|---|
-| `views/donate_window.py` | `..controllers.main_window.style` | `..ui_theme` |
+
 | `controllers/cut_window.py` | `.main_window.style` | `..ui_theme` |
 | `tools/emby_actor_manager_ui.py` | `..controllers.main_window.style` | `..ui_theme` |
 | `main.py` | `mdcx.controllers.main_window.style` | `mdcx.ui_theme` |
@@ -471,12 +471,12 @@ D15 目录行、D18 线程框架），其余逐条记录了**为什么不合并*
 14. **改测试指针后必须跑全量**：某个 fixture 中途抛异常会让模块属性在整个
     session 内保持被替换状态，1 个文件的指针错误会级联出 20 多个无关文件的失败。
 15. **`ruff.toml` 的 `exclude` 对显式传入的路径无效**，除非加 `force-exclude`。
-    所以 `ruff format mdcx/views/donate_window.py` 会真的改写它 ——
+    所以 `ruff format mdcx/views/<某个视图>.py` 会真的改写它 ——
     而 `**/views/*.py` 是被**故意**排除的。本轮踩到，已从 HEAD 还原并只保留导入改动。
 16. **HEAD 本身就有 19 个文件过不了 `ruff format --check`**（含用户自己刚提交的
     `core/network_check.py` 里的 I001）。不要顺手格式化它们 ——
     `ruff format` 会把无关的格式改动混进本次 diff。本轮已还原
-    `cut_window.py` / `network_check.py` / `donate_window.py` 的格式改动。
+    `cut_window.py` / `network_check.py` 的格式改动。
 17. **`mdcx/tools/emby_actor_manager_ui.py` 的模块级属性是被 monkeypatch 的**：
     `QMessageBox` / `manager` / `search_actor_info` / `fetch_all_actors` /
     `get_all_staff_count` / `QGuiApplication` / `EmbyActorManagerDialog`。

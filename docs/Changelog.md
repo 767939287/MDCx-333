@@ -4,6 +4,19 @@
 
 ## 2026-11-08
 
+### 移除赞助功能
+
+- 侧栏「微信收款码 / 支付宝收款码 / [赞助作者]」区块整体删除：`views/donate_window.py`、三个收款码图片、`resources.donate_*_icon`、`dock_layout` 里连同二维码定位/缩放/锚法在内的一整套布局一并去掉，左侧状态文字直接贴在导航按钮下方。
+- 清掉对应 QSS（`QLabel#label_donate_link`）、`_init_donate_widgets` / `_style_donate_link` 调用点与测试（`test_donate_window_cards.py` 整份删除，`test_window_state_matrix.py` 去掉 10 个赞助布局用例，`test_window_centering.py` 去掉 DonateDialog 项）。
+
+### CF 挑战改走 solver-first：命中过挑战的站点不再先打直连
+
+- 设置→网络新增「走Solver的站点」输入框（`cf_solver_sites`，逗号分隔、支持 `*.example.com` 子域通配）与「Solver 优先」勾选框（`cf_solver_first`，默认开）。
+- 名单内站点、或已经命中过 Cloudflare 挑战的站点，后续请求**跳过直连**直接交给外部 CF 服务（TRAWL/FlareSolverr）；solver 失败才回退直连并记日志。流式下载不介入。
+- TRAWL 请求新增 `sessionId=mdcx-{host}`，外部服务可按站点隔离会话，日志也标明是哪一站触发；MDCx 侧日志新增 `🌐 站点 X 走 Solver（solver-first，跳过直连）` / `✅ Solver 成功` / `⚠️ Solver 失败…回退直连`。
+- 新增 `tests/test_cf_solver_first.py`（名单匹配、挑战命中、开关、直连零调用、solver 失败回退、sessionId）。
+- solver 成功后开 600s「cookie 复用窗口」：窗口内该站点**先直连带 cookie**（`cf_clearance` 等存于 solver cookie jar），直连又被拦才清窗口、下一次重新进 solver —— 与 FlareSolverr/TRAWL 常规用法一致，不必每次请求都开浏览器解挑战。日志相应写明「接下来 600s 内先直连复用 cookie」。
+
 ### 演员简介按维基网页分行：`<br>` 断行不再被吞、写库统一转 `<br/>`
 
 - 维基正文常在一个段落里用 `<br>` 分行（作品列表、逐条履历），旧解析只拼接 `.//text()`，这些行被并成一整行，刮下来的简介和网页排版对不上。`tools/wiki_actor.py::_clean_text` 改为按「文本 / `<br>`」文档序收集，`<br>` 处断行，行内空白仍压成一个空格；旧实现 `tools/wiki.py` 的导语 / 章节提取（`_extract_introduction`、`_extract_section_content`）同样改为先按 `<br>` 断行再取文本。

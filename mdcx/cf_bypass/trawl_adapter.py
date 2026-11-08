@@ -3,6 +3,7 @@ import atexit
 import json
 import logging
 import os
+import re
 import socket
 import threading
 import time
@@ -141,6 +142,18 @@ def _trawl_error_detail(resp: httpx.Response) -> str:
     return ""
 
 
+def _session_id_for(url: str) -> str:
+    """按目标站点生成 solver 会话标识：`mdcx-{host}`（host 里的非法字符换成 `-`）。"""
+    try:
+        host = (urlsplit(str(url or "")).hostname or "").strip().lower()
+    except ValueError:
+        return ""
+    if not host:
+        return ""
+    safe = re.sub(r"[^a-z0-9.-]+", "-", host).strip("-")
+    return f"mdcx-{safe}" if safe else ""
+
+
 async def _call_trawl(
     client: httpx.AsyncClient,
     *,
@@ -166,7 +179,12 @@ async def _call_trawl(
     method_name = str(method or "GET").upper()
     if method_name not in ("GET", "HEAD"):
         return {"error": f"TRAWL /scrape 仅支持 GET（不支持 {method_name}），该请求无法经 TRAWL 绕过"}
+    # sessionId 让外部服务知道这次请求属于哪个站点（按站点隔离会话/统计），
+    # 也方便在 solver 侧日志里一眼看出是谁触发的。TRAWL 原生 schema 支持该字段。
     payload: dict = {"url": url, "maxTimeout": max_timeout_ms}
+    session_id = _session_id_for(url)
+    if session_id:
+        payload["sessionId"] = session_id
     if headers:
         payload["headers"] = headers
     if proxy:

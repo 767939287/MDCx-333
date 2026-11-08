@@ -23368,6 +23368,66 @@ QSpinBox::down-button { margin-right: 5px; }</string>
                             </property>
                             </widget>
                         </item>
+                        <item row="14" column="0">
+                          <widget class="QLabel" name="label_cf_solver_sites">
+                            <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                              </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                              <size>
+                                <width>130</width>
+                                <height>0</height>
+                              </size>
+                            </property>
+                            <property name="layoutDirection">
+                              <enum>Qt::RightToLeft</enum>
+                            </property>
+                            <property name="text">
+                              <string>走Solver的站点：</string>
+                            </property>
+                            <property name="alignment">
+                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="14" column="1">
+                          <widget class="QLineEdit" name="lineEdit_cf_solver_sites">
+                            <property name="sizePolicy">
+                              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                              </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                              <size>
+                                <width>300</width>
+                                <height>30</height>
+                              </size>
+                            </property>
+                            <property name="styleSheet">
+                              <string notr="true"> font: "Courier New";
+                                border: 1px solid rgba(0,0,0, 50);
+                                border-radius: 15px;
+</string>
+                            </property>
+                            <property name="placeholderText">
+                              <string>留空=只对命中过CF的站点生效；逗号分隔，支持*.example.com</string>
+                            </property>
+                          </widget>
+                        </item>
+                        <item row="15" column="1" colspan="3">
+                          <widget class="QCheckBox" name="checkBox_cf_solver_first">
+                            <property name="text">
+                              <string>Solver 优先：触发过 CF 的站点后续直接走 Solver，不再先试直连</string>
+                            </property>
+                            <property name="checked">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
                         <item row="8" column="0">
                           <widget class="QLabel" name="label_65">
                             <property name="sizePolicy">

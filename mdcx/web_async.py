@@ -603,6 +603,8 @@ class AsyncWebClient:
         cf_bypass_trawl_url: str = "",
         cf_bypass_trawl_backend: str = "trawl",
         cf_bypass_trusted_hosts: str = "",
+        cf_solver_first: bool = True,
+        cf_solver_sites: str = "",
         verify_ssl: bool = True,
         proxy_sites: list[str] | None = None,
         direct_sites: list[str] | None = None,
@@ -659,6 +661,15 @@ class AsyncWebClient:
         self._cf_locks_guard = asyncio.Lock()
         self._cf_last_bypass_attempt_at: dict[str, float] = {}
         self._cf_host_challenge_hits: dict[str, int] = {}
+        # solver 成功后开一个「cookie 复用窗口」：窗口内该 host 先直连（带 solver cookie），
+        # 又被拦才回 solver。避免每次都开浏览器解挑战（常规 FlareSolverr/TRAWL 用法）。
+        self._cf_solver_reuse_until: dict[str, float] = {}
+        self._cf_solver_reuse_ttl = 600.0
+        # solver-first：名单内站点 / 命中过挑战的站点直接进外部 CF 服务，不再先打直连
+        self._cf_solver_first = bool(cf_solver_first)
+        self._cf_solver_sites: tuple[str, ...] = tuple(
+            entry.strip().lower() for entry in (cf_solver_sites or "").split(",") if entry.strip()
+        )
         self._cf_bypass_min_interval = 2.0
         self._cf_bypass_timeout = 45.0
         self._cf_bypass_retries = 2
@@ -1511,6 +1522,54 @@ class AsyncWebClient:
         normalized = error.strip()
         return normalized.startswith("mirror 返回 Cloudflare 挑战页") or "Cloudflare 挑战页" in normalized
 
+    @staticmethod
+    def _host_matches_patterns(host: str, patterns: tuple[str, ...]) -> bool:
+        """域名是否命中名单：精确匹配或 `*.example.com` 子域通配（不含裸域名本身）。"""
+        host = (host or "").strip().lower()
+        if not host:
+            return False
+        for pattern in patterns:
+            if pattern.startswith("*."):
+                if host.endswith(pattern[1:]):
+                    return True
+            elif host == pattern:
+                return True
+        return False
+
+    def _solver_reuse_active(self, host: str) -> bool:
+        """solver 解出的 cookie 是否还在复用窗口内（窗口内优先直连带 cookie）。"""
+        until = self._cf_solver_reuse_until.get(host, 0.0)
+        if until <= 0:
+            return False
+        if time.monotonic() >= until:
+            self._cf_solver_reuse_until.pop(host, None)
+            return False
+        return True
+
+    def _mark_solver_reuse(self, host: str) -> None:
+        """solver 成功：开（或续）该 host 的 cookie 复用窗口。"""
+        if host:
+            self._cf_solver_reuse_until[host] = time.monotonic() + self._cf_solver_reuse_ttl
+
+    def _is_solver_first_host(self, host: str) -> bool:
+        """该 host 是否跳过直连、直接交给外部 CF 服务。
+
+        两条件任一成立（且总开关开着）：
+        - 命中 `cf_solver_sites` 名单（用户在 UI 里指定的站点，首次也不试直连）；
+        - 该 host 之前命中过 Cloudflare 挑战（`_cf_host_challenge_hits` > 0）。
+
+        例外：solver 刚解过、cookie 还在复用窗口内时**先走直连**（带 jar 里的
+        `cf_clearance` 等 cookie）——常规 FlareSolverr/TRAWL 用法，解一次用一段时间，
+        不每次都开浏览器；直连又被拦会清掉窗口，下一次重新进 solver。
+        """
+        if not self._cf_solver_first or not host:
+            return False
+        if self._solver_reuse_active(host):
+            return False
+        if self._cf_solver_sites and self._host_matches_patterns(host, self._cf_solver_sites):
+            return True
+        return self._cf_host_challenge_hits.get(host, 0) > 0
+
     def _is_trusted_bypass_landing(self, url: str) -> bool:
         """校验 bypass 服务落地或重定向后的最终 URL 域名是否在白名单内。
 
@@ -2213,6 +2272,45 @@ class AsyncWebClient:
                     req_headers = dict(prepared_headers)
                     # solver-cookie jar：同池后续直连自动带上 bypass 解出的 cookie
                     req_cookies = self._merge_cookies(cookies, self._solver_cookie_jar.get(pool_base_key))
+                    # solver-first：名单内 / 命中过挑战的站点不再打直连，直接走外部 CF 服务
+                    # （用户 2026-11-08：不让触发直连）。solver 失败才回退直连。
+                    if (
+                        enable_cf_bypass
+                        and self._cf_bypass_enabled
+                        and host
+                        and not stream
+                        and bypass_round < self._cf_request_bypass_rounds
+                        and self._is_solver_first_host(host)
+                    ):
+                        target_url = self._merge_url_params(url, params)
+                        self._log_cf(f"🌐 站点 {host} 走 Solver（solver-first，跳过直连）", host)
+                        bypass_response, bypass_error = await self._try_bypass_cloudflare(
+                            host=host,
+                            method=method,
+                            target_url=target_url,
+                            headers=req_headers,
+                            cookies=req_cookies,
+                            data=data,
+                            json_data=json_data,
+                            timeout=timeout,
+                            allow_redirects=allow_redirects,
+                            use_proxy=bool((self.cf_bypass_proxy or "").strip()),
+                        )
+                        bypass_round += 1
+                        if bypass_response is not None:
+                            bypass_mode = self._extract_header_case_insensitive(
+                                {str(k): str(v) for k, v in bypass_response.headers.items()},
+                                "x-mdcx-bypass-mode",
+                            )
+                            self._log_cf(
+                                f"✅ Solver 成功（模式: {bypass_mode or 'unknown'}），"
+                                f"接下来 {int(self._cf_solver_reuse_ttl)}s 内先直连复用 cookie",
+                                host,
+                            )
+                            self._store_solver_response_cookies(host, pool_base_key, fingerprint, bypass_response)
+                            self._mark_solver_reuse(host)
+                            return bypass_response, ""
+                        self._log_cf(f"⚠️ Solver 失败（{bypass_error}），回退直连", host)
                     host_retry_semaphore = None
                     if host and self._cf_host_challenge_hits.get(host, 0) > 0:
                         host_retry_semaphore = await self._get_cf_host_retry_semaphore(host)
@@ -2261,6 +2359,8 @@ class AsyncWebClient:
                         is_cf_challenge = await self._is_cf_challenge_response(resp)
                     if is_cf_challenge:
                         self._log_cf(f"🛑 Cloudflare 挑战页，轮换指纹重试: {method} {url}", host)
+                        # 解出来的 cookie 已失效：清掉复用窗口，下一次重新进 solver
+                        self._cf_solver_reuse_until.pop(host, None)
                         self._force_rotate_fingerprint(pool_base_key, fingerprint)
 
                     # 仅在真正遇到挑战页时才阻塞启动适配层：普通请求不应为此等待。
@@ -2336,6 +2436,7 @@ class AsyncWebClient:
                                     self._store_solver_response_cookies(
                                         host, pool_base_key, fingerprint, bypass_response
                                     )
+                                    self._mark_solver_reuse(host)
                                     if stream:
                                         await self._close_response(resp)
                                     return bypass_response, ""

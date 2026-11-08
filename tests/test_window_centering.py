@@ -340,12 +340,6 @@ def _detail_dialog():
     return ActorDetailDialog(_make_actor())
 
 
-def _donate_dialog():
-    from mdcx.views.donate_window import DonateDialog
-
-    return DonateDialog()
-
-
 def _similar_dialog():
     from mdcx.views.similar_window import SimilarDialog
 
@@ -372,7 +366,6 @@ _WINDOW_FACTORIES = [
     ("EmbyActorSettingsDialog", _settings_dialog),
     ("ActorSourceTestDialog", _source_test_dialog),
     ("ActorDetailDialog", _detail_dialog),
-    ("DonateDialog", _donate_dialog),
     ("SimilarDialog", _similar_dialog),
     ("SiteListEditorDialog", _site_list_dialog),
     ("FieldPriorityDialog", _field_priority_dialog),

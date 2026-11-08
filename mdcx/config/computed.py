@@ -39,6 +39,8 @@ class Computed:
             cf_bypass_trawl_url=config.cf_bypass_trawl_url,
             cf_bypass_trawl_backend=config.cf_bypass_trawl_backend,
             cf_bypass_trusted_hosts=config.cf_bypass_trusted_hosts,
+            cf_solver_first=config.cf_solver_first,
+            cf_solver_sites=config.cf_solver_sites,
             verify_ssl=config.verify_ssl,
             proxy_sites=config.proxy_hosts_list(),
             direct_sites=[s.strip() for s in (config.direct_sites or "").split(",") if s.strip()],
