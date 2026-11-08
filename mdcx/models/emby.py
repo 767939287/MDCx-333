@@ -54,6 +54,13 @@ def normalize_production_year(value: object) -> int | None:
 # (增量)共用, 保证未来写入不再产生占位噪声。
 _OVERVIEW_PLACEHOLDER_RE = re.compile(r"无维基百科信息\s*[,，]\s*从\s*minnano-av\s*数据库补全女优信息")
 
+# 简介段标题：``===== 个人资料 =====`` 这类整行等号包起来的标题（旧存盘里还可能跟在
+# ``<br>`` 后面）。服务器端按 HTML 渲染，写库前改成 ``<b>标题</b>``。
+_OVERVIEW_HEADING_RE = re.compile(
+    r"(?P<lead>^|<br\s*/?>)[ \t]*={2,}[ \t]*(?P<title>[^=\n<>]+?)[ \t]*={2,}[ \t]*(?=<br\s*/?>|$)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 def apply_overview_clean_rules(value: object, rules: object = None) -> str:
     """在 clean_overview_text 内置清洗之上, 再按用户自定义替换规则逐条做字面量子串替换。
@@ -131,17 +138,28 @@ def clean_overview_text(value: object) -> str:
 
 
 def to_emby_overview(value: object) -> str:
-    """写入 Emby/Jellyfin 前的简介整形：清洗噪声 + 裸换行一律转 ``<br/>``。
+    """写入 Emby/Jellyfin 前的简介整形：清洗噪声 + 段标题转粗体 + 裸换行转 ``<br/>``。
 
     Emby 4.8+ 把 Overview 当 HTML 渲染，裸 ``\\n`` 会被折叠成空格：维基正文的段落、
     以及「个人资料」段的每一行（生日/别名…）会并成一整行，看起来完全没有换行。
     服务器端要求以 ``<br>`` 分行（议题 #180），因此所有写库出口都必须先过这一步。
     已有的 ``<br>`` 变体原样保留（议题 #171），只把剩下的裸换行补成 ``<br/>``。
+
+    段标题（``===== 個人情報 =====`` / ``===== 人物 =====``）在服务器端会连等号一起
+    显示成字面文本，这里改成 ``<b>個人情報</b>``：服务器端反正按 HTML 渲染，粗体才是
+    段标题该有的样子（用户 2026-11-08）。库里的值仍保留等号——客户端用
+    ``setPlainText`` 展示，写库里不能带 HTML 标签字面量。
     """
     text = clean_overview_text(value)
     if not text:
         return ""
+    text = _OVERVIEW_HEADING_RE.sub(_bold_heading, text)
     return text.replace("\r\n", "\n").replace("\r", "\n").replace("\n", "<br/>")
+
+
+def _bold_heading(match: re.Match[str]) -> str:
+    """把一整行的 ``== 标题 ==`` 换成 ``<b>标题</b>``，保留前面的 ``<br>``。"""
+    return f"{match.group('lead')}<b>{match.group('title')}</b>"
 
 
 @dataclass

@@ -396,6 +396,10 @@ def apply_wiki_profile(
         actor_info.taglines = [zhconv.convert(str(actor_info.taglines[0]), target_lang)]
 
     profile_lines = _profile_lines(profile, section_lang)
+    # 正文里的资料字段行归位：标签重复的删掉、缺的字段补进「个人资料」段末，
+    # 整节都是资料字段时连标题与来源说明一起丢（实测亜紗美词条的「プロフィール」节）。
+    overview, extra_fields = _split_profile_fields(profile.overview or "", profile_lines)
+    profile_lines.extend(extra_fields)
     link_lines = _external_link_lines(profile)
     profile_title, link_title = _SECTION_TITLES.get(section_lang, _SECTION_TITLES["zh-cn"])
     blocks: list[str] = []
@@ -403,7 +407,7 @@ def apply_wiki_profile(
         blocks.append(f"===== {profile_title} =====\n" + "\n".join(profile_lines))
     if link_lines:
         blocks.append(f"===== {link_title} =====\n" + "\n".join(link_lines))
-    overview = (profile.overview or "").strip()
+    overview = overview.strip()
     head = "\n\n".join(blocks)
     if head and overview:
         # 正文（人物 / 履历）永远排在这两段下面
@@ -882,13 +886,17 @@ def _overview_blocks(html: Selector) -> list[str]:
     标题层级决定归属：白名单章节层级以下的子章节同属该章节，遇到同级或更高级标题才退出。
     输出顺序固定为「导语 → 人物类章节 → 经历类章节 → 其它白名单章节」，同类内保持
     原文顺序（用户 2026-11-08：正文要包含人物与经历，且先人物再经历）。
+
+    章节之间插入 `===== 标题 =====` 行（标题取维基原文，如「人物」「経歴」）：
+    段序重排后人物段与经历段紧邻，只靠空行分不开归属，用户反馈「经历 人物 没有
+    分割符号」（2026-11-08）。导语无标题，不加。
     """
-    collected: list[tuple[int, int, str]] = []
+    collected: list[tuple[int, int, str, str]] = []
     seq = 0
 
     def add(text: str) -> None:
         nonlocal seq
-        collected.append((_section_group(headings), seq, text))
+        collected.append((_section_group(headings), seq, _section_title(headings), text))
         seq += 1
 
     headings: list[tuple[int, str]] = []
@@ -922,7 +930,28 @@ def _overview_blocks(html: Selector) -> list[str]:
         if items:
             add("\n".join(items))
     collected.sort(key=lambda item: (item[0], item[1]))
-    return [text for _group, _seq, text in collected]
+
+    # 相邻同类段落并成一段，标题只在切换时写一次（`== 人物 ==` 下再分 `=== 略歴 ===`
+    # 时，两者的白名单标题不同，各自出一行标题）。
+    chunks: list[str] = []
+    title = ""
+    paragraphs: list[str] = []
+    for _group, _seq, block_title, text in collected:
+        if block_title != title:
+            if paragraphs:
+                chunks.append(_body_chunk(title, paragraphs))
+            title = block_title
+            paragraphs = []
+        paragraphs.append(text)
+    if paragraphs:
+        chunks.append(_body_chunk(title, paragraphs))
+    return chunks
+
+
+def _body_chunk(title: str, paragraphs: list[str]) -> str:
+    """一段正文：有章节标题时先写标题行，段落之间空一行。"""
+    body = "\n\n".join(paragraphs)
+    return f"===== {title} =====\n{body}" if title else body
 
 
 def _heading_text(node: Selector) -> str:
@@ -940,14 +969,19 @@ def _section_fold(title: str) -> str:
     return zhconv.convert(title, "zh-cn").translate(_JA_HEADING_FOLD).lower()
 
 
+def _section_title(headings: list[tuple[int, str]]) -> str:
+    """当前段落所属的白名单章节标题（取最内层）；导语返回空串。"""
+    return next((name for _level, name in reversed(headings) if _is_section(name)), "")
+
+
 def _section_group(headings: list[tuple[int, str]]) -> int:
     """段落归属分组：0=导语（无标题）、1=人物类、2=经历类、3=其它白名单章节。
 
     取**最内层**的白名单标题作为归属：`== 人物 ==` 下的 `=== 略歴 ===` 归经历，
     同一章节下再分的子章节各自按自己的标题归类。
     """
-    section = next((name for _level, name in reversed(headings) if _is_section(name)), None)
-    if section is None:
+    section = _section_title(headings)
+    if not section:
         return 3 if headings else 0
     folded = _section_fold(section)
     if any(keyword in folded for keyword in _PERSON_SECTIONS):
@@ -1326,6 +1360,113 @@ def _profile_lines(profile: WikiActorProfile, lang: str = "zh-cn") -> list[str]:
     if names:
         lines.append(f"{alias_label}: {'、'.join(names)}")
     return lines
+
+
+# 正文里形如「标签: 值」的资料行。标签不收数字：避免把「2005年1月: …」这类时间轴
+# 当成字段；值以 URL 开头的同样不算（正文不该出现外链行，错误归位反而更脏）。
+_BODY_FIELD_RE = re.compile(r"^\s*(?P<label>[^:：\d\n]{1,20}?)\s*[:：]\s*(?P<value>\S.*?)\s*$")
+_BODY_URL_VALUE_RE = re.compile(r"^(?:https?://|www\.)", re.IGNORECASE)
+_BODY_HEADING_RE = re.compile(r"^={2,}\s*(?P<title>[^=].*?)\s*={2,}$")
+
+
+def _label_tokens(label: str) -> set[str]:
+    """字段标签比对用的分词：NFKC、去空白与「の」、按 / ・ 、 切开。
+
+    「身長 / 体重」与正文的「身長」、「ブラサイズ」与「ブラのサイズ」要能对上，
+    否则同一个字段会在两段里各写一遍（实测亜紗美词条的「プロフィール」节）。
+    """
+    folded = unicodedata.normalize("NFKC", label).replace("の", "").casefold()
+    folded = re.sub(r"\s+", "", folded)
+    return {token for token in re.split(r"[/・、,，]", folded) if token}
+
+
+def _known_label_tokens(profile_lines: Sequence[str]) -> set[str]:
+    known: set[str] = set()
+    for line in profile_lines:
+        label, sep, _value = line.partition(": ")
+        if sep:
+            known |= _label_tokens(label)
+    return known
+
+
+def _split_profile_fields(overview: str, profile_lines: Sequence[str]) -> tuple[str, list[str]]:
+    """把正文里的「标签: 值」行归位到「个人资料」段，返回（剩余正文，补进资料段的字段）。
+
+    部分词条（实测亜紗美）在正文里另有一节「プロフィール」，用列表把信息框的
+    生年月日 / 出身地 / 身長 / スリーサイズ 再列一遍，数值还可能不一致；而「趣味 /
+    特技 / 靴のサイズ」这类信息框没有的字段又值得保留。处理口径（用户 2026-11-08）：
+
+    - 标签与「个人资料」段重复 → 该行删掉，不留两份口径不一的数值；
+    - 标签是新的 → 该行移进「个人资料」段末，正文不再重复；
+    - 字段行占该节非空行一半以上（资料列表型章节）→ 整节丢弃，连标题与「本数据
+      出自某年事务所资料」这类说明句一起，避免留一个只有空话的段标题。
+
+    导语（第一个标题之前）不动：它是一段连贯的叙述，不是字段列表。
+    """
+    known = _known_label_tokens(profile_lines)
+    sections: list[tuple[str | None, list[str]]] = [(None, [])]
+    for line in overview.split("\n"):
+        if _BODY_HEADING_RE.match(line.strip()):
+            sections.append((line.strip(), []))
+        else:
+            sections[-1][1].append(line)
+
+    extras: list[str] = []
+    extra_keys: set[str] = set()
+    kept: list[tuple[str | None, list[str]]] = []
+    for title, body_lines in sections:
+        if title is None:
+            kept.append((None, _trim_body_lines(body_lines)))
+            continue
+        non_empty = sum(1 for line in body_lines if line.strip())
+        fields = 0
+        remaining: list[str] = []
+        for line in body_lines:
+            match = _BODY_FIELD_RE.match(line)
+            if not match or _BODY_URL_VALUE_RE.match(match.group("value")):
+                remaining.append(line)
+                continue
+            keys = _label_tokens(match.group("label"))
+            if not keys:
+                remaining.append(line)
+                continue
+            fields += 1
+            if keys & known:
+                continue
+            extra_key = "|".join(sorted(keys))
+            if extra_key not in extra_keys:
+                extra_keys.add(extra_key)
+                extras.append(line.strip())
+        if fields and fields * 2 >= non_empty:
+            continue
+        kept.append((title, _trim_body_lines(remaining)))
+
+    parts: list[str] = []
+    for title, body_lines in kept:
+        body = "\n".join(body_lines).strip()
+        if title is None:
+            if body:
+                parts.append(body)
+            continue
+        if not body:
+            continue
+        parts.append(f"{title}\n{body}")
+    return "\n\n".join(parts), extras
+
+
+def _trim_body_lines(lines: list[str]) -> list[str]:
+    """删行后收拢空白：连续空行压成一个，首尾空行去掉，行尾空白不留。"""
+    out: list[str] = []
+    for line in lines:
+        text = line.rstrip()
+        if not text:
+            if out and out[-1]:
+                out.append("")
+            continue
+        out.append(text)
+    while out and not out[-1]:
+        out.pop()
+    return out
 
 
 def _external_link_lines(profile: WikiActorProfile) -> list[str]:

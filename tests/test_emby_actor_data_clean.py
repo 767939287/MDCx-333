@@ -109,7 +109,7 @@ async def _capture_update_payload(monkeypatch: pytest.MonkeyPatch, actor) -> dic
 
 
 async def test_update_person_info_cleans_legacy_overview(monkeypatch: pytest.MonkeyPatch):
-    """议题 #149: 存量脏简介随同步自愈——清洗后经同一出口写回。"""
+    """议题 #149: 存量脏简介随同步自愈——清洗后经同一出口写回（段标题转粗体）。"""
     from mdcx.tools.emby_actor_manager import ActorInfo
 
     actor = ActorInfo(
@@ -119,7 +119,7 @@ async def test_update_person_info_cleans_legacy_overview(monkeypatch: pytest.Mon
         existing_overview="a<br>===== 个人资料 =====<br>b",
     )
     payload = await _capture_update_payload(monkeypatch, actor)
-    assert payload["Overview"] == "a<br>===== 个人资料 =====<br>b"
+    assert payload["Overview"] == "a<br><b>个人资料</b><br>b"
 
 
 async def test_update_person_info_placeholder_becomes_empty_and_omitted(monkeypatch: pytest.MonkeyPatch):

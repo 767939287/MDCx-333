@@ -104,6 +104,25 @@ def test_to_emby_overview_drops_placeholder():
     assert to_emby_overview("正文\n无维基百科信息, 从 minnano-av 数据库补全女优信息\n尾段") == ("正文<br/><br/>尾段")
 
 
+def test_to_emby_overview_makes_section_titles_bold():
+    """写库时段标题转粗体：`===== 人物 =====` → `<b>人物</b>`（服务器端按 HTML 渲染）。
+
+    库里的值仍保留等号（客户端 `setPlainText` 展示，不能带 HTML 标签字面量），
+    只有写库出口换成 `<b>`；旧存盘里跟在 `<br>` 后面的段标题同样要转。
+    """
+    assert to_emby_overview("===== 個人情報 =====\n別名: ぺち") == "<b>個人情報</b><br/>別名: ぺち"
+    assert to_emby_overview("正文<br>===== 人物 =====<br>段落") == "正文<br><b>人物</b><br>段落"
+    # 正文里的等号（非整行标题）不动
+    assert to_emby_overview("A = B 实测 2 == 2") == "A = B 实测 2 == 2"
+
+
+def test_dump_keeps_plain_section_titles():
+    """dump() 是客户端展示用的裸文本：段标题保留等号，不带 `<b>` 字面量。"""
+    info = EMbyActressInfo(name="音琴るい", server_id="s", id="i", overview="===== 人物 =====\n段落")
+    assert info.dump()["Overview"] == "===== 人物 =====\n段落"
+    assert to_emby_overview(info.dump()["Overview"]) == "<b>人物</b><br/>段落"
+
+
 # --- 旧 wiki.py 路径（search_wiki / parse_detail，保留的老实现）同样要按 <br> 断行 ---
 
 _MOBILE_HTML = """
@@ -181,7 +200,17 @@ def test_overview_puts_person_section_before_history():
       <h2>人物</h2><p>人物段落。</p>
     </div>"""
     page = _parse_wiki_page("https://ja.wikipedia.org/wiki/test", "ja", html)
-    assert page.overview == "导语段落。\n\n人物段落。\n\n经历段落。"
+    assert page.overview == ("导语段落。\n\n===== 人物 =====\n人物段落。\n\n===== 経歴 =====\n经历段落。")
+
+
+def test_overview_writes_section_heading_once_per_section():
+    """同一章节的多个段落只在开头写一次标题；章节内段落之间仍空一行。"""
+    html = """<div class="mw-parser-output">
+      <h2>人物</h2><p>人物一。</p><p>人物二。</p>
+      <h2>経歴</h2><p>经历一。</p><p>经历二。</p>
+    </div>"""
+    page = _parse_wiki_page("https://ja.wikipedia.org/wiki/test", "ja", html)
+    assert page.overview == ("===== 人物 =====\n人物一。\n\n人物二。\n\n===== 経歴 =====\n经历一。\n\n经历二。")
 
 
 def test_profile_lines_appends_entry_name_when_searched_by_alias():
@@ -222,3 +251,62 @@ def test_profile_lines_drops_searched_name_from_alias():
     info = EMbyActressInfo(name="ぺち", server_id="s", id="i")
     apply_wiki_profile(info, profile, emby_on=[EmbyAction.ACTOR_INFO_JA])
     assert info.overview == "===== 個人情報 =====\n別名: 音琴 留衣（中華圏）、妃月るい、音琴るい"
+
+
+def test_body_profile_fields_merge_into_profile_block():
+    """正文里的资料字段归位（用户 2026-11-08 实测亜紗美词条）：
+    重复标签的行删掉、信息框没有的字段补进「個人情報」段，整节只有字段时连标题丢弃。
+    「ブラのサイズ」与「ブラサイズ」、「身長」与「身長 / 体重」按分词比对算重复。
+    """
+    profile = WikiActorProfile(
+        language="ja",
+        name="亜紗美",
+        infobox=[
+            "生年月日: 1985年8月19日",
+            "出身地: 東京都",
+            "身長 / 体重: 160 cm / ― kg",
+            "ブラサイズ: D65",
+        ],
+        overview=(
+            "导语段落。\n\n"
+            "===== 人物 =====\n爬虫類好き\n\n"
+            "===== プロフィール =====\n2005年12月時点でティアラが公表している情報に基づく。\n\n"
+            "生年月日: 1985年8月19日\n出身地: 東京都\n身長: 160 cm\nブラのサイズ: D65\n"
+            "靴のサイズ: 24 cm\n趣味: ゲーム、映画鑑賞"
+        ),
+    )
+    info = EMbyActressInfo(name="亜紗美", server_id="s", id="i")
+    apply_wiki_profile(info, profile, emby_on=[EmbyAction.ACTOR_INFO_JA])
+    assert info.overview == (
+        "===== 個人情報 =====\n"
+        "生年月日: 1985年8月19日\n"
+        "出身地: 東京都\n"
+        "身長 / 体重: 160 cm / ― kg\n"
+        "ブラサイズ: D65\n"
+        "靴のサイズ: 24 cm\n"
+        "趣味: ゲーム、映画鑑賞\n"
+        "\n"
+        "导语段落。\n\n"
+        "===== 人物 =====\n爬虫類好き"
+    )
+
+
+def test_body_section_with_prose_keeps_text_and_moves_only_field():
+    """字段只是少数时不能把整节丢掉：正文留着，字段行挪进「個人情報」段。
+
+    时间轴行（`2005年1月: …`）标签带数字，不算资料字段，原样留在正文。
+    """
+    profile = WikiActorProfile(
+        language="zh",
+        infobox=["生日: 1985-08-19"],
+        overview=(
+            "===== 经历 =====\n2005年1月: 出道。\n2006年移籍到 X 公司。\n2007年7月发布最后一部作品。\n趣味: 游戏\n"
+        ),
+    )
+    info = EMbyActressInfo(name="亜紗美", server_id="s", id="i")
+    apply_wiki_profile(info, profile, emby_on=[EmbyAction.ACTOR_INFO_ZH_CN])
+    assert info.overview == (
+        "===== 个人资料 =====\n生日: 1985-08-19\n趣味: 游戏\n"
+        "\n===== 经历 =====\n"
+        "2005年1月: 出道。\n2006年移籍到 X 公司。\n2007年7月发布最后一部作品。"
+    )
