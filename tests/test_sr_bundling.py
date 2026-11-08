@@ -67,6 +67,52 @@ def test_fetch_tool_rejects_checksum_mismatch(tmp_path, monkeypatch):
         fetch.fetch_tool(tool, platform, tmp_path / "sr_tools")
 
 
+def test_download_candidates_prefer_direct_then_mirror(monkeypatch):
+    monkeypatch.delenv("SR_TOOL_MIRROR", raising=False)
+    assert fetch._candidate_urls("https://github.com/x.zip") == ["https://github.com/x.zip"]
+
+    monkeypatch.setenv("SR_TOOL_MIRROR", "https://ghproxy.net/")
+    assert fetch._candidate_urls("https://github.com/x.zip") == [
+        "https://github.com/x.zip",
+        "https://ghproxy.net/https://github.com/x.zip",
+    ]
+
+
+def test_download_falls_back_to_mirror_on_504(monkeypatch):
+    requested: list[str] = []
+
+    class _Resp:
+        def __init__(self, status: int, content: bytes = b"", text: str = ""):
+            self.status_code = status
+            self.content = content
+            self.text = text
+
+    class _Client:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def get(self, url: str, **kwargs):
+            requested.append(url)
+            if url.startswith("https://mirror/"):
+                return _Resp(200, b"zip-bytes")
+            return _Resp(504, text="<html>504 Gateway Time-out</html>")
+
+    monkeypatch.setenv("SR_TOOL_MIRROR", "https://mirror/")
+    monkeypatch.setattr(fetch.httpx, "Client", _Client)
+
+    assert fetch._download("https://github.com/x.zip") == b"zip-bytes"
+    assert requested == [
+        "https://github.com/x.zip",
+        "https://mirror/https://github.com/x.zip",
+    ]
+
+
 def test_fetch_tool_skips_download_when_ready(tmp_path, monkeypatch):
     tool = "realesrgan"
     target = tmp_path / "sr_tools" / tool

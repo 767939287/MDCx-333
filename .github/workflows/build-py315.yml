@@ -26,6 +26,11 @@ on:
         description: "版本号 / Tag（留空则自动取 consts.py 的 LOCAL_VERSION，必须为纯数字；也可手动填写）"
         required: false
         default: ""
+      publish_release:
+        description: "是否创建 GitHub Release；不勾选时只在本次 Actions run 里保留可下载的构建产物"
+        type: boolean
+        required: false
+        default: false
       prerelease:
         description: "是否作为预发布（pre-release）"
         required: false
@@ -176,6 +181,10 @@ jobs:
         shell: bash
         env:
           PYTHONIOENCODING: utf-8
+          # 可选：仓库 Secret 配 SR_TOOL_PROXY / 仓库 Variable 配 SR_TOOL_MIRROR，
+          # 下载脚本会在直连失败时回退到镜像；sha256 仍按官方基准校验。
+          SR_TOOL_PROXY: ${{ secrets.SR_TOOL_PROXY }}
+          SR_TOOL_MIRROR: ${{ vars.SR_TOOL_MIRROR }}
         run: uv run python -m scripts.fetch_sr_tools --platform ${{ matrix.build }}
 
       - name: Build macOS app - macOS
@@ -265,10 +274,12 @@ jobs:
   publish-release:
     needs: build-app
     runs-on: ubuntu-latest
-    # 门禁两条：!cancelled() 而非 always()，run 被取消时不再白跑一轮发版；
+    # 门禁三条：!cancelled() 而非 always()，run 被取消时不再白跑一轮发版；
     # needs.build-app.result == 'success' 核对 build-app 的真实结果（build-app 开了
     # continue-on-error，不能写 `success()`：`needs` 里任一失败腿都会让它整体跳过）。
-    if: ${{ !cancelled() && needs.build-app.result == 'success' }}
+    # 手动触发时由 publish_release 开关决定是否写 Release；不写时 build-app 已上传的
+    # actions/upload-artifact 产物仍可在本次 run 页面下载。
+    if: ${{ !cancelled() && needs.build-app.result == 'success' && (github.event_name != 'workflow_dispatch' || inputs.publish_release) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7

@@ -9,6 +9,11 @@ sha256 不匹配一律失败，避免坏包被打进发布产物。
     uv run python -m scripts.fetch_sr_tools --dest build/sr_tools
     uv run python -m scripts.fetch_sr_tools --tool realesrgan --platform windows
     uv run python -m scripts.fetch_sr_tools --force
+
+网络不稳定（GitHub Release 偶发 504）时可配置：
+    SR_TOOL_PROXY=http://127.0.0.1:7890        # 显式代理；不设则沿用 HTTP(S)_PROXY
+    SR_TOOL_MIRROR=https://ghproxy.net/        # 前缀式镜像，失败时作为第二候选
+镜像只是传输通道，sha256 仍按官方基准校验；不匹配一律失败。
 """
 
 from __future__ import annotations
@@ -18,6 +23,7 @@ import hashlib
 import os
 import shutil
 import sys
+import time
 import zipfile
 from io import BytesIO
 from pathlib import Path
@@ -25,6 +31,7 @@ from pathlib import Path
 import httpx
 
 from mdcx.core.super_resolution import (
+    _DOWNLOAD_HEADERS,
     _PLATFORM,
     _TOOL_CHECKSUMS,
     _TOOL_DOWNLOAD_URLS,
@@ -34,9 +41,10 @@ from mdcx.core.super_resolution import (
 
 CONNECT_TIMEOUT = 30.0
 READ_TIMEOUT = 120.0
-# 构建期拉取允许失败一次后重试：CI 偶发抖动不应直接卡住发版
-DOWNLOAD_ATTEMPTS = 2
-
+# GitHub Release 资产偶发 504（release-assets.githubusercontent.com 网关超时）。
+# 单次失败立即重试往往还是同一个故障节点，改为带退避的多轮重试 + 镜像回退。
+DOWNLOAD_ROUNDS = 5
+RETRY_DELAYS = (1.0, 3.0, 8.0, 20.0)
 # 与打包参数 `sr_tools/<tool>` 保持一致，运行时按 `sys._MEIPASS / "sr_tools" / tool` 查找
 DEFAULT_DEST = "build/sr_tools"
 
@@ -72,14 +80,56 @@ def _extract(data: bytes, dest: Path) -> None:
     _make_executable(binary_path_from_dir(dest.name, dest))
 
 
+def _proxy_url() -> str | None:
+    """显式代理优先；未配置时由 httpx 读取 HTTP(S)_PROXY。"""
+    return (os.environ.get("SR_TOOL_PROXY") or "").strip() or None
+
+
+def _candidate_urls(url: str) -> list[str]:
+    """直连优先，配置了 SR_TOOL_MIRROR 时追加前缀式镜像。"""
+    urls = [url]
+    mirror = (os.environ.get("SR_TOOL_MIRROR") or "").strip()
+    if mirror:
+        mirrored = f"{mirror.rstrip('/')}/{url}"
+        if mirrored not in urls:
+            urls.append(mirrored)
+    return urls
+
+
 def _download(url: str) -> bytes:
-    """下载官方 release 资产；HTTP 4xx/5xx 错误串带截断响应体，便于排障。"""
-    with httpx.Client(timeout=httpx.Timeout(READ_TIMEOUT, connect=CONNECT_TIMEOUT), follow_redirects=True) as client:
-        resp = client.get(url)
-    if resp.status_code >= 400:
-        preview = " ".join(resp.text.split())[:120]
-        raise RuntimeError(f"HTTP {resp.status_code}: {preview}")
-    return resp.content
+    """下载官方 release 资产；HTTP 4xx/5xx 错误串带截断响应体，便于排障。
+
+    每轮依次尝试直连与镜像；单轮全失败后退避进入下一轮，避免 GitHub Release
+    的 504 恰好落在同一个网关节点时被立即重复命中。
+    """
+    candidates = _candidate_urls(url)
+    last_error = ""
+    for round_index in range(DOWNLOAD_ROUNDS):
+        for candidate in candidates:
+            try:
+                with httpx.Client(
+                    timeout=httpx.Timeout(READ_TIMEOUT, connect=CONNECT_TIMEOUT),
+                    follow_redirects=True,
+                    proxy=_proxy_url(),
+                    trust_env=True,
+                ) as client:
+                    resp = client.get(candidate, headers=_DOWNLOAD_HEADERS)
+                if resp.status_code >= 400:
+                    preview = " ".join(resp.text.split())[:120]
+                    raise RuntimeError(f"HTTP {resp.status_code}: {preview}")
+                if not resp.content:
+                    raise RuntimeError("响应为空")
+                if candidate != url:
+                    print(f"ℹ️ 已通过镜像下载: {candidate}")
+                return resp.content
+            except Exception as e:
+                last_error = f"{candidate} -> {e}"
+                print(f"⚠️ 下载失败（第 {round_index + 1}/{DOWNLOAD_ROUNDS} 轮）: {last_error}")
+        if round_index + 1 < DOWNLOAD_ROUNDS:
+            delay = RETRY_DELAYS[min(round_index, len(RETRY_DELAYS) - 1)]
+            print(f"⏳ {delay:g}s 后重试...")
+            time.sleep(delay)
+    raise RuntimeError(last_error or "未知原因")
 
 
 def fetch_tool(tool: str, platform: str, dest: Path, force: bool = False) -> str:
@@ -88,26 +138,18 @@ def fetch_tool(tool: str, platform: str, dest: Path, force: bool = False) -> str
     target = tool_dir(dest, tool)
     if not force and is_ready(dest, tool):
         return f"跳过 {tool}: 已就绪 {target}"
-    last_error = ""
-    for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
-        try:
-            data = _download(url)
-        except Exception as e:
-            last_error = f"第 {attempt} 次下载失败: {e}"
-            print(f"⚠️ {tool}/{platform} {last_error}")
-            continue
-        expected = _TOOL_CHECKSUMS.get(tool, {}).get(platform, "")
-        actual = hashlib.sha256(data).hexdigest()
-        if expected and actual != expected:
-            raise RuntimeError(f"sha256 不匹配 {tool}/{platform}: 期望 {expected[:12]}… 实际 {actual[:12]}…")
-        if not expected:
-            print(f"⚠️ {tool}/{platform} 无基准 sha256，跳过校验并解压（建议补进 _TOOL_CHECKSUMS）")
-        _extract(data, target)
-        if is_ready(dest, tool):
-            return f"就绪 {tool}/{platform}: {len(data) / 1048576:.2f} MB <- {url} (sha256 {actual[:12]}…)"
-        last_error = f"第 {attempt} 次解压产物不可执行"
-        print(f"⚠️ {tool}/{platform} {last_error}")
-    raise RuntimeError(last_error or "未知原因")
+
+    data = _download(url)
+    expected = _TOOL_CHECKSUMS.get(tool, {}).get(platform, "")
+    actual = hashlib.sha256(data).hexdigest()
+    if expected and actual != expected:
+        raise RuntimeError(f"sha256 不匹配 {tool}/{platform}: 期望 {expected[:12]}… 实际 {actual[:12]}…")
+    if not expected:
+        print(f"⚠️ {tool}/{platform} 无基准 sha256，跳过校验并解压（建议补进 _TOOL_CHECKSUMS）")
+    _extract(data, target)
+    if not is_ready(dest, tool):
+        raise RuntimeError(f"解压产物不可执行 {tool}/{platform}: {target}")
+    return f"就绪 {tool}/{platform}: {len(data) / 1048576:.2f} MB <- {url} (sha256 {actual[:12]}…)"
 
 
 def main() -> int:

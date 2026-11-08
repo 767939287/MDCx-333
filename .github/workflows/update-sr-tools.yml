@@ -97,4 +97,6 @@ jobs:
         shell: bash
         env:
           PYTHONIOENCODING: utf-8
+          SR_TOOL_PROXY: ${{ secrets.SR_TOOL_PROXY }}
+          SR_TOOL_MIRROR: ${{ vars.SR_TOOL_MIRROR }}
         run: uv run python -m scripts.fetch_sr_tools --platform ${{ matrix.build }}

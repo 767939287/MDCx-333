@@ -119,6 +119,18 @@ _SR_CONNECT_TIMEOUT_SECONDS = 30.0
 _SR_DOWNLOAD_TIMEOUT_SECONDS = 120.0
 _SR_DOWNLOAD_ATTEMPTS = 2
 
+# GitHub Release 资产下载头：httpx 默认 UA（python-httpx/x.y）在部分代理/网关会被拦或
+# 返回 504；显式带浏览器 UA 与二进制 Accept，跟随 302 到 release-assets.githubusercontent.com
+# 时也保留这组头。构建期 scripts/fetch_sr_tools.py 复用同一份。
+_DOWNLOAD_HEADERS: dict[str, str] = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/octet-stream,application/zip,*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
 # 输出尺寸/耗时护栏：低清海报超分正常 <60s；给足余量防卡死批刮任务
 _SR_TIMEOUT_SECONDS = 300.0
 _SR_MAX_INPUT_BYTES = 8 * 1024 * 1024
@@ -289,7 +301,7 @@ async def _download_bytes(url: str) -> bytes:
         follow_redirects=True,
         proxy=proxy or None,
     ) as client:
-        async with client.stream("GET", url) as resp:
+        async with client.stream("GET", url, headers=_DOWNLOAD_HEADERS) as resp:
             if resp.status_code >= 400:
                 await resp.aread()
                 raise RuntimeError(f"HTTP {resp.status_code}: {' '.join(resp.text.split())[:120]}")

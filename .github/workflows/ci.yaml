@@ -232,6 +232,8 @@ jobs:
         if: steps.changes.outputs.code_changed == 'true'
         env:
           PYTHONIOENCODING: utf-8
+          SR_TOOL_PROXY: ${{ secrets.SR_TOOL_PROXY }}
+          SR_TOOL_MIRROR: ${{ vars.SR_TOOL_MIRROR }}
         run: uv run python -m scripts.fetch_sr_tools --platform windows
 
       # 打包参数回归（hidden-import / add-binary / 图标）只在发版 tag 才暴露，
