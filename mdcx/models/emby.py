@@ -55,9 +55,10 @@ def normalize_production_year(value: object) -> int | None:
 _OVERVIEW_PLACEHOLDER_RE = re.compile(r"无维基百科信息\s*[,，]\s*从\s*minnano-av\s*数据库补全女优信息")
 
 # 简介段标题：``===== 个人资料 =====`` 这类整行等号包起来的标题（旧存盘里还可能跟在
-# ``<br>`` 后面）。服务器端按 HTML 渲染，写库前改成 ``<b>标题</b>``。
+# ``<br>`` 后面）。服务器端按 HTML 渲染，写库前改成 ``<b>标题</b>``；等号个数当层级用
+# （五个 = 章节、四个 = 子标题，依此类推），子标题缩进一个全角空格。
 _OVERVIEW_HEADING_RE = re.compile(
-    r"(?P<lead>^|<br\s*/?>)[ \t]*={2,}[ \t]*(?P<title>[^=\n<>]+?)[ \t]*={2,}[ \t]*(?=<br\s*/?>|$)",
+    r"(?P<lead>^|<br\s*/?>)[ \t]*(?P<marks>={2,})[ \t]*(?P<title>[^=\n<>]+?)[ \t]*={2,}[ \t]*(?=<br\s*/?>|$)",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -149,6 +150,9 @@ def to_emby_overview(value: object) -> str:
     显示成字面文本，这里改成 ``<b>個人情報</b>``：服务器端反正按 HTML 渲染，粗体才是
     段标题该有的样子（用户 2026-11-08）。库里的值仍保留等号——客户端用
     ``setPlainText`` 展示，写库里不能带 HTML 标签字面量。
+
+    等号个数当层级用（用户 2026-11-09：「写库值可以按照页面」）：五个等号是章节，
+    四个等号是它的子标题，子标题前面补全角空格缩进，写库里也能看出维基页面的层级。
     """
     text = clean_overview_text(value)
     if not text:
@@ -158,8 +162,14 @@ def to_emby_overview(value: object) -> str:
 
 
 def _bold_heading(match: re.Match[str]) -> str:
-    """把一整行的 ``== 标题 ==`` 换成 ``<b>标题</b>``，保留前面的 ``<br>``。"""
-    return f"{match.group('lead')}<b>{match.group('title')}</b>"
+    """把一整行的 ``== 标题 ==`` 换成 ``<b>标题</b>``，保留前面的 ``<br>``。
+
+    缩进跟着等号个数走：五个等号（章节）不缩进，四个（子标题）缩一个全角空格，
+    三个缩两个。全角空格不会被服务器端的空白折叠吃掉，所以缩进在 HTML 里是稳当的。
+    """
+    depth = max(1, 6 - len(match.group("marks")))
+    indent = "　" * (depth - 1)
+    return f"{match.group('lead')}{indent}<b>{match.group('title')}</b>"
 
 
 @dataclass

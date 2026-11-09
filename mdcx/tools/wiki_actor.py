@@ -88,6 +88,7 @@ _SKIP_WRAPPERS = frozenset({"table", "figure"})
 _JA_HEADING_FOLD = str.maketrans({"経": "经"})
 _SECTION_KEYWORDS: tuple[str, ...] = (
     "人物",
+    "小传",
     "简历",
     "简介",
     "经历",
@@ -144,6 +145,7 @@ _TIDY_PUNCT_RE = re.compile(r"([。．.！!？?])\1+|[、,，]\s*(?=[。．.、,
 # 关键字存简体形态；比对前先做与 _is_section 相同的折叠。
 _PERSON_SECTIONS: tuple[str, ...] = (
     "人物",
+    "小传",
     "简介",
     "私生活",
     "个人生活",
@@ -350,10 +352,11 @@ def apply_wiki_profile(
     """把档案写进 ``EMbyActressInfo``（原地修改）。
 
     只写「维基给出了值」的字段；姓名始终保留 Emby 侧原值，不因词条语言改名。
-    简介按老实现的版式拼三段：``===== 个人资料 =====`` → ``===== 外部链接 =====`` →
-    词条正文（人物 / 履历段落）。段标题与拼装字段名跟随目标语言，日文模式下即
-    维基日文词条的「個人情報 / 外部リンク」。身高/三围/罩杯等 Emby 没有对应字段的
-    信息一并进「个人资料」段。
+    简介版式：词条导语（第一个段标题之前的部分）放在最上面，后面依次拼
+    ``===== 个人资料 =====`` → ``===== 外部链接 =====`` → 人物 / 履历等正文章节
+    （用户 2026-11-09：「导语放最上」——导语是「谁」的一句话概括，放最后会被当成
+    外部链接列表的尾巴）。段标题与拼装字段名跟随目标语言，日文模式下即维基日文词条的
+    「個人情報 / 外部リンク」。身高/三围/罩杯等 Emby 没有对应字段的信息一并进「个人资料」段。
     """
     from ..config.enums import EmbyAction
 
@@ -402,18 +405,18 @@ def apply_wiki_profile(
     profile_lines.extend(extra_fields)
     link_lines = _external_link_lines(profile)
     profile_title, link_title = _SECTION_TITLES.get(section_lang, _SECTION_TITLES["zh-cn"])
+    lead, body = _split_lead(overview)
     blocks: list[str] = []
+    # 导语排最上面：一句话介绍完「是谁」，后面才是资料 / 外链 / 正文章节。
+    if lead:
+        blocks.append(lead)
     if profile_lines:
         blocks.append(f"===== {profile_title} =====\n" + "\n".join(profile_lines))
     if link_lines:
         blocks.append(f"===== {link_title} =====\n" + "\n".join(link_lines))
-    overview = overview.strip()
-    head = "\n\n".join(blocks)
-    if head and overview:
-        # 正文（人物 / 履历）永远排在这两段下面
-        overview = f"{head}\n\n{overview}"
-    elif head:
-        overview = head
+    if body:
+        blocks.append(body)
+    overview = "\n\n".join(blocks)
     if overview:
         actor_info.overview = overview
 
@@ -890,13 +893,19 @@ def _overview_blocks(html: Selector) -> list[str]:
     章节之间插入 `===== 标题 =====` 行（标题取维基原文，如「人物」「経歴」）：
     段序重排后人物段与经历段紧邻，只靠空行分不开归属，用户反馈「经历 人物 没有
     分割符号」（2026-11-08）。导语无标题，不加。
+
+    子标题同样保留：`== 人物 ==` 下面的 `=== AV新法への反対 ===` 是页面上的独立小标题，
+    此前被当作「同属人物章节」直接吞掉，正文里只剩空行、看不出小节边界（用户 2026-11-09：
+    「AV新法への反対 h3 没有」）。现在只要祖先里有白名单章节，就按**最内层标题**出段标题，
+    以 `=` 的个数体现层级（h2 五个、h3 四个，依此类推）。
     """
-    collected: list[tuple[int, int, str, str]] = []
+    collected: list[tuple[int, int, int, str, str]] = []
     seq = 0
 
     def add(text: str) -> None:
         nonlocal seq
-        collected.append((_section_group(headings), seq, _section_title(headings), text))
+        depth, block_title = _block_heading(headings)
+        collected.append((_section_group(headings), seq, depth, block_title, text))
         seq += 1
 
     headings: list[tuple[int, str]] = []
@@ -931,27 +940,35 @@ def _overview_blocks(html: Selector) -> list[str]:
             add("\n".join(items))
     collected.sort(key=lambda item: (item[0], item[1]))
 
-    # 相邻同类段落并成一段，标题只在切换时写一次（`== 人物 ==` 下再分 `=== 略歴 ===`
-    # 时，两者的白名单标题不同，各自出一行标题）。
+    # 相邻同标题段落并成一段，标题只在切换时写一次；标题或深度变了就另起一段。
     chunks: list[str] = []
-    title = ""
+    heading: tuple[int, str] = (0, "")
     paragraphs: list[str] = []
-    for _group, _seq, block_title, text in collected:
-        if block_title != title:
+    for _group, _seq, depth, block_title, text in collected:
+        if (depth, block_title) != heading:
             if paragraphs:
-                chunks.append(_body_chunk(title, paragraphs))
-            title = block_title
+                chunks.append(_body_chunk(heading, paragraphs))
+            heading = (depth, block_title)
             paragraphs = []
         paragraphs.append(text)
     if paragraphs:
-        chunks.append(_body_chunk(title, paragraphs))
+        chunks.append(_body_chunk(heading, paragraphs))
     return chunks
 
 
-def _body_chunk(title: str, paragraphs: list[str]) -> str:
-    """一段正文：有章节标题时先写标题行，段落之间空一行。"""
+def _body_chunk(heading: tuple[int, str], paragraphs: list[str]) -> str:
+    """一段正文：有章节标题时先写标题行，段落之间空一行。
+
+    标题用等号包裹，个数随**章节内深度**递减（白名单章节本身 `===== 人物 =====`，
+    它下面的子标题 `==== AV新法への反対 ====`）。深度而不是维基层级：`小传 → 人物`
+    这种「人物 被包在未收录章节里」的词条，段标题仍应是五级。
+    """
     body = "\n\n".join(paragraphs)
-    return f"===== {title} =====\n{body}" if title else body
+    depth, title = heading
+    if not title:
+        return body
+    marker = "=" * max(2, 6 - depth)
+    return f"{marker} {title} {marker}\n{body}"
 
 
 def _heading_text(node: Selector) -> str:
@@ -972,6 +989,20 @@ def _section_fold(title: str) -> str:
 def _section_title(headings: list[tuple[int, str]]) -> str:
     """当前段落所属的白名单章节标题（取最内层）；导语返回空串。"""
     return next((name for _level, name in reversed(headings) if _is_section(name)), "")
+
+
+def _block_heading(headings: list[tuple[int, str]]) -> tuple[int, str]:
+    """段落输出用的段标题：(章节内深度, 标题)；导语返回 ``(0, "")``。
+
+    只要祖先里出现白名单章节，就取**最内层标题**（含非白名单子标题），深度从**最外层**
+    白名单标题算起（1 = 章节本身，2 = 它下面的子章节/子标题）。子标题保留是刻意的：
+    `== 人物 ==` 下的 `=== AV新法への反対 ===` 在页面上是独立小节，吞掉它正文就只剩
+    空行分隔；`小传 → 人物` 这种两级白名单章节也照页面显示成二级。
+    """
+    for index, (_level, title) in enumerate(headings):
+        if _is_section(title):
+            return len(headings) - index, headings[-1][1]
+    return 0, ""
 
 
 def _section_group(headings: list[tuple[int, str]]) -> int:
@@ -1467,6 +1498,19 @@ def _trim_body_lines(lines: list[str]) -> list[str]:
     while out and not out[-1]:
         out.pop()
     return out
+
+
+def _split_lead(overview: str) -> tuple[str, str]:
+    """把正文拆成（导语, 其余）：导语是第一个段标题之前的部分。
+
+    导语是「谁」的一句话概括，放在最上面才读得顺（用户 2026-11-09）；没有段标题时
+    整段都算导语，其余为空串。
+    """
+    lines = overview.split("\n")
+    for index, line in enumerate(lines):
+        if _BODY_HEADING_RE.match(line.strip()):
+            return "\n".join(lines[:index]).strip(), "\n".join(lines[index:]).strip()
+    return overview.strip(), ""
 
 
 def _external_link_lines(profile: WikiActorProfile) -> list[str]:

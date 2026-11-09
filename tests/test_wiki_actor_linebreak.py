@@ -50,6 +50,49 @@ def test_list_items_and_paragraphs_stay_separate():
     assert "所属事務所はX。\n\n2021年12月から" in overview
 
 
+_HEADING_HTML = """
+<html><body><div class="mw-parser-output">
+<p>導語段落。</p>
+<div class="mw-heading mw-heading2"><h2 id="人物">人物</h2></div>
+<p>人物の段落。</p>
+<div class="mw-heading mw-heading3"><h3 id="AV新法への反対">AV新法への反対</h3></div>
+<p>反対意見の段落。</p>
+<div class="mw-heading mw-heading2"><h2 id="作品">作品</h2></div>
+<p>作品一覧は収録しない。</p>
+</div></body></html>
+"""
+
+
+def test_subsection_headings_are_kept():
+    """白名单章节下的子标题（h3…）要保留成段标题，不能并进父章节。"""
+    page = _parse_wiki_page("https://ja.wikipedia.org/wiki/test", "ja", _HEADING_HTML)
+    overview = page.overview or ""
+    assert "===== 人物 =====\n人物の段落。" in overview
+    assert "==== AV新法への反対 ====\n反対意見の段落。" in overview
+    # 未收录章节（作品）整节丢弃，连标题一起
+    assert "作品一覧は収録しない" not in overview
+    assert "作品" not in overview.split("AV新法への反対")[1]
+
+
+_NESTED_HTML = """
+<html><body><div class="mw-parser-output">
+<p>導語。</p>
+<div class="mw-heading mw-heading2"><h2 id="小传">小传</h2></div>
+<p>小传の段落。</p>
+<div class="mw-heading mw-heading3"><h3 id="人物">人物</h3></div>
+<p>人物の段落。</p>
+</div></body></html>
+"""
+
+
+def test_nested_allowed_section_drops_one_level():
+    """两级白名单章节（小传 > 人物）按页面临一级：五级 → 四级。"""
+    page = _parse_wiki_page("https://zh.wikipedia.org/zh-cn/test", "zh", _NESTED_HTML)
+    overview = page.overview or ""
+    assert "===== 小传 =====\n小传の段落。" in overview
+    assert "==== 人物 ====\n人物の段落。" in overview
+
+
 def test_apply_wiki_profile_keeps_profile_block_lines():
     """简介版式：「个人资料」→「外部链接」→ 正文；日文模式下段标题取日文。
 
@@ -67,6 +110,8 @@ def test_apply_wiki_profile_keeps_profile_block_lines():
     apply_wiki_profile(info, profile, emby_on=[EmbyAction.ACTOR_INFO_JA])
 
     assert info.overview == (
+        "段落一\n\n段落二\n"
+        "\n"
         "===== 個人情報 =====\n"
         "別名: 上村陽菜（うえむらはるな）\n"
         "生年月日: 1993年8月1日\n"
@@ -75,9 +120,7 @@ def test_apply_wiki_profile_keeps_profile_block_lines():
         "IMDb: https://www.imdb.com/name/nm7706859\n"
         "Twitter: https://twitter.com/riku_minato\n"
         "xHamster: https://xhamster.com/pornstars/riku-minato\n"
-        "Wikipedia: https://ja.wikipedia.org/wiki/湊莉久\n"
-        "\n"
-        "段落一\n\n段落二"
+        "Wikipedia: https://ja.wikipedia.org/wiki/湊莉久"
     )
 
 
@@ -112,6 +155,10 @@ def test_to_emby_overview_makes_section_titles_bold():
     """
     assert to_emby_overview("===== 個人情報 =====\n別名: ぺち") == "<b>個人情報</b><br/>別名: ぺち"
     assert to_emby_overview("正文<br>===== 人物 =====<br>段落") == "正文<br><b>人物</b><br>段落"
+    # 子标题（四个等号）缩进一个全角空格，层级照页面
+    assert to_emby_overview("===== 小传 =====\n段落\n==== 人物 ====\n正文") == (
+        "<b>小传</b><br/>段落<br/>　<b>人物</b><br/>正文"
+    )
     # 正文里的等号（非整行标题）不动
     assert to_emby_overview("A = B 实测 2 == 2") == "A = B 实测 2 == 2"
 
@@ -278,6 +325,8 @@ def test_body_profile_fields_merge_into_profile_block():
     info = EMbyActressInfo(name="亜紗美", server_id="s", id="i")
     apply_wiki_profile(info, profile, emby_on=[EmbyAction.ACTOR_INFO_JA])
     assert info.overview == (
+        "导语段落。\n"
+        "\n"
         "===== 個人情報 =====\n"
         "生年月日: 1985年8月19日\n"
         "出身地: 東京都\n"
@@ -286,7 +335,6 @@ def test_body_profile_fields_merge_into_profile_block():
         "靴のサイズ: 24 cm\n"
         "趣味: ゲーム、映画鑑賞\n"
         "\n"
-        "导语段落。\n\n"
         "===== 人物 =====\n爬虫類好き"
     )
 
