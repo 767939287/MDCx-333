@@ -160,12 +160,10 @@ class LayoutActorMixin:
     # 该网格（layoutWidget_8）要一并登记进 _clear_actor_narrow_align 的重排行名里，
     # 否则解锁后网格不重排，控件仍停在窄态钉宽。
     _ACTOR_PAGE_NET_PATH_GRID = "layoutWidget_8"
-    # 与 checkBox_actor_photo_ne_face（使用 Graphis 头像，即 A2 列）左缘对齐的两个
-    # 右缘锚定项：「补全完成后自动补全演员头像」「刮削结束后自动补全演员头像」。
-    _ACTOR_PAGE_A2_TARGETS = (
-        "checkBox_actor_photo_auto",
-        "checkBox_actor_info_photo",
-    )
+    # 与 checkBox_actor_photo_ne_face（使用 Graphis 头像，即 A2 列）左缘对齐的右缘
+    # 锚定项。「补全完成后自动补全演员头像」已移入「补全范围」行内与单选同行，由 .ui
+    # 的绝对定位固定，不再参与 A2 左移（否则会和「仅缺少信息的演员」重叠）。
+    _ACTOR_PAGE_A2_TARGETS = ("checkBox_actor_photo_auto",)
     # A2 列锚点：使用 Graphis 头像
     _ACTOR_PAGE_A2_ANCHOR = "checkBox_actor_photo_ne_face"
     # 需求②：checkBox_actor_photo_kodi 与 radioButton_actor_photo_miss
@@ -283,15 +281,15 @@ class LayoutActorMixin:
     _ACTOR_INFO_LABEL_COL_W = 130
     # 「补全范围：」行（绝对定位链路 frame_4/layoutWidget_15/horizontalLayout_101）
     _ACTOR_INFO_SCOPE_ROW = ("radioButton_actor_info_all", "radioButton_actor_info_miss")
-    # layoutWidget_15 相对 frame_4 的设计几何（MDCx.ui 140,10,511,32）
-    _ACTOR_INFO_SCOPE_HOLDER_DESIGN = (140, 10, 511, 32)
+    # layoutWidget_15 相对 frame_4 的设计几何（MDCx.ui 136,10,300,32）
+    _ACTOR_INFO_SCOPE_HOLDER_DESIGN = (136, 10, 300, 32)
     # 把它左移到 136 = gridLayout_14 的 col1 起点（= content 186 = A1 列），
     # 于是「所有演员」自然落在 A1 左缘，无需再插间隔。
     _ACTOR_INFO_SCOPE_WIDE_X = 136
     # 「补全范围：」两个单选的设计宽（窄态实测 253/252，511 = 253+6+252 恰好铺满
     # layoutWidget_15 的设计宽）。宽态拉宽容器前必须先按这两值 setFixedWidth，否则
     # Minimum 策略的单选会跟着容器长到 366，钉位间隔就没空间了。
-    _ACTOR_INFO_SCOPE_W = (253, 252)
+    _ACTOR_INFO_SCOPE_W = (140, 152)
     # 宽态把容器拉宽后，「仅缺少信息的演员」右缘 + 内边距留白
     _ACTOR_INFO_SCOPE_PAD = 20
     # 宽态：「演员信息数据库：」路径输入框的右缘目标列 = 「选择目录」按钮左缘。
@@ -325,7 +323,9 @@ class LayoutActorMixin:
     # (父布局名, spacing, 左内边距, 行首占位控件名或 None)
     _ACTOR_INFO_ROW_LEAD_INDENT = (
         ("horizontalLayout_98", 0, "label_280"),
-        ("horizontalLayout_159", 0, None),
+        # hl159 行首就是 checkBox_actor_db，spacing 只作用于它与「点击下载演员数据库」
+        # 之间，不影响行起点，故保留 12px 视觉间距（与其它行的复选框-提示间距一致）。
+        ("horizontalLayout_159", 12, None),
     )
     # 自身 leftMargin 非零、需归零的行布局（hl159 的 20px）
     _ACTOR_INFO_ROW_ZERO_MARGIN = ("horizontalLayout_159",)
@@ -1303,6 +1303,19 @@ class LayoutActorMixin:
                     row.invalidate()
                     row.activate()
 
+        # 底部「并发数 + 开始补全」整组按组框宽度实时居中（窄/宽态通吃）。
+        # 用固定坐标在换 DPI 或窗口变宽后会偏左，故每遍同步重算一次；dx=0 时不动，幂等。
+        conc_lbl = getattr(ui, "label_actor_info_concurrency", None)
+        conc_spin = getattr(ui, "spinBox_actor_info_concurrency", None)
+        conc_btn = getattr(ui, "pushButton_add_actor_info", None)
+        if conc_lbl is not None and conc_spin is not None and conc_btn is not None:
+            row_w = conc_btn.x() + conc_btn.width() - conc_lbl.x()
+            start = max(0, (box.width() - row_w) // 2)
+            dx = start - conc_lbl.x()
+            if dx:
+                for _w in (conc_lbl, conc_spin, conc_btn):
+                    _w.move(_w.x() + dx, _w.y())
+
     def _clear_actor_narrow_align(self) -> None:
         """清掉窄态右移对齐留下的间隔/钉宽/stretch（每遍同步先清后建，故幂等、往返自愈）。
 
@@ -1506,15 +1519,12 @@ class LayoutActorMixin:
                 lock_width(w, target_btn_w)
                 w.setGeometry(g.x(), g.y(), target_btn_w, g.height())
 
-        # 窄态新增②：上一步收窄完成后，把「补全完成后自动补全演员头像」
-        # 「刮削结束后自动补全演员头像」连同「刮削结束后自动创建头像」一起向左移动到与
-        # 「使用Graphis头像」(A2 锚点) 严格上下对齐，锚点自身保持不动。
-        # 三者都是绝对定位项、通用宽幅同步每遍都按 design_x + extra 重置它们，本方法的
+        # 窄态新增②：上一步收窄完成后，把「刮削结束后自动补全演员头像」连同
+        # 「刮削结束后自动创建头像」一起向左移动到与「使用Graphis头像」(A2 锚点) 严格
+        # 上下对齐，锚点自身保持不动。
+        # 两者都是绝对定位项、通用宽幅同步每遍都按 design_x + extra 重置它们，本方法的
         # 左移因此天然幂等（第二遍 dx=0）且宽↔窄往返自愈，不需要登记还原。
-        # **必须排在下面 anchor_x 取样之前**：_ACTOR_NARROW_ANCHOR 正是
-        # checkBox_actor_info_photo（「补全完成后自动补全演员头像」），它在本步被左移到
-        # A2 列；后续各行按 anchor_x 右移时必须读到移动后的新 x，否则那批控件会停在
-        # 旧锚点列、与锚点错开 102px（实测「仅缺少信息的演员」「Jellyfin」等随即失准）。
+        # （「补全完成后自动补全演员头像」已移入「补全范围」行内，不再参与本步。）
         a2 = getattr(ui, self._ACTOR_PAGE_A2_ANCHOR, None)
         a2_x = None if a2 is None else left_x(a2)
         if a2 is not None:

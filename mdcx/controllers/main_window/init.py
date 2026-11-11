@@ -1353,6 +1353,9 @@ def Init_Singal(self: MyMAinWindow):
         self.Ui.horizontalLayout_160.addWidget(checkbox)
         self._actor_info_source_checks[source] = checkbox
 
+    # 信息源复选框靠左紧凑排列，尾部留伸缩空白（否则会被均分铺满整行）
+    self.Ui.horizontalLayout_160.addStretch()
+
     # 日志窗口链接仅外部打开，避免 QTextBrowser 内部跳转导致日志页变空
     self.Ui.textBrowser_log_main.setOpenLinks(False)
     self.Ui.textBrowser_log_main_2.setOpenLinks(False)

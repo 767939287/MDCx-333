@@ -77,11 +77,7 @@ class Ui_MDCx(object):
         self.label_outline.setText("")
         self.label_outline.setTextFormat(QtCore.Qt.TextFormat.PlainText)
         self.label_outline.setScaledContents(False)
-        self.label_outline.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_outline.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_outline.setWordWrap(True)
         self.label_outline.setObjectName("label_outline")
         self.label_18 = QtWidgets.QLabel(parent=self.page_main)
@@ -180,11 +176,7 @@ class Ui_MDCx(object):
         self.label_result.setAutoFillBackground(False)
         self.label_result.setFrameShape(QtWidgets.QFrame.Shape.Box)
         self.label_result.setLineWidth(0)
-        self.label_result.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_result.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_result.setObjectName("label_result")
         self.label_22 = QtWidgets.QLabel(parent=self.page_main)
         self.label_22.setGeometry(QtCore.QRect(310, 530, 50, 40))
@@ -327,11 +319,7 @@ class Ui_MDCx(object):
         self.label_source.setFrameShape(QtWidgets.QFrame.Shape.Box)
         self.label_source.setLineWidth(0)
         self.label_source.setText("")
-        self.label_source.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_source.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_source.setObjectName("label_source")
         self.pushButton_select_media_folder = QtWidgets.QPushButton(parent=self.page_main)
         self.pushButton_select_media_folder.setGeometry(QtCore.QRect(565, 13, 101, 40))
@@ -344,11 +332,7 @@ class Ui_MDCx(object):
         self.label_poster_size.setLineWidth(0)
         self.label_poster_size.setText("")
         self.label_poster_size.setScaledContents(False)
-        self.label_poster_size.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_poster_size.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_poster_size.setWordWrap(True)
         self.label_poster_size.setObjectName("label_poster_size")
         self.label_thumb_size = QtWidgets.QLabel(parent=self.page_main)
@@ -360,11 +344,7 @@ class Ui_MDCx(object):
         self.label_thumb_size.setStyleSheet("color: rgba(0, 0, 0, 200);")
         self.label_thumb_size.setLineWidth(0)
         self.label_thumb_size.setText("")
-        self.label_thumb_size.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_thumb_size.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_thumb_size.setObjectName("label_thumb_size")
         self.pushButton_play = QtWidgets.QPushButton(parent=self.page_main)
         self.pushButton_play.setGeometry(QtCore.QRect(507, 110, 40, 40))
@@ -504,7 +484,7 @@ class Ui_MDCx(object):
         self.pushButton_show_hide_logs.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(
-            QtGui.QPixmap("mdcx/views\\../../MDCx-py-20220407/edit.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.On
+            QtGui.QPixmap("mdcx/views/../../MDCx-py-20220407/edit.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.On
         )
         self.pushButton_show_hide_logs.setIcon(icon)
         self.pushButton_show_hide_logs.setIconSize(QtCore.QSize(30, 30))
@@ -605,31 +585,19 @@ class Ui_MDCx(object):
         self.lineEdit_appoint_url.setObjectName("lineEdit_appoint_url")
         self.label_10 = QtWidgets.QLabel(parent=self.groupBox_7)
         self.label_10.setGeometry(QtCore.QRect(60, 100, 80, 30))
-        self.label_10.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_10.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_10.setObjectName("label_10")
         self.pushButton_start_single_file = QtWidgets.QPushButton(parent=self.groupBox_7)
         self.pushButton_start_single_file.setGeometry(QtCore.QRect(140, 180, 351, 40))
         self.pushButton_start_single_file.setObjectName("pushButton_start_single_file")
         self.label_3 = QtWidgets.QLabel(parent=self.groupBox_7)
         self.label_3.setGeometry(QtCore.QRect(60, 40, 80, 30))
-        self.label_3.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_3.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_3.setObjectName("label_3")
         self.label = QtWidgets.QLabel(parent=self.groupBox_7)
         self.label.setGeometry(QtCore.QRect(60, 130, 611, 31))
         self.label.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label.setWordWrap(True)
         self.label.setObjectName("label")
         self.lineEdit_single_file_path = QtWidgets.QLineEdit(parent=self.groupBox_7)
@@ -686,11 +654,7 @@ class Ui_MDCx(object):
         self.label_53.setSizePolicy(sizePolicy)
         self.label_53.setMinimumSize(QtCore.QSize(100, 0))
         self.label_53.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_53.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_53.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_53.setObjectName("label_53")
         self.gridLayout_18.addWidget(self.label_53, 1, 0, 1, 1)
         self.horizontalLayout_59 = QtWidgets.QHBoxLayout()
@@ -716,11 +680,7 @@ class Ui_MDCx(object):
         self.label_72.setSizePolicy(sizePolicy)
         self.label_72.setMinimumSize(QtCore.QSize(0, 0))
         self.label_72.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_72.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_72.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_72.setObjectName("label_72")
         self.gridLayout_18.addWidget(self.label_72, 0, 0, 1, 1)
         self.pushButton_find_missing_number = QtWidgets.QPushButton(parent=self.groupBox_19)
@@ -747,11 +707,7 @@ class Ui_MDCx(object):
         self.pushButton_move_mp4.setObjectName("pushButton_move_mp4")
         self.label_41 = QtWidgets.QLabel(parent=self.groupBox_6)
         self.label_41.setGeometry(QtCore.QRect(50, 30, 90, 30))
-        self.label_41.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_41.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_41.setObjectName("label_41")
         self.lineEdit_escape_dir_move = QtWidgets.QLineEdit(parent=self.groupBox_6)
         self.lineEdit_escape_dir_move.setGeometry(QtCore.QRect(140, 30, 351, 30))
@@ -762,11 +718,7 @@ class Ui_MDCx(object):
         self.label_8 = QtWidgets.QLabel(parent=self.groupBox_6)
         self.label_8.setGeometry(QtCore.QRect(50, 70, 591, 31))
         self.label_8.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_8.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_8.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_8.setWordWrap(True)
         self.label_8.setObjectName("label_8")
         self.groupBox_21 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_gongju)
@@ -801,11 +753,7 @@ class Ui_MDCx(object):
         self.label_338.setSizePolicy(sizePolicy)
         self.label_338.setMinimumSize(QtCore.QSize(100, 0))
         self.label_338.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_338.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_338.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_338.setObjectName("label_338")
         self.gridLayout_56.addWidget(self.label_338, 1, 0, 1, 1)
         self.horizontalLayout_117 = QtWidgets.QHBoxLayout()
@@ -831,11 +779,7 @@ class Ui_MDCx(object):
         self.label_339.setSizePolicy(sizePolicy)
         self.label_339.setMinimumSize(QtCore.QSize(0, 0))
         self.label_339.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_339.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_339.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_339.setObjectName("label_339")
         self.gridLayout_56.addWidget(self.label_339, 0, 0, 1, 1)
         self.pushButton_creat_symlink = QtWidgets.QPushButton(parent=self.groupBox_21)
@@ -853,11 +797,7 @@ class Ui_MDCx(object):
         self.label_340.setSizePolicy(sizePolicy)
         self.label_340.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_340.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_340.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_340.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_340.setObjectName("label_340")
         self.pushButton_select_localdisk_path = QtWidgets.QPushButton(parent=self.groupBox_21)
         self.pushButton_select_localdisk_path.setGeometry(QtCore.QRect(571, 90, 110, 40))
@@ -886,11 +826,7 @@ class Ui_MDCx(object):
         self.label_341.setMinimumSize(QtCore.QSize(0, 0))
         self.label_341.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_341.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_341.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_341.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_341.setWordWrap(True)
         self.label_341.setObjectName("label_341")
         self.verticalLayout_6.addWidget(self.label_341)
@@ -1028,9 +964,7 @@ class Ui_MDCx(object):
         self.label_cover_backfill_number.setMinimumSize(QtCore.QSize(0, 0))
         self.label_cover_backfill_number.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_cover_backfill_number.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_cover_backfill_number.setObjectName("label_cover_backfill_number")
         self.lineEdit_cover_backfill_numbers = QtWidgets.QLineEdit(parent=self.groupBox_cover_backfill)
@@ -1132,11 +1066,7 @@ class Ui_MDCx(object):
         self.label_241_tool.setMinimumSize(QtCore.QSize(0, 0))
         self.label_241_tool.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_241_tool.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_241_tool.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_241_tool.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_241_tool.setObjectName("label_241_tool")
         self.comboBox_change_config_tool = QtWidgets.QComboBox(parent=self.page_tool)
         self.comboBox_change_config_tool.setGeometry(QtCore.QRect(100, 635, 151, 30))
@@ -1234,11 +1164,7 @@ class Ui_MDCx(object):
         self.label_softlink_dir.setSizePolicy(sizePolicy)
         self.label_softlink_dir.setMinimumSize(QtCore.QSize(0, 0))
         self.label_softlink_dir.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_softlink_dir.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_softlink_dir.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_softlink_dir.setObjectName("label_softlink_dir")
         self.gridLayout_7.addWidget(self.label_softlink_dir, 5, 0, 1, 1)
         self.horizontalLayout_134 = QtWidgets.QHBoxLayout()
@@ -1286,11 +1212,7 @@ class Ui_MDCx(object):
         self.label_49.setSizePolicy(sizePolicy)
         self.label_49.setMinimumSize(QtCore.QSize(0, 0))
         self.label_49.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_49.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_49.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_49.setObjectName("label_49")
         self.gridLayout_7.addWidget(self.label_49, 0, 0, 1, 1)
         self.horizontalLayout_45 = QtWidgets.QHBoxLayout()
@@ -1331,11 +1253,7 @@ class Ui_MDCx(object):
         self.label_56.setMinimumSize(QtCore.QSize(0, 32))
         self.label_56.setMaximumSize(QtCore.QSize(16777215, 36))
         self.label_56.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_56.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_56.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_56.setWordWrap(True)
         self.label_56.setObjectName("label_56")
         self.gridLayout_7.addWidget(self.label_56, 1, 1, 1, 1)
@@ -1359,11 +1277,7 @@ class Ui_MDCx(object):
         self.label_47.setMinimumSize(QtCore.QSize(0, 0))
         self.label_47.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_47.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_47.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_47.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_47.setObjectName("label_47")
         self.gridLayout_7.addWidget(self.label_47, 7, 0, 1, 1)
         self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
@@ -1398,11 +1312,7 @@ class Ui_MDCx(object):
         self.label_48.setSizePolicy(sizePolicy)
         self.label_48.setMinimumSize(QtCore.QSize(130, 0))
         self.label_48.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_48.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_48.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_48.setObjectName("label_48")
         self.gridLayout_7.addWidget(self.label_48, 11, 0, 1, 1)
         self.label_57 = QtWidgets.QLabel(parent=self.gridLayoutWidget_7)
@@ -1451,11 +1361,7 @@ class Ui_MDCx(object):
         self.label_382.setMinimumSize(QtCore.QSize(0, 0))
         self.label_382.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_382.setText("")
-        self.label_382.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_382.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_382.setObjectName("label_382")
         self.gridLayout_7.addWidget(self.label_382, 6, 0, 1, 1)
         self.label_46 = QtWidgets.QLabel(parent=self.gridLayoutWidget_7)
@@ -1466,11 +1372,7 @@ class Ui_MDCx(object):
         self.label_46.setSizePolicy(sizePolicy)
         self.label_46.setMinimumSize(QtCore.QSize(0, 0))
         self.label_46.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_46.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_46.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_46.setObjectName("label_46")
         self.gridLayout_7.addWidget(self.label_46, 9, 0, 1, 1)
         self.horizontalLayout_31 = QtWidgets.QHBoxLayout()
@@ -1527,11 +1429,7 @@ class Ui_MDCx(object):
         self.label_data_dir.setSizePolicy(sizePolicy)
         self.label_data_dir.setMinimumSize(QtCore.QSize(0, 0))
         self.label_data_dir.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_data_dir.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_data_dir.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_data_dir.setObjectName("label_data_dir")
         self.gridLayout_7.addWidget(self.label_data_dir, 2, 0, 1, 1)
         self.horizontalLayout_data_dir = QtWidgets.QHBoxLayout()
@@ -1567,11 +1465,7 @@ class Ui_MDCx(object):
         self.label_data_dir_tip.setMinimumSize(QtCore.QSize(0, 32))
         self.label_data_dir_tip.setMaximumSize(QtCore.QSize(16777215, 36))
         self.label_data_dir_tip.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_data_dir_tip.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_data_dir_tip.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_data_dir_tip.setWordWrap(True)
         self.label_data_dir_tip.setObjectName("label_data_dir_tip")
         self.gridLayout_7.addWidget(self.label_data_dir_tip, 3, 1, 1, 1)
@@ -1594,11 +1488,7 @@ class Ui_MDCx(object):
         self.label_336.setMinimumSize(QtCore.QSize(0, 0))
         self.label_336.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_336.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_336.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_336.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_336.setObjectName("label_336")
         self.gridLayout_19.addWidget(self.label_336, 4, 0, 1, 1)
         self.label_337 = QtWidgets.QLabel(parent=self.gridLayoutWidget_19)
@@ -1677,11 +1567,7 @@ class Ui_MDCx(object):
         self.label_346.setMinimumSize(QtCore.QSize(130, 0))
         self.label_346.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_346.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_346.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_346.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_346.setObjectName("label_346")
         self.gridLayout_19.addWidget(self.label_346, 0, 0, 1, 1)
         self.lineEdit_escape_string = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_19)
@@ -1750,11 +1636,7 @@ class Ui_MDCx(object):
         self.label_83.setMinimumSize(QtCore.QSize(130, 0))
         self.label_83.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_83.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_83.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_83.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_83.setObjectName("label_83")
         self.gridLayout_19.addWidget(self.label_83, 6, 0, 1, 1)
         self.label_93 = QtWidgets.QLabel(parent=self.gridLayoutWidget_19)
@@ -1766,11 +1648,7 @@ class Ui_MDCx(object):
         self.label_93.setMinimumSize(QtCore.QSize(0, 0))
         self.label_93.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_93.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_93.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_93.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_93.setObjectName("label_93")
         self.gridLayout_19.addWidget(self.label_93, 2, 0, 1, 1)
         self.groupBox_61 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_guaxiaomulu)
@@ -1820,11 +1698,7 @@ class Ui_MDCx(object):
         self.label_177.setMinimumSize(QtCore.QSize(130, 0))
         self.label_177.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_177.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_177.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_177.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_177.setObjectName("label_177")
         self.gridLayout_52.addWidget(self.label_177, 1, 0, 1, 1)
         self.label_184 = QtWidgets.QLabel(parent=self.gridLayoutWidget_34)
@@ -1836,11 +1710,7 @@ class Ui_MDCx(object):
         self.label_184.setMinimumSize(QtCore.QSize(0, 0))
         self.label_184.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_184.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_184.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_184.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_184.setObjectName("label_184")
         self.gridLayout_52.addWidget(self.label_184, 3, 0, 1, 1)
         self.horizontalLayout_84 = QtWidgets.QHBoxLayout()
@@ -1880,11 +1750,7 @@ class Ui_MDCx(object):
         self.label_178.setMinimumSize(QtCore.QSize(0, 0))
         self.label_178.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_178.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_178.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_178.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_178.setObjectName("label_178")
         self.gridLayout_52.addWidget(self.label_178, 2, 0, 1, 1)
         self.label_262 = QtWidgets.QLabel(parent=self.gridLayoutWidget_34)
@@ -1947,11 +1813,7 @@ class Ui_MDCx(object):
         self.label_261.setMinimumSize(QtCore.QSize(0, 0))
         self.label_261.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_261.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_261.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_261.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_261.setObjectName("label_261")
         self.gridLayout_52.addWidget(self.label_261, 7, 0, 1, 1)
         self.label_270 = QtWidgets.QLabel(parent=self.gridLayoutWidget_34)
@@ -2005,11 +1867,7 @@ class Ui_MDCx(object):
         self.label_202.setMinimumSize(QtCore.QSize(130, 0))
         self.label_202.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_202.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_202.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_202.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_202.setObjectName("label_202")
         self.gridLayout_52.addWidget(self.label_202, 6, 0, 1, 1)
         self.label_263 = QtWidgets.QLabel(parent=self.gridLayoutWidget_34)
@@ -2021,11 +1879,7 @@ class Ui_MDCx(object):
         self.label_263.setMinimumSize(QtCore.QSize(0, 0))
         self.label_263.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_263.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_263.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_263.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_263.setObjectName("label_263")
         self.gridLayout_52.addWidget(self.label_263, 4, 0, 1, 1)
         self.label_162 = QtWidgets.QLabel(parent=self.gridLayoutWidget_34)
@@ -2175,11 +2029,7 @@ class Ui_MDCx(object):
         self.label_78.setSizePolicy(sizePolicy)
         self.label_78.setMinimumSize(QtCore.QSize(0, 30))
         self.label_78.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_78.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_78.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_78.setObjectName("label_78")
         self.gridLayout_16.addWidget(self.label_78, 1, 0, 1, 1)
         self.lineEdit_sub_type = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_16)
@@ -2205,11 +2055,7 @@ class Ui_MDCx(object):
         self.label_50.setSizePolicy(sizePolicy)
         self.label_50.setMinimumSize(QtCore.QSize(130, 0))
         self.label_50.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_50.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_50.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_50.setObjectName("label_50")
         self.gridLayout_16.addWidget(self.label_50, 0, 0, 1, 1)
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_guaxiaomulu)
@@ -2264,7 +2110,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_organize_mode.sizePolicy().hasHeightForWidth())
         self.label_organize_mode.setSizePolicy(sizePolicy)
         self.label_organize_mode.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_organize_mode.setWordWrap(False)
+        self.label_organize_mode.setWordWrap(True)
         self.label_organize_mode.setObjectName("label_organize_mode")
         self.horizontalLayout_organize_mode.addWidget(self.label_organize_mode)
         self.pushButton_tips_organize_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2314,7 +2160,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_separate_mode.sizePolicy().hasHeightForWidth())
         self.label_separate_mode.setSizePolicy(sizePolicy)
         self.label_separate_mode.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_separate_mode.setWordWrap(False)
+        self.label_separate_mode.setWordWrap(True)
         self.label_separate_mode.setObjectName("label_separate_mode")
         self.horizontalLayout_separate_mode.addWidget(self.label_separate_mode)
         self.pushButton_tips_separate_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2405,11 +2251,7 @@ class Ui_MDCx(object):
         self.label_strm_spacer.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_strm_spacer.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_strm_spacer.setText("")
-        self.label_strm_spacer.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_strm_spacer.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_strm_spacer.setObjectName("label_strm_spacer")
         self.gridLayout_2.addWidget(self.label_strm_spacer, 3, 0, 1, 1)
         self.radioButton_mode_sort = QtWidgets.QRadioButton(parent=self.gridLayoutWidget_2)
@@ -2439,7 +2281,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_complete_mode.sizePolicy().hasHeightForWidth())
         self.label_complete_mode.setSizePolicy(sizePolicy)
         self.label_complete_mode.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_complete_mode.setWordWrap(False)
+        self.label_complete_mode.setWordWrap(True)
         self.label_complete_mode.setObjectName("label_complete_mode")
         self.horizontalLayout_complete_mode.addWidget(self.label_complete_mode)
         self.pushButton_tips_complete_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2482,11 +2324,7 @@ class Ui_MDCx(object):
         self.label_231.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_231.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_231.setText("")
-        self.label_231.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_231.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_231.setObjectName("label_231")
         self.gridLayout_2.addWidget(self.label_231, 10, 0, 1, 1)
         self.horizontalLayout_122 = QtWidgets.QHBoxLayout()
@@ -2498,7 +2336,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_312.sizePolicy().hasHeightForWidth())
         self.label_312.setSizePolicy(sizePolicy)
         self.label_312.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_312.setWordWrap(False)
+        self.label_312.setWordWrap(True)
         self.label_312.setObjectName("label_312")
         self.horizontalLayout_122.addWidget(self.label_312)
         self.pushButton_tips_read_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2618,7 +2456,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_36.sizePolicy().hasHeightForWidth())
         self.label_36.setSizePolicy(sizePolicy)
         self.label_36.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_36.setWordWrap(False)
+        self.label_36.setWordWrap(True)
         self.label_36.setObjectName("label_36")
         self.horizontalLayout_120.addWidget(self.label_36)
         self.pushButton_tips_update_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2678,7 +2516,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_15.sizePolicy().hasHeightForWidth())
         self.label_15.setSizePolicy(sizePolicy)
         self.label_15.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_15.setWordWrap(False)
+        self.label_15.setWordWrap(True)
         self.label_15.setObjectName("label_15")
         self.horizontalLayout_119.addWidget(self.label_15)
         self.pushButton_tips_sort_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2720,7 +2558,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
         self.label_11.setSizePolicy(sizePolicy)
         self.label_11.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_11.setWordWrap(False)
+        self.label_11.setWordWrap(True)
         self.label_11.setObjectName("label_11")
         self.horizontalLayout_126.addWidget(self.label_11)
         self.pushButton_tips_normal_mode = QtWidgets.QPushButton(parent=self.gridLayoutWidget_2)
@@ -2804,9 +2642,7 @@ class Ui_MDCx(object):
         self.label_separate_mode_succ_move.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_separate_mode_succ_move.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_separate_mode_succ_move.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_separate_mode_succ_move.setObjectName("label_separate_mode_succ_move")
         self.widget_separate_mode_succ_move = QtWidgets.QWidget(parent=self.groupBox_27)
@@ -2883,9 +2719,7 @@ class Ui_MDCx(object):
         self.label_separate_mode_fail_move.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_separate_mode_fail_move.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_separate_mode_fail_move.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_separate_mode_fail_move.setObjectName("label_separate_mode_fail_move")
         self.widget_separate_mode_fail_move = QtWidgets.QWidget(parent=self.groupBox_15)
@@ -2962,9 +2796,7 @@ class Ui_MDCx(object):
         self.label_separate_mode_del_empty_folder.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_separate_mode_del_empty_folder.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_separate_mode_del_empty_folder.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_separate_mode_del_empty_folder.setObjectName("label_separate_mode_del_empty_folder")
         self.widget_separate_mode_del_empty_folder = QtWidgets.QWidget(parent=self.groupBox_30)
@@ -3021,11 +2853,7 @@ class Ui_MDCx(object):
         self.label_219.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_219.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_219.setText("")
-        self.label_219.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_219.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_219.setObjectName("label_219")
         self.gridLayout_5.addWidget(self.label_219, 6, 0, 1, 1)
         self.horizontalLayout_51 = QtWidgets.QHBoxLayout()
@@ -3039,11 +2867,7 @@ class Ui_MDCx(object):
         self.label_218.setMinimumSize(QtCore.QSize(80, 0))
         self.label_218.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_218.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_218.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_218.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_218.setObjectName("label_218")
         self.horizontalLayout_51.addWidget(self.label_218)
         self.lineEdit_update_d_folder = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_5)
@@ -3093,11 +2917,7 @@ class Ui_MDCx(object):
         self.label_278.setMinimumSize(QtCore.QSize(80, 0))
         self.label_278.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_278.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_278.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_278.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_278.setObjectName("label_278")
         self.horizontalLayout_156.addWidget(self.label_278)
         self.lineEdit_update_c_filetemplate = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_5)
@@ -3126,11 +2946,7 @@ class Ui_MDCx(object):
         self.label_220.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_220.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_220.setText("")
-        self.label_220.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_220.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_220.setObjectName("label_220")
         self.gridLayout_5.addWidget(self.label_220, 3, 0, 1, 1)
         self.horizontalLayout_48 = QtWidgets.QHBoxLayout()
@@ -3144,11 +2960,7 @@ class Ui_MDCx(object):
         self.label_210.setMinimumSize(QtCore.QSize(80, 0))
         self.label_210.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_210.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_210.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_210.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_210.setObjectName("label_210")
         self.horizontalLayout_48.addWidget(self.label_210)
         self.lineEdit_update_b_folder = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_5)
@@ -3216,11 +3028,7 @@ class Ui_MDCx(object):
         self.label_221.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_221.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_221.setText("")
-        self.label_221.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_221.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_221.setObjectName("label_221")
         self.gridLayout_5.addWidget(self.label_221, 4, 0, 1, 1)
         self.horizontalLayout_60 = QtWidgets.QHBoxLayout()
@@ -3261,11 +3069,7 @@ class Ui_MDCx(object):
         self.label_294.setMinimumSize(QtCore.QSize(80, 0))
         self.label_294.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_294.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_294.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_294.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_294.setObjectName("label_294")
         self.horizontalLayout_157.addWidget(self.label_294)
         self.lineEdit_update_titletemplate = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_5)
@@ -3301,9 +3105,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_21.sizePolicy().hasHeightForWidth())
         self.label_21.setSizePolicy(sizePolicy)
         self.label_21.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_21.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_21.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_21.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_21.setObjectName("label_21")
         self.label_304 = QtWidgets.QLabel(parent=self.groupBox_5)
@@ -3317,11 +3119,7 @@ class Ui_MDCx(object):
         self.label_304.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_304.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_304.setText("")
-        self.label_304.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_304.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_304.setObjectName("label_304")
         self.groupBox_18 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_guaxiaomoshi)
         self.groupBox_18.setGeometry(QtCore.QRect(30, 1418, 701, 111))
@@ -3374,9 +3172,7 @@ class Ui_MDCx(object):
         self.label_separate_mode_succ_rename.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_separate_mode_succ_rename.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_separate_mode_succ_rename.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_separate_mode_succ_rename.setObjectName("label_separate_mode_succ_rename")
         self.widget_separate_mode_succ_rename = QtWidgets.QWidget(parent=self.groupBox_18)
@@ -3761,11 +3557,7 @@ class Ui_MDCx(object):
         self.label_151.setMinimumSize(QtCore.QSize(0, 30))
         self.label_151.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_151.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_151.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_151.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_151.setObjectName("label_151")
         self.gridLayout_36.addWidget(self.label_151, 2, 0, 1, 1)
         self.lineEdit_website_fc2 = QtWidgets.QLineEdit(parent=self.layoutWidget_6)
@@ -3792,11 +3584,7 @@ class Ui_MDCx(object):
         self.label_322.setMinimumSize(QtCore.QSize(0, 30))
         self.label_322.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_322.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_322.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_322.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_322.setObjectName("label_322")
         self.gridLayout_36.addWidget(self.label_322, 15, 0, 1, 1)
         self.label_232 = QtWidgets.QLabel(parent=self.layoutWidget_6)
@@ -3807,9 +3595,7 @@ class Ui_MDCx(object):
         self.label_232.setSizePolicy(sizePolicy)
         self.label_232.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_232.setMaximumSize(QtCore.QSize(16777215, 34))
-        self.label_232.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_232.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_232.setWordWrap(True)
         self.label_232.setObjectName("label_232")
         self.gridLayout_36.addWidget(self.label_232, 9, 1, 1, 3)
@@ -3879,11 +3665,7 @@ class Ui_MDCx(object):
         self.label_149.setMinimumSize(QtCore.QSize(0, 30))
         self.label_149.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_149.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_149.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_149.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_149.setObjectName("label_149")
         self.gridLayout_36.addWidget(self.label_149, 6, 0, 1, 1)
         self.label_155 = QtWidgets.QLabel(parent=self.layoutWidget_6)
@@ -3893,7 +3675,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_155.sizePolicy().hasHeightForWidth())
         self.label_155.setSizePolicy(sizePolicy)
         self.label_155.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_155.setWordWrap(False)
+        self.label_155.setWordWrap(True)
         self.label_155.setObjectName("label_155")
         self.gridLayout_36.addWidget(self.label_155, 3, 1, 1, 3)
         self.label_323 = QtWidgets.QLabel(parent=self.layoutWidget_6)
@@ -3920,11 +3702,7 @@ class Ui_MDCx(object):
         self.label_dongman_sites.setMinimumSize(QtCore.QSize(120, 30))
         self.label_dongman_sites.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_dongman_sites.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_dongman_sites.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_dongman_sites.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_dongman_sites.setObjectName("label_dongman_sites")
         self.gridLayout_36.addWidget(self.label_dongman_sites, 13, 0, 1, 1)
         self.lineEdit_website_dongman = QtWidgets.QLineEdit(parent=self.layoutWidget_6)
@@ -3986,11 +3764,7 @@ class Ui_MDCx(object):
         self.label_152.setMinimumSize(QtCore.QSize(0, 30))
         self.label_152.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_152.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_152.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_152.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_152.setObjectName("label_152")
         self.gridLayout_36.addWidget(self.label_152, 10, 0, 1, 1)
         self.lineEdit_website_youma = QtWidgets.QLineEdit(parent=self.layoutWidget_6)
@@ -4017,11 +3791,7 @@ class Ui_MDCx(object):
         self.label_153.setMinimumSize(QtCore.QSize(120, 30))
         self.label_153.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_153.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_153.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_153.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_153.setObjectName("label_153")
         self.gridLayout_36.addWidget(self.label_153, 0, 0, 1, 1)
         self.label_148 = QtWidgets.QLabel(parent=self.layoutWidget_6)
@@ -4032,11 +3802,7 @@ class Ui_MDCx(object):
         self.label_148.setSizePolicy(sizePolicy)
         self.label_148.setMinimumSize(QtCore.QSize(0, 30))
         self.label_148.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_148.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_148.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_148.setObjectName("label_148")
         self.gridLayout_36.addWidget(self.label_148, 4, 0, 1, 1)
         self.lineEdit_website_guochan = QtWidgets.QLineEdit(parent=self.layoutWidget_6)
@@ -4063,11 +3829,7 @@ class Ui_MDCx(object):
         self.label_217.setMinimumSize(QtCore.QSize(0, 30))
         self.label_217.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_217.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_217.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_217.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_217.setObjectName("label_217")
         self.gridLayout_36.addWidget(self.label_217, 8, 0, 1, 1)
         self.comboBox_fixed_scraping_type = QtWidgets.QComboBox(parent=self.layoutWidget_6)
@@ -4097,9 +3859,7 @@ class Ui_MDCx(object):
         self.label_fixed_scraping_type.setMinimumSize(QtCore.QSize(0, 30))
         self.label_fixed_scraping_type.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_fixed_scraping_type.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_fixed_scraping_type.setObjectName("label_fixed_scraping_type")
         self.gridLayout_36.addWidget(self.label_fixed_scraping_type, 17, 0, 1, 1)
@@ -4110,7 +3870,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_fixed_scraping_type_desc.sizePolicy().hasHeightForWidth())
         self.label_fixed_scraping_type_desc.setSizePolicy(sizePolicy)
         self.label_fixed_scraping_type_desc.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_fixed_scraping_type_desc.setWordWrap(False)
+        self.label_fixed_scraping_type_desc.setWordWrap(True)
         self.label_fixed_scraping_type_desc.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_fixed_scraping_type_desc.setObjectName("label_fixed_scraping_type_desc")
         self.gridLayout_36.addWidget(self.label_fixed_scraping_type_desc, 18, 1, 1, 3)
@@ -4256,11 +4016,7 @@ class Ui_MDCx(object):
         self.label_114.setMinimumSize(QtCore.QSize(120, 30))
         self.label_114.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_114.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_114.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_114.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_114.setObjectName("label_114")
         self.gridLayout_41.addWidget(self.label_114, 0, 0, 1, 1)
         self.lineEdit_title_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4317,11 +4073,7 @@ class Ui_MDCx(object):
         self.label_227.setMinimumSize(QtCore.QSize(120, 30))
         self.label_227.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_227.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_227.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_227.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_227.setObjectName("label_227")
         self.gridLayout_41.addWidget(self.label_227, 14, 0, 1, 1)
         self.label_182 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4333,11 +4085,7 @@ class Ui_MDCx(object):
         self.label_182.setMinimumSize(QtCore.QSize(120, 30))
         self.label_182.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_182.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_182.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_182.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_182.setObjectName("label_182")
         self.gridLayout_41.addWidget(self.label_182, 11, 0, 1, 1)
         self.lineEdit_extrafanart_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4379,11 +4127,7 @@ class Ui_MDCx(object):
         self.label_129.setMinimumSize(QtCore.QSize(120, 30))
         self.label_129.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_129.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_129.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_129.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_129.setObjectName("label_129")
         self.gridLayout_41.addWidget(self.label_129, 1, 0, 1, 1)
         self.label_406 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4395,11 +4139,7 @@ class Ui_MDCx(object):
         self.label_406.setMinimumSize(QtCore.QSize(120, 30))
         self.label_406.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_406.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_406.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_406.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_406.setObjectName("label_406")
         self.gridLayout_41.addWidget(self.label_406, 2, 0, 1, 1)
         self.lineEdit_originaltitle_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4426,11 +4166,7 @@ class Ui_MDCx(object):
         self.label_191.setMinimumSize(QtCore.QSize(120, 30))
         self.label_191.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_191.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_191.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_191.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_191.setObjectName("label_191")
         self.gridLayout_41.addWidget(self.label_191, 6, 0, 1, 1)
         self.label_183 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4442,11 +4178,7 @@ class Ui_MDCx(object):
         self.label_183.setMinimumSize(QtCore.QSize(120, 30))
         self.label_183.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_183.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_183.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_183.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_183.setObjectName("label_183")
         self.gridLayout_41.addWidget(self.label_183, 13, 0, 1, 1)
         self.label_144 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4458,11 +4190,7 @@ class Ui_MDCx(object):
         self.label_144.setMinimumSize(QtCore.QSize(120, 30))
         self.label_144.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_144.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_144.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_144.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_144.setObjectName("label_144")
         self.gridLayout_41.addWidget(self.label_144, 10, 0, 1, 1)
         self.lineEdit_runtime_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4519,11 +4247,7 @@ class Ui_MDCx(object):
         self.label_211.setMinimumSize(QtCore.QSize(120, 30))
         self.label_211.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_211.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_211.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_211.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_211.setObjectName("label_211")
         self.gridLayout_41.addWidget(self.label_211, 16, 0, 1, 1)
         self.lineEdit_tags_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4550,11 +4274,7 @@ class Ui_MDCx(object):
         self.label_180.setMinimumSize(QtCore.QSize(120, 30))
         self.label_180.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_180.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_180.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_180.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_180.setObjectName("label_180")
         self.gridLayout_41.addWidget(self.label_180, 8, 0, 1, 1)
         self.label_307 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4566,11 +4286,7 @@ class Ui_MDCx(object):
         self.label_307.setMinimumSize(QtCore.QSize(120, 30))
         self.label_307.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_307.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_307.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_307.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_307.setObjectName("label_307")
         self.gridLayout_41.addWidget(self.label_307, 18, 0, 1, 1)
         self.label_222 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4582,11 +4298,7 @@ class Ui_MDCx(object):
         self.label_222.setMinimumSize(QtCore.QSize(120, 30))
         self.label_222.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_222.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_222.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_222.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_222.setObjectName("label_222")
         self.gridLayout_41.addWidget(self.label_222, 17, 0, 1, 1)
         self.lineEdit_originalplot_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4613,11 +4325,7 @@ class Ui_MDCx(object):
         self.label_142.setMinimumSize(QtCore.QSize(120, 30))
         self.label_142.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_142.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_142.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_142.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_142.setObjectName("label_142")
         self.gridLayout_41.addWidget(self.label_142, 3, 0, 1, 1)
         self.lineEdit_publisher_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4659,11 +4367,7 @@ class Ui_MDCx(object):
         self.label_229.setMinimumSize(QtCore.QSize(120, 30))
         self.label_229.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_229.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_229.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_229.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_229.setObjectName("label_229")
         self.gridLayout_41.addWidget(self.label_229, 7, 0, 1, 1)
         self.lineEdit_thumb_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4690,11 +4394,7 @@ class Ui_MDCx(object):
         self.label_143.setMinimumSize(QtCore.QSize(120, 30))
         self.label_143.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_143.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_143.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_143.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_143.setObjectName("label_143")
         self.gridLayout_41.addWidget(self.label_143, 4, 0, 1, 1)
         self.lineEdit_release_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4721,11 +4421,7 @@ class Ui_MDCx(object):
         self.label_181.setMinimumSize(QtCore.QSize(120, 30))
         self.label_181.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_181.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_181.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_181.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_181.setObjectName("label_181")
         self.gridLayout_41.addWidget(self.label_181, 12, 0, 1, 1)
         self.label_206 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4737,11 +4433,7 @@ class Ui_MDCx(object):
         self.label_206.setMinimumSize(QtCore.QSize(120, 30))
         self.label_206.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_206.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_206.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_206.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_206.setObjectName("label_206")
         self.gridLayout_41.addWidget(self.label_206, 9, 0, 1, 1)
         self.label_201 = QtWidgets.QLabel(parent=self.layoutWidget_14)
@@ -4753,11 +4445,7 @@ class Ui_MDCx(object):
         self.label_201.setMinimumSize(QtCore.QSize(120, 30))
         self.label_201.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_201.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_201.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_201.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_201.setObjectName("label_201")
         self.gridLayout_41.addWidget(self.label_201, 15, 0, 1, 1)
         self.lineEdit_series_website = QtWidgets.QLineEdit(parent=self.layoutWidget_14)
@@ -4814,11 +4502,7 @@ class Ui_MDCx(object):
         self.label_179.setMinimumSize(QtCore.QSize(120, 30))
         self.label_179.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_179.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_179.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_179.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_179.setObjectName("label_179")
         self.gridLayout_41.addWidget(self.label_179, 5, 0, 1, 1)
         self.label_325 = QtWidgets.QLabel(parent=self.groupBox_35)
@@ -4871,11 +4555,7 @@ class Ui_MDCx(object):
         self.label_317.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_317.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_317.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_317.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_317.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_317.setWordWrap(False)
         self.label_317.setObjectName("label_317")
         self.gridLayout_28.addWidget(self.label_317, 5, 1, 1, 1)
@@ -4937,11 +4617,7 @@ class Ui_MDCx(object):
         self.label_315.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_315.setStyleSheet("color: rgb(255, 38, 0);\n")
         self.label_315.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_315.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_315.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_315.setWordWrap(False)
         self.label_315.setWordWrap(True)
         self.label_315.setObjectName("label_315")
@@ -5001,11 +4677,7 @@ class Ui_MDCx(object):
             ""
         )
         self.label_300.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_300.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_300.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_300.setWordWrap(False)
         self.label_300.setObjectName("label_300")
         self.horizontalLayout_107.addWidget(self.label_300)
@@ -5322,9 +4994,7 @@ class Ui_MDCx(object):
         self.label_85.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_85.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_85.setScaledContents(False)
-        self.label_85.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_85.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_85.setWordWrap(False)
         self.label_85.setIndent(0)
         self.label_85.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
@@ -5341,11 +5011,7 @@ class Ui_MDCx(object):
         self.label_310.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_310.setStyleSheet("color: rgb(255, 38, 0);\n                          font-weight:bold")
         self.label_310.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_310.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_310.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_310.setWordWrap(True)
         self.label_310.setObjectName("label_310")
         self.groupBox_33 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_xiazai)
@@ -5390,9 +5056,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_79.sizePolicy().hasHeightForWidth())
         self.label_79.setSizePolicy(sizePolicy)
         self.label_79.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_79.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_79.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_79.setWordWrap(True)
         self.label_79.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_79.setObjectName("label_79")
@@ -5408,9 +5072,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_87.sizePolicy().hasHeightForWidth())
         self.label_87.setSizePolicy(sizePolicy)
         self.label_87.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_87.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_87.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_87.setWordWrap(True)
         self.label_87.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_87.setObjectName("label_87")
@@ -5472,9 +5134,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_59.sizePolicy().hasHeightForWidth())
         self.label_59.setSizePolicy(sizePolicy)
         self.label_59.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_59.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_59.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_59.setWordWrap(True)
         self.label_59.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_59.setObjectName("label_59")
@@ -5510,6 +5170,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_397.sizePolicy().hasHeightForWidth())
         self.label_397.setSizePolicy(sizePolicy)
         self.label_397.setStyleSheet("color: rgb(8, 128, 128);")
+        self.label_397.setWordWrap(True)
         self.label_397.setObjectName("label_397")
         self.horizontalLayout_38.addWidget(self.label_397)
         self.horizontalLayoutWidget_70 = QtWidgets.QWidget(parent=self.groupBox_52)
@@ -5601,9 +5262,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_333.sizePolicy().hasHeightForWidth())
         self.label_333.setSizePolicy(sizePolicy)
         self.label_333.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_333.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_333.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_333.setWordWrap(True)
         self.label_333.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_333.setObjectName("label_333")
@@ -5682,9 +5341,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_66.sizePolicy().hasHeightForWidth())
         self.label_66.setSizePolicy(sizePolicy)
         self.label_66.setStyleSheet("color: rgb(8, 128, 128); padding-left: 29px;")
-        self.label_66.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_66.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_66.setWordWrap(True)
         self.label_66.setTextInteractionFlags(
             QtCore.Qt.TextInteractionFlag.TextSelectableByKeyboard | QtCore.Qt.TextInteractionFlag.TextSelectableByMouse
@@ -5699,11 +5356,7 @@ class Ui_MDCx(object):
         self.label_63.setSizePolicy(sizePolicy)
         self.label_63.setMinimumSize(QtCore.QSize(0, 0))
         self.label_63.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_63.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_63.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_63.setObjectName("label_63")
         self.gridLayout_8.addWidget(self.label_63, 2, 0, 1, 1)
         self.lineEdit_dir_name = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_8)
@@ -5724,11 +5377,7 @@ class Ui_MDCx(object):
         self.label_43.setSizePolicy(sizePolicy)
         self.label_43.setMinimumSize(QtCore.QSize(130, 0))
         self.label_43.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_43.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_43.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_43.setObjectName("label_43")
         self.gridLayout_8.addWidget(self.label_43, 0, 0, 1, 1)
         self.label_240 = QtWidgets.QLabel(parent=self.gridLayoutWidget_8)
@@ -5739,11 +5388,7 @@ class Ui_MDCx(object):
         self.label_240.setSizePolicy(sizePolicy)
         self.label_240.setMinimumSize(QtCore.QSize(0, 0))
         self.label_240.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_240.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_240.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_240.setObjectName("label_240")
         self.gridLayout_8.addWidget(self.label_240, 6, 0, 1, 1)
         self.label_68 = QtWidgets.QLabel(parent=self.gridLayoutWidget_8)
@@ -5764,11 +5409,7 @@ class Ui_MDCx(object):
         self.label_67.setSizePolicy(sizePolicy)
         self.label_67.setMinimumSize(QtCore.QSize(0, 0))
         self.label_67.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_67.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_67.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_67.setObjectName("label_67")
         self.gridLayout_8.addWidget(self.label_67, 4, 0, 1, 1)
         self.label_61 = QtWidgets.QLabel(parent=self.gridLayoutWidget_8)
@@ -5788,6 +5429,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_239.sizePolicy().hasHeightForWidth())
         self.label_239.setSizePolicy(sizePolicy)
         self.label_239.setStyleSheet("color: rgb(8, 128, 128);")
+        self.label_239.setWordWrap(True)
         self.label_239.setObjectName("label_239")
         self.gridLayout_8.addWidget(self.label_239, 7, 1, 1, 1)
         self.lineEdit_local_name = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_8)
@@ -5809,9 +5451,7 @@ class Ui_MDCx(object):
         self.label_name_template_preview.setMinimumSize(QtCore.QSize(130, 0))
         self.label_name_template_preview.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_name_template_preview.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTop
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop
         )
         self.label_name_template_preview.setObjectName("label_name_template_preview")
         self.gridLayout_8.addWidget(self.label_name_template_preview, 8, 0, 1, 1)
@@ -5835,7 +5475,7 @@ class Ui_MDCx(object):
         self.label_name_template_preview_result.setMinimumSize(QtCore.QSize(0, 82))
         self.label_name_template_preview_result.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_name_template_preview_result.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
+            QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
         )
         self.label_name_template_preview_result.setWordWrap(True)
         self.label_name_template_preview_result.setTextInteractionFlags(
@@ -5928,11 +5568,7 @@ class Ui_MDCx(object):
         self.label_350.setSizePolicy(sizePolicy)
         self.label_350.setMinimumSize(QtCore.QSize(130, 30))
         self.label_350.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_350.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_350.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_350.setObjectName("label_350")
         self.checkBox_cd_part_01 = QtWidgets.QCheckBox(parent=self.groupBox_38)
         self.checkBox_cd_part_01.setGeometry(QtCore.QRect(160, 270, 211, 30))
@@ -5961,11 +5597,7 @@ class Ui_MDCx(object):
         self.label_408.setSizePolicy(sizePolicy)
         self.label_408.setMinimumSize(QtCore.QSize(130, 30))
         self.label_408.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_408.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_408.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_408.setObjectName("label_408")
         self.checkBox_cd_part_space = QtWidgets.QCheckBox(parent=self.groupBox_38)
         self.checkBox_cd_part_space.setGeometry(QtCore.QRect(420, 350, 110, 30))
@@ -6044,11 +5676,7 @@ class Ui_MDCx(object):
         self.label_171.setSizePolicy(sizePolicy)
         self.label_171.setMinimumSize(QtCore.QSize(130, 0))
         self.label_171.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_171.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_171.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_171.setObjectName("label_171")
         self.label_167 = QtWidgets.QLabel(parent=self.groupBox_77)
         self.label_167.setGeometry(QtCore.QRect(45, 227, 106, 16))
@@ -6059,11 +5687,7 @@ class Ui_MDCx(object):
         self.label_167.setSizePolicy(sizePolicy)
         self.label_167.setMinimumSize(QtCore.QSize(0, 0))
         self.label_167.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_167.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_167.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_167.setObjectName("label_167")
         self.label_169 = QtWidgets.QLabel(parent=self.groupBox_77)
         self.label_169.setGeometry(QtCore.QRect(157, 77, 523, 40))
@@ -6085,11 +5709,7 @@ class Ui_MDCx(object):
         self.label_170.setSizePolicy(sizePolicy)
         self.label_170.setMinimumSize(QtCore.QSize(0, 0))
         self.label_170.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_170.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_170.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_170.setObjectName("label_170")
         self.label_172 = QtWidgets.QLabel(parent=self.groupBox_77)
         self.label_172.setGeometry(QtCore.QRect(157, 169, 523, 40))
@@ -6152,9 +5772,7 @@ class Ui_MDCx(object):
         self.label_actor_name_more.setMinimumSize(QtCore.QSize(130, 30))
         self.label_actor_name_more.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_actor_name_more.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_actor_name_more.setObjectName("label_actor_name_more")
         self.groupBox_46 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_mingming)
@@ -6192,11 +5810,7 @@ class Ui_MDCx(object):
         self.label_281.setMinimumSize(QtCore.QSize(130, 0))
         self.label_281.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_281.setText("")
-        self.label_281.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_281.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_281.setObjectName("label_281")
         self.label_189 = QtWidgets.QLabel(parent=self.groupBox_46)
         self.label_189.setGeometry(QtCore.QRect(21, 227, 130, 16))
@@ -6207,11 +5821,7 @@ class Ui_MDCx(object):
         self.label_189.setSizePolicy(sizePolicy)
         self.label_189.setMinimumSize(QtCore.QSize(130, 0))
         self.label_189.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_189.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_189.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_189.setObjectName("label_189")
         self.label_117 = QtWidgets.QLabel(parent=self.groupBox_46)
         self.label_117.setGeometry(QtCore.QRect(157, 169, 523, 40))
@@ -6221,9 +5831,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_117.sizePolicy().hasHeightForWidth())
         self.label_117.setSizePolicy(sizePolicy)
         self.label_117.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_117.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_117.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_117.setWordWrap(True)
         self.label_117.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_117.setObjectName("label_117")
@@ -6237,11 +5845,7 @@ class Ui_MDCx(object):
         self.label_282.setMinimumSize(QtCore.QSize(130, 0))
         self.label_282.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_282.setText("")
-        self.label_282.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_282.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_282.setObjectName("label_282")
         self.lineEdit_wuma_style = QtWidgets.QLineEdit(parent=self.groupBox_46)
         self.lineEdit_wuma_style.setGeometry(QtCore.QRect(157, 220, 521, 30))
@@ -6262,11 +5866,7 @@ class Ui_MDCx(object):
         self.label_175.setSizePolicy(sizePolicy)
         self.label_175.setMinimumSize(QtCore.QSize(130, 0))
         self.label_175.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_175.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_175.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_175.setObjectName("label_175")
         self.lineEdit_umr_style = QtWidgets.QLineEdit(parent=self.groupBox_46)
         self.lineEdit_umr_style.setGeometry(QtCore.QRect(157, 36, 521, 30))
@@ -6288,11 +5888,7 @@ class Ui_MDCx(object):
         self.label_284.setMinimumSize(QtCore.QSize(130, 0))
         self.label_284.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_284.setText("")
-        self.label_284.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_284.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_284.setObjectName("label_284")
         self.label_190 = QtWidgets.QLabel(parent=self.groupBox_46)
         self.label_190.setGeometry(QtCore.QRect(21, 319, 130, 16))
@@ -6303,11 +5899,7 @@ class Ui_MDCx(object):
         self.label_190.setSizePolicy(sizePolicy)
         self.label_190.setMinimumSize(QtCore.QSize(130, 0))
         self.label_190.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_190.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_190.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_190.setObjectName("label_190")
         self.label_137 = QtWidgets.QLabel(parent=self.groupBox_46)
         self.label_137.setGeometry(QtCore.QRect(157, 261, 523, 40))
@@ -6317,9 +5909,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_137.sizePolicy().hasHeightForWidth())
         self.label_137.setSizePolicy(sizePolicy)
         self.label_137.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_137.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_137.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_137.setWordWrap(True)
         self.label_137.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_137.setObjectName("label_137")
@@ -6331,9 +5921,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_116.sizePolicy().hasHeightForWidth())
         self.label_116.setSizePolicy(sizePolicy)
         self.label_116.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_116.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_116.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_116.setWordWrap(True)
         self.label_116.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_116.setObjectName("label_116")
@@ -6347,11 +5935,7 @@ class Ui_MDCx(object):
         self.label_283.setMinimumSize(QtCore.QSize(130, 0))
         self.label_283.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_283.setText("")
-        self.label_283.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_283.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_283.setObjectName("label_283")
         self.label_174 = QtWidgets.QLabel(parent=self.groupBox_46)
         self.label_174.setGeometry(QtCore.QRect(21, 43, 130, 16))
@@ -6362,11 +5946,7 @@ class Ui_MDCx(object):
         self.label_174.setSizePolicy(sizePolicy)
         self.label_174.setMinimumSize(QtCore.QSize(130, 0))
         self.label_174.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_174.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_174.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_174.setObjectName("label_174")
         self.lineEdit_leak_style = QtWidgets.QLineEdit(parent=self.groupBox_46)
         self.lineEdit_leak_style.setGeometry(QtCore.QRect(157, 128, 521, 30))
@@ -6386,9 +5966,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_145.sizePolicy().hasHeightForWidth())
         self.label_145.setSizePolicy(sizePolicy)
         self.label_145.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_145.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_145.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_145.setWordWrap(True)
         self.label_145.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_145.setObjectName("label_145")
@@ -6401,11 +5979,7 @@ class Ui_MDCx(object):
         self.label_286.setSizePolicy(sizePolicy)
         self.label_286.setMinimumSize(QtCore.QSize(130, 30))
         self.label_286.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_286.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_286.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_286.setObjectName("label_286")
         self.checkBox_foldername_mosaic = QtWidgets.QCheckBox(parent=self.groupBox_46)
         self.checkBox_foldername_mosaic.setGeometry(QtCore.QRect(160, 400, 100, 30))
@@ -6532,11 +6106,7 @@ class Ui_MDCx(object):
         self.label_407.setSizePolicy(sizePolicy)
         self.label_407.setMinimumSize(QtCore.QSize(130, 30))
         self.label_407.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_407.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_407.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_407.setObjectName("label_407")
         self.gridLayout_26.addWidget(self.label_407, 2, 0, 1, 1)
         self.label_146 = QtWidgets.QLabel(parent=self.gridLayoutWidget_26)
@@ -6584,11 +6154,7 @@ class Ui_MDCx(object):
         self.label_319.setSizePolicy(sizePolicy)
         self.label_319.setMinimumSize(QtCore.QSize(130, 30))
         self.label_319.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_319.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_319.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_319.setObjectName("label_319")
         self.gridLayout_26.addWidget(self.label_319, 1, 0, 1, 1)
         self.label_197 = QtWidgets.QLabel(parent=self.gridLayoutWidget_26)
@@ -6599,11 +6165,7 @@ class Ui_MDCx(object):
         self.label_197.setSizePolicy(sizePolicy)
         self.label_197.setMinimumSize(QtCore.QSize(130, 0))
         self.label_197.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_197.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_197.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_197.setObjectName("label_197")
         self.gridLayout_26.addWidget(self.label_197, 4, 0, 1, 1)
         self.checkBox_title_del_actor = QtWidgets.QCheckBox(parent=self.gridLayoutWidget_26)
@@ -6627,11 +6189,7 @@ class Ui_MDCx(object):
         self.label_276.setSizePolicy(sizePolicy)
         self.label_276.setMinimumSize(QtCore.QSize(130, 0))
         self.label_276.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_276.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_276.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_276.setObjectName("label_276")
         self.gridLayout_26.addWidget(self.label_276, 8, 0, 1, 1)
         self.label_302 = QtWidgets.QLabel(parent=self.gridLayoutWidget_26)
@@ -6672,11 +6230,7 @@ class Ui_MDCx(object):
         self.label_320.setSizePolicy(sizePolicy)
         self.label_320.setMinimumSize(QtCore.QSize(130, 30))
         self.label_320.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_320.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_320.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_320.setObjectName("label_320")
         self.gridLayout_26.addWidget(self.label_320, 0, 0, 1, 1)
         self.label_173 = QtWidgets.QLabel(parent=self.gridLayoutWidget_26)
@@ -6687,11 +6241,7 @@ class Ui_MDCx(object):
         self.label_173.setSizePolicy(sizePolicy)
         self.label_173.setMinimumSize(QtCore.QSize(130, 0))
         self.label_173.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_173.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_173.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_173.setObjectName("label_173")
         self.gridLayout_26.addWidget(self.label_173, 6, 0, 1, 1)
         self.checkBox_actor_fc2_seller = QtWidgets.QCheckBox(parent=self.gridLayoutWidget_26)
@@ -6711,11 +6261,7 @@ class Ui_MDCx(object):
         self.label_actor_fc2.setSizePolicy(sizePolicy)
         self.label_actor_fc2.setMinimumSize(QtCore.QSize(130, 30))
         self.label_actor_fc2.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_actor_fc2.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_actor_fc2.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_actor_fc2.setObjectName("label_actor_fc2")
         self.gridLayout_26.addWidget(self.label_actor_fc2, 3, 0, 1, 1)
         self.groupBox_65 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_mingming)
@@ -6771,9 +6317,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_331.sizePolicy().hasHeightForWidth())
         self.label_331.setSizePolicy(sizePolicy)
         self.label_331.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_331.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_331.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_331.setWordWrap(True)
         self.label_331.setObjectName("label_331")
         self.frame_6 = QtWidgets.QFrame(parent=self.groupBox_65)
@@ -6811,11 +6355,7 @@ class Ui_MDCx(object):
         self.label_332.setSizePolicy(sizePolicy)
         self.label_332.setMinimumSize(QtCore.QSize(130, 0))
         self.label_332.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_332.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_332.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_332.setObjectName("label_332")
         self.label_357 = QtWidgets.QLabel(parent=self.groupBox_65)
         self.label_357.setGeometry(QtCore.QRect(31, 126, 130, 16))
@@ -6826,11 +6366,7 @@ class Ui_MDCx(object):
         self.label_357.setSizePolicy(sizePolicy)
         self.label_357.setMinimumSize(QtCore.QSize(130, 16))
         self.label_357.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_357.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_357.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_357.setObjectName("label_357")
         self.checkBox_filename_4k = QtWidgets.QCheckBox(parent=self.groupBox_65)
         self.checkBox_filename_4k.setGeometry(QtCore.QRect(420, 129, 206, 16))
@@ -6873,11 +6409,7 @@ class Ui_MDCx(object):
         self.label_353.setSizePolicy(sizePolicy)
         self.label_353.setMinimumSize(QtCore.QSize(130, 30))
         self.label_353.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_353.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_353.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_353.setObjectName("label_353")
         self.label_352 = QtWidgets.QLabel(parent=self.groupBox_67)
         self.label_352.setGeometry(QtCore.QRect(50, 60, 621, 131))
@@ -6887,9 +6419,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_352.sizePolicy().hasHeightForWidth())
         self.label_352.setSizePolicy(sizePolicy)
         self.label_352.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_352.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_352.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_352.setOpenExternalLinks(True)
         self.label_352.setObjectName("label_352")
         self.label_351 = QtWidgets.QLabel(parent=self.groupBox_67)
@@ -6911,11 +6441,7 @@ class Ui_MDCx(object):
         self.label_354.setSizePolicy(sizePolicy)
         self.label_354.setMinimumSize(QtCore.QSize(130, 30))
         self.label_354.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_354.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_354.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_354.setObjectName("label_354")
         self.scrollArea_7.setWidget(self.scrollAreaWidgetContents_mingming)
         self.tabWidget.addTab(self.tab_3, "")
@@ -6950,11 +6476,7 @@ class Ui_MDCx(object):
         self.label_81.setSizePolicy(sizePolicy)
         self.label_81.setMinimumSize(QtCore.QSize(130, 30))
         self.label_81.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_81.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_81.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_81.setObjectName("label_81")
         self.gridLayout_32.addWidget(self.label_81, 0, 0, 1, 1)
         self.label_baidu_hint = QtWidgets.QLabel(parent=self.layoutWidget_2)
@@ -6971,11 +6493,7 @@ class Ui_MDCx(object):
         self.label_baidu_appid.setMinimumSize(QtCore.QSize(130, 30))
         self.label_baidu_appid.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_baidu_appid.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_baidu_appid.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_baidu_appid.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_baidu_appid.setObjectName("label_baidu_appid")
         self.gridLayout_32.addWidget(self.label_baidu_appid, 5, 0, 1, 1)
         self.lineEdit_baidu_appid = QtWidgets.QLineEdit(parent=self.layoutWidget_2)
@@ -7002,11 +6520,7 @@ class Ui_MDCx(object):
         self.label_baidu_key.setMinimumSize(QtCore.QSize(130, 30))
         self.label_baidu_key.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_baidu_key.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_baidu_key.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_baidu_key.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_baidu_key.setObjectName("label_baidu_key")
         self.gridLayout_32.addWidget(self.label_baidu_key, 6, 0, 1, 1)
         self.lineEdit_baidu_key = QtWidgets.QLineEdit(parent=self.layoutWidget_2)
@@ -7085,11 +6599,7 @@ class Ui_MDCx(object):
         self.label_deepl_api_key.setMinimumSize(QtCore.QSize(130, 30))
         self.label_deepl_api_key.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_deepl_api_key.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_deepl_api_key.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_deepl_api_key.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_deepl_api_key.setObjectName("label_deepl_api_key")
         self.gridLayout_32.addWidget(self.label_deepl_api_key, 2, 0, 1, 1)
         self.lineEdit_deeplx_url = QtWidgets.QLineEdit(parent=self.layoutWidget_2)
@@ -7116,11 +6626,7 @@ class Ui_MDCx(object):
         self.label_80.setMinimumSize(QtCore.QSize(130, 30))
         self.label_80.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_80.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_80.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_80.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_80.setObjectName("label_80")
         self.gridLayout_32.addWidget(self.label_80, 3, 0, 1, 1)
         spacerItem6 = QtWidgets.QSpacerItem(
@@ -7153,11 +6659,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_llm_url.sizePolicy().hasHeightForWidth())
         self.label_llm_url.setSizePolicy(sizePolicy)
         self.label_llm_url.setMinimumSize(QtCore.QSize(130, 30))
-        self.label_llm_url.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_llm_url.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_llm_url.setObjectName("label_llm_url")
         self.gridLayout_llm.addWidget(self.label_llm_url, 0, 0, 1, 1)
         self.label_llm_url_desc = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
@@ -7166,11 +6668,7 @@ class Ui_MDCx(object):
         self.gridLayout_llm.addWidget(self.label_llm_url_desc, 1, 1, 1, 1)
         self.label_llm_model = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_model.setMinimumSize(QtCore.QSize(130, 30))
-        self.label_llm_model.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_llm_model.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_llm_model.setObjectName("label_llm_model")
         self.gridLayout_llm.addWidget(self.label_llm_model, 2, 0, 1, 1)
         self.lineEdit_llm_model = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_llm)
@@ -7185,11 +6683,7 @@ class Ui_MDCx(object):
         self.gridLayout_llm.addWidget(self.lineEdit_llm_model, 2, 1, 1, 1)
         self.label_llm_key = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_key.setMinimumSize(QtCore.QSize(130, 30))
-        self.label_llm_key.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_llm_key.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_llm_key.setObjectName("label_llm_key")
         self.gridLayout_llm.addWidget(self.label_llm_key, 4, 0, 1, 1)
         self.lineEdit_llm_key = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_llm)
@@ -7205,9 +6699,7 @@ class Ui_MDCx(object):
         self.label_llm_prompt_title = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_prompt_title.setMinimumSize(QtCore.QSize(130, 30))
         self.label_llm_prompt_title.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_llm_prompt_title.setObjectName("label_llm_prompt_title")
         self.gridLayout_llm.addWidget(self.label_llm_prompt_title, 5, 0, 1, 1)
@@ -7223,9 +6715,7 @@ class Ui_MDCx(object):
         self.label_llm_prompt_outline = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_prompt_outline.setMinimumSize(QtCore.QSize(130, 30))
         self.label_llm_prompt_outline.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_llm_prompt_outline.setObjectName("label_llm_prompt_outline")
         self.gridLayout_llm.addWidget(self.label_llm_prompt_outline, 6, 0, 1, 1)
@@ -7251,9 +6741,7 @@ class Ui_MDCx(object):
         self.label_llm_max_req_sec = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_max_req_sec.setMinimumSize(QtCore.QSize(130, 30))
         self.label_llm_max_req_sec.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_llm_max_req_sec.setObjectName("label_llm_max_req_sec")
         self.gridLayout_llm.addWidget(self.label_llm_max_req_sec, 8, 0, 1, 1)
@@ -7267,11 +6755,7 @@ class Ui_MDCx(object):
         self.gridLayout_llm.addWidget(self.spinBox_llm_max_try, 10, 1, 1, 1)
         self.label_llm_max_try = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_max_try.setMinimumSize(QtCore.QSize(130, 30))
-        self.label_llm_max_try.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_llm_max_try.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_llm_max_try.setObjectName("label_llm_max_try")
         self.gridLayout_llm.addWidget(self.label_llm_max_try, 10, 0, 1, 1)
         self.label_llm_max_try_desc = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
@@ -7281,9 +6765,7 @@ class Ui_MDCx(object):
         self.label_llm_temperature = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_temperature.setMinimumSize(QtCore.QSize(130, 30))
         self.label_llm_temperature.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_llm_temperature.setObjectName("label_llm_temperature")
         self.gridLayout_llm.addWidget(self.label_llm_temperature, 12, 0, 1, 1)
@@ -7298,6 +6780,7 @@ class Ui_MDCx(object):
         self.gridLayout_llm.addWidget(self.checkBox_llm_disable_thinking, 13, 0, 1, 1)
         self.label_llm_disable_thinking_desc = QtWidgets.QLabel(parent=self.gridLayoutWidget_llm)
         self.label_llm_disable_thinking_desc.setStyleSheet("color: rgb(8, 128, 128);")
+        self.label_llm_disable_thinking_desc.setWordWrap(True)
         self.label_llm_disable_thinking_desc.setObjectName("label_llm_disable_thinking_desc")
         self.gridLayout_llm.addWidget(self.label_llm_disable_thinking_desc, 13, 1, 1, 1)
         self.groupBox_82 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_fanyi)
@@ -7324,11 +6807,7 @@ class Ui_MDCx(object):
         self.label_242.setSizePolicy(sizePolicy)
         self.label_242.setMinimumSize(QtCore.QSize(130, 30))
         self.label_242.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_242.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_242.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_242.setObjectName("label_242")
         self.gridLayout_45.addWidget(self.label_242, 0, 0, 1, 1)
         self.label_74 = QtWidgets.QLabel(parent=self.layoutWidget_9)
@@ -7363,11 +6842,7 @@ class Ui_MDCx(object):
         self.label_244.setMinimumSize(QtCore.QSize(130, 30))
         self.label_244.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_244.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_244.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_244.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_244.setObjectName("label_244")
         self.gridLayout_45.addWidget(self.label_244, 2, 0, 1, 1)
         self.groupBox_83 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_fanyi)
@@ -7388,11 +6863,7 @@ class Ui_MDCx(object):
         self.label_133.setSizePolicy(sizePolicy)
         self.label_133.setMinimumSize(QtCore.QSize(130, 30))
         self.label_133.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_133.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_133.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_133.setObjectName("label_133")
         self.gridLayout_48.addWidget(self.label_133, 0, 0, 1, 1)
         self.label_176 = QtWidgets.QLabel(parent=self.layoutWidget_13)
@@ -7414,11 +6885,7 @@ class Ui_MDCx(object):
         self.label_166.setMinimumSize(QtCore.QSize(130, 30))
         self.label_166.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_166.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_166.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_166.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_166.setObjectName("label_166")
         self.gridLayout_48.addWidget(self.label_166, 1, 0, 1, 1)
         self.horizontalLayout_22 = QtWidgets.QHBoxLayout()
@@ -7473,11 +6940,7 @@ class Ui_MDCx(object):
         self.label_328.setSizePolicy(sizePolicy)
         self.label_328.setMinimumSize(QtCore.QSize(130, 0))
         self.label_328.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_328.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_328.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_328.setObjectName("label_328")
         self.groupBox_84 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_fanyi)
         self.groupBox_84.setGeometry(QtCore.QRect(30, 1365, 701, 440))
@@ -7498,11 +6961,7 @@ class Ui_MDCx(object):
         self.label_250.setMinimumSize(QtCore.QSize(130, 30))
         self.label_250.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_250.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_250.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_250.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_250.setObjectName("label_250")
         self.gridLayout_50.addWidget(self.label_250, 1, 0, 1, 1)
         self.horizontalLayout_35 = QtWidgets.QHBoxLayout()
@@ -7525,9 +6984,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_249.sizePolicy().hasHeightForWidth())
         self.label_249.setSizePolicy(sizePolicy)
         self.label_249.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_249.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_249.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_249.setWordWrap(True)
         self.label_249.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_249.setObjectName("label_249")
@@ -7549,11 +7006,7 @@ class Ui_MDCx(object):
         self.label_248.setSizePolicy(sizePolicy)
         self.label_248.setMinimumSize(QtCore.QSize(130, 30))
         self.label_248.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_248.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_248.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_248.setObjectName("label_248")
         self.gridLayout_50.addWidget(self.label_248, 0, 0, 1, 1)
         self.groupBox_85 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_fanyi)
@@ -7586,11 +7039,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_165.sizePolicy().hasHeightForWidth())
         self.label_165.setSizePolicy(sizePolicy)
         self.label_165.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_165.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_165.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_165.setWordWrap(True)
         self.label_165.setObjectName("label_165")
         self.gridLayout_51.addWidget(self.label_165, 2, 1, 1, 1)
@@ -7605,11 +7054,7 @@ class Ui_MDCx(object):
         self.label_251.setSizePolicy(sizePolicy)
         self.label_251.setMinimumSize(QtCore.QSize(130, 30))
         self.label_251.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_251.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_251.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_251.setObjectName("label_251")
         self.gridLayout_51.addWidget(self.label_251, 0, 0, 1, 1)
         self.label_253 = QtWidgets.QLabel(parent=self.layoutWidget_21)
@@ -7621,11 +7066,7 @@ class Ui_MDCx(object):
         self.label_253.setMinimumSize(QtCore.QSize(130, 30))
         self.label_253.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_253.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_253.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_253.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_253.setObjectName("label_253")
         self.gridLayout_51.addWidget(self.label_253, 1, 0, 1, 1)
         self.groupBox_86 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_fanyi)
@@ -7646,11 +7087,7 @@ class Ui_MDCx(object):
         self.label_255.setSizePolicy(sizePolicy)
         self.label_255.setMinimumSize(QtCore.QSize(130, 30))
         self.label_255.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_255.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_255.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_255.setObjectName("label_255")
         self.gridLayout_53.addWidget(self.label_255, 0, 0, 1, 1)
         self.label_256 = QtWidgets.QLabel(parent=self.layoutWidget_23)
@@ -7662,11 +7099,7 @@ class Ui_MDCx(object):
         self.label_256.setMinimumSize(QtCore.QSize(130, 30))
         self.label_256.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_256.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_256.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_256.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_256.setObjectName("label_256")
         self.gridLayout_53.addWidget(self.label_256, 1, 0, 1, 1)
         self.label_245 = QtWidgets.QLabel(parent=self.layoutWidget_23)
@@ -7676,11 +7109,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_245.sizePolicy().hasHeightForWidth())
         self.label_245.setSizePolicy(sizePolicy)
         self.label_245.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_245.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_245.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_245.setWordWrap(True)
         self.label_245.setObjectName("label_245")
         self.gridLayout_53.addWidget(self.label_245, 2, 1, 1, 1)
@@ -7718,11 +7147,7 @@ class Ui_MDCx(object):
         self.label_259.setSizePolicy(sizePolicy)
         self.label_259.setMinimumSize(QtCore.QSize(130, 30))
         self.label_259.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_259.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_259.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_259.setObjectName("label_259")
         self.gridLayout_55.addWidget(self.label_259, 0, 0, 1, 1)
         self.label_260 = QtWidgets.QLabel(parent=self.layoutWidget_25)
@@ -7734,11 +7159,7 @@ class Ui_MDCx(object):
         self.label_260.setMinimumSize(QtCore.QSize(130, 30))
         self.label_260.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_260.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_260.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_260.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_260.setObjectName("label_260")
         self.gridLayout_55.addWidget(self.label_260, 1, 0, 1, 1)
         self.label_247 = QtWidgets.QLabel(parent=self.layoutWidget_25)
@@ -7748,11 +7169,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_247.sizePolicy().hasHeightForWidth())
         self.label_247.setSizePolicy(sizePolicy)
         self.label_247.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_247.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_247.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_247.setWordWrap(True)
         self.label_247.setObjectName("label_247")
         self.gridLayout_55.addWidget(self.label_247, 2, 1, 1, 1)
@@ -7790,11 +7207,7 @@ class Ui_MDCx(object):
         self.label_264.setSizePolicy(sizePolicy)
         self.label_264.setMinimumSize(QtCore.QSize(130, 30))
         self.label_264.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_264.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_264.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_264.setObjectName("label_264")
         self.gridLayout_57.addWidget(self.label_264, 0, 0, 1, 1)
         self.label_265 = QtWidgets.QLabel(parent=self.layoutWidget_27)
@@ -7806,11 +7219,7 @@ class Ui_MDCx(object):
         self.label_265.setMinimumSize(QtCore.QSize(130, 30))
         self.label_265.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_265.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_265.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_265.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_265.setObjectName("label_265")
         self.gridLayout_57.addWidget(self.label_265, 1, 0, 1, 1)
         self.label_266 = QtWidgets.QLabel(parent=self.layoutWidget_27)
@@ -7820,11 +7229,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_266.sizePolicy().hasHeightForWidth())
         self.label_266.setSizePolicy(sizePolicy)
         self.label_266.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_266.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_266.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_266.setWordWrap(True)
         self.label_266.setObjectName("label_266")
         self.gridLayout_57.addWidget(self.label_266, 2, 1, 1, 1)
@@ -7862,11 +7267,7 @@ class Ui_MDCx(object):
         self.label_267.setSizePolicy(sizePolicy)
         self.label_267.setMinimumSize(QtCore.QSize(130, 30))
         self.label_267.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_267.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_267.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_267.setObjectName("label_267")
         self.gridLayout_58.addWidget(self.label_267, 0, 0, 1, 1)
         self.label_268 = QtWidgets.QLabel(parent=self.layoutWidget_29)
@@ -7878,11 +7279,7 @@ class Ui_MDCx(object):
         self.label_268.setMinimumSize(QtCore.QSize(130, 30))
         self.label_268.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_268.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_268.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_268.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_268.setObjectName("label_268")
         self.gridLayout_58.addWidget(self.label_268, 1, 0, 1, 1)
         self.label_269 = QtWidgets.QLabel(parent=self.layoutWidget_29)
@@ -7892,11 +7289,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_269.sizePolicy().hasHeightForWidth())
         self.label_269.setSizePolicy(sizePolicy)
         self.label_269.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_269.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_269.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_269.setWordWrap(True)
         self.label_269.setObjectName("label_269")
         self.gridLayout_58.addWidget(self.label_269, 2, 1, 1, 1)
@@ -7959,11 +7352,7 @@ class Ui_MDCx(object):
         self.label_89.setSizePolicy(sizePolicy)
         self.label_89.setMinimumSize(QtCore.QSize(130, 30))
         self.label_89.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_89.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_89.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_89.setObjectName("label_89")
         self.gridLayout_17.addWidget(self.label_89, 0, 0, 1, 1)
         self.lineEdit_cnword_char = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_17)
@@ -8004,11 +7393,7 @@ class Ui_MDCx(object):
         self.label_69.setSizePolicy(sizePolicy)
         self.label_69.setMinimumSize(QtCore.QSize(0, 30))
         self.label_69.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_69.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_69.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_69.setObjectName("label_69")
         self.gridLayout_17.addWidget(self.label_69, 2, 0, 1, 1)
         self.label_119 = QtWidgets.QLabel(parent=self.gridLayoutWidget_17)
@@ -8050,11 +7435,7 @@ class Ui_MDCx(object):
         self.label_120.setSizePolicy(sizePolicy)
         self.label_120.setMinimumSize(QtCore.QSize(130, 30))
         self.label_120.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_120.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_120.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_120.setObjectName("label_120")
         self.gridLayout_17.addWidget(self.label_120, 4, 0, 1, 1)
         self.groupBox_45 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_zimu)
@@ -8086,11 +7467,7 @@ class Ui_MDCx(object):
         self.label_124.setMinimumSize(QtCore.QSize(130, 30))
         self.label_124.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_124.setText("")
-        self.label_124.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_124.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_124.setObjectName("label_124")
         self.gridLayout_27.addWidget(self.label_124, 1, 0, 1, 1)
         self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
@@ -8126,11 +7503,7 @@ class Ui_MDCx(object):
         self.label_111.setSizePolicy(sizePolicy)
         self.label_111.setMinimumSize(QtCore.QSize(130, 30))
         self.label_111.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_111.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_111.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_111.setObjectName("label_111")
         self.gridLayout_27.addWidget(self.label_111, 0, 0, 1, 1)
         self.label_112 = QtWidgets.QLabel(parent=self.gridLayoutWidget_27)
@@ -8141,11 +7514,7 @@ class Ui_MDCx(object):
         self.label_112.setSizePolicy(sizePolicy)
         self.label_112.setMinimumSize(QtCore.QSize(130, 0))
         self.label_112.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_112.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_112.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_112.setObjectName("label_112")
         self.gridLayout_27.addWidget(self.label_112, 2, 0, 1, 1)
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout()
@@ -8196,9 +7565,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_125.sizePolicy().hasHeightForWidth())
         self.label_125.setSizePolicy(sizePolicy)
         self.label_125.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_125.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_125.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_125.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_125.setObjectName("label_125")
         self.checkBox_sub_add_chs = QtWidgets.QCheckBox(parent=self.groupBox_45)
@@ -8247,9 +7614,7 @@ class Ui_MDCx(object):
         self.label_118.setSizePolicy(sizePolicy)
         self.label_118.setMouseTracking(True)
         self.label_118.setStyleSheet("color: rgb(8, 128, 128);\n                          line-height:50px")
-        self.label_118.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_118.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_118.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_118.setObjectName("label_118")
         self.label_download_mark_zip = QtWidgets.QLabel(parent=self.groupBox_26)
@@ -8264,9 +7629,7 @@ class Ui_MDCx(object):
         self.label_download_mark_zip.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_download_mark_zip.setStyleSheet("color: rgb(10, 52, 255);")
         self.label_download_mark_zip.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_download_mark_zip.setObjectName("label_download_mark_zip")
         self.groupBox_31 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_shuiyin)
@@ -8317,9 +7680,7 @@ class Ui_MDCx(object):
         self.label_138.setSizePolicy(sizePolicy)
         self.label_138.setMouseTracking(True)
         self.label_138.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_138.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_138.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_138.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_138.setObjectName("label_138")
         self.gridLayout_24.addWidget(self.label_138, 5, 1, 1, 1)
@@ -8332,11 +7693,7 @@ class Ui_MDCx(object):
         self.label_135.setMinimumSize(QtCore.QSize(0, 0))
         self.label_135.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_135.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_135.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_135.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_135.setObjectName("label_135")
         self.gridLayout_24.addWidget(self.label_135, 4, 0, 1, 1)
         self.label_128 = QtWidgets.QLabel(parent=self.gridLayoutWidget_24)
@@ -8347,11 +7704,7 @@ class Ui_MDCx(object):
         self.label_128.setSizePolicy(sizePolicy)
         self.label_128.setMinimumSize(QtCore.QSize(130, 0))
         self.label_128.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_128.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_128.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_128.setObjectName("label_128")
         self.gridLayout_24.addWidget(self.label_128, 0, 0, 1, 1)
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
@@ -8429,9 +7782,7 @@ class Ui_MDCx(object):
         self.label_141.setSizePolicy(sizePolicy)
         self.label_141.setMouseTracking(True)
         self.label_141.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_141.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_141.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_141.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_141.setObjectName("label_141")
         self.gridLayout_24.addWidget(self.label_141, 7, 1, 1, 1)
@@ -8473,11 +7824,7 @@ class Ui_MDCx(object):
         self.label_139.setSizePolicy(sizePolicy)
         self.label_139.setMinimumSize(QtCore.QSize(0, 0))
         self.label_139.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_139.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_139.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_139.setObjectName("label_139")
         self.gridLayout_24.addWidget(self.label_139, 2, 0, 1, 1)
         self.horizontalLayout_15 = QtWidgets.QHBoxLayout()
@@ -8520,11 +7867,7 @@ class Ui_MDCx(object):
         self.label_127.setSizePolicy(sizePolicy)
         self.label_127.setMinimumSize(QtCore.QSize(0, 0))
         self.label_127.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_127.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_127.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_127.setObjectName("label_127")
         self.gridLayout_24.addWidget(self.label_127, 6, 0, 1, 1)
         self.label_130 = QtWidgets.QLabel(parent=self.gridLayoutWidget_24)
@@ -8594,11 +7937,7 @@ class Ui_MDCx(object):
         self.label_126.setSizePolicy(sizePolicy)
         self.label_126.setMinimumSize(QtCore.QSize(130, 0))
         self.label_126.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_126.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_126.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_126.setObjectName("label_126")
         self.gridLayout_30.addWidget(self.label_126, 0, 0, 1, 1)
         self.groupBox_42 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_shuiyin)
@@ -8658,11 +7997,7 @@ class Ui_MDCx(object):
         self.label_131.setSizePolicy(sizePolicy)
         self.label_131.setMinimumSize(QtCore.QSize(130, 0))
         self.label_131.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_131.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_131.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_131.setObjectName("label_131")
         self.gridLayout_31.addWidget(self.label_131, 0, 0, 1, 1)
         self.gridLayoutWidget_29 = QtWidgets.QWidget(parent=self.groupBox_42)
@@ -8718,11 +8053,7 @@ class Ui_MDCx(object):
         self.label_134.setSizePolicy(sizePolicy)
         self.label_134.setMinimumSize(QtCore.QSize(130, 30))
         self.label_134.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_134.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_134.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_134.setObjectName("label_134")
         self.gridLayout_29.addWidget(self.label_134, 0, 0, 1, 1)
         self.gridLayoutWidget_32 = QtWidgets.QWidget(parent=self.groupBox_42)
@@ -8778,11 +8109,7 @@ class Ui_MDCx(object):
         self.label_216.setSizePolicy(sizePolicy)
         self.label_216.setMinimumSize(QtCore.QSize(130, 0))
         self.label_216.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_216.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_216.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_216.setObjectName("label_216")
         self.gridLayout_39.addWidget(self.label_216, 0, 0, 1, 1)
         self.groupBox_39 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_shuiyin)
@@ -8842,11 +8169,7 @@ class Ui_MDCx(object):
         self.label_233.setSizePolicy(sizePolicy)
         self.label_233.setMinimumSize(QtCore.QSize(130, 0))
         self.label_233.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_233.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_233.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_233.setObjectName("label_233")
         self.gridLayout_42.addWidget(self.label_233, 0, 0, 1, 1)
         self.scrollArea_4.setWidget(self.scrollAreaWidgetContents_shuiyin)
@@ -8955,11 +8278,7 @@ class Ui_MDCx(object):
         self.label_391.setSizePolicy(sizePolicy)
         self.label_391.setMinimumSize(QtCore.QSize(130, 30))
         self.label_391.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_391.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_391.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_391.setObjectName("label_391")
         self.gridLayout_40.addWidget(self.label_391, 9, 0, 1, 1)
         self.horizontalLayout_37 = QtWidgets.QHBoxLayout()
@@ -8986,11 +8305,7 @@ class Ui_MDCx(object):
         self.label_413.setMinimumSize(QtCore.QSize(130, 30))
         self.label_413.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_413.setText("")
-        self.label_413.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_413.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_413.setObjectName("label_413")
         self.gridLayout_40.addWidget(self.label_413, 17, 0, 1, 1)
         self.label_396 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9084,11 +8399,7 @@ class Ui_MDCx(object):
         self.label_301.setMinimumSize(QtCore.QSize(130, 30))
         self.label_301.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_301.setText("")
-        self.label_301.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_301.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_301.setObjectName("label_301")
         self.gridLayout_40.addWidget(self.label_301, 16, 0, 1, 1)
         self.label_335 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9100,11 +8411,7 @@ class Ui_MDCx(object):
         self.label_335.setMinimumSize(QtCore.QSize(130, 30))
         self.label_335.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_335.setText("")
-        self.label_335.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_335.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_335.setObjectName("label_335")
         self.gridLayout_40.addWidget(self.label_335, 3, 0, 1, 1)
         self.label_209 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9116,11 +8423,7 @@ class Ui_MDCx(object):
         self.label_209.setMinimumSize(QtCore.QSize(130, 30))
         self.label_209.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_209.setText("")
-        self.label_209.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_209.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_209.setObjectName("label_209")
         self.gridLayout_40.addWidget(self.label_209, 1, 0, 1, 1)
         self.label_387 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9132,11 +8435,7 @@ class Ui_MDCx(object):
         self.label_387.setMinimumSize(QtCore.QSize(130, 30))
         self.label_387.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_387.setText("")
-        self.label_387.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_387.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_387.setObjectName("label_387")
         self.gridLayout_40.addWidget(self.label_387, 6, 0, 1, 1)
         self.label_163 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9147,11 +8446,7 @@ class Ui_MDCx(object):
         self.label_163.setSizePolicy(sizePolicy)
         self.label_163.setMinimumSize(QtCore.QSize(130, 30))
         self.label_163.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_163.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_163.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_163.setObjectName("label_163")
         self.gridLayout_40.addWidget(self.label_163, 0, 0, 1, 1)
         self.label_388 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9162,11 +8457,7 @@ class Ui_MDCx(object):
         self.label_388.setSizePolicy(sizePolicy)
         self.label_388.setMinimumSize(QtCore.QSize(130, 30))
         self.label_388.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_388.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_388.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_388.setObjectName("label_388")
         self.gridLayout_40.addWidget(self.label_388, 25, 0, 1, 1)
         self.horizontalLayout_136 = QtWidgets.QHBoxLayout()
@@ -9204,11 +8495,7 @@ class Ui_MDCx(object):
         self.label_412.setMinimumSize(QtCore.QSize(0, 30))
         self.label_412.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_412.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_412.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_412.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_412.setObjectName("label_412")
         self.horizontalLayout_144.addWidget(self.label_412)
         self.lineEdit_nfo_tag_series = QtWidgets.QLineEdit(parent=self.layoutWidget_10)
@@ -9238,11 +8525,7 @@ class Ui_MDCx(object):
         self.label_416.setMinimumSize(QtCore.QSize(0, 30))
         self.label_416.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_416.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_416.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_416.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_416.setObjectName("label_416")
         self.horizontalLayout_145.addWidget(self.label_416)
         self.lineEdit_nfo_tag_studio = QtWidgets.QLineEdit(parent=self.layoutWidget_10)
@@ -9272,11 +8555,7 @@ class Ui_MDCx(object):
         self.label_394.setMinimumSize(QtCore.QSize(20, 0))
         self.label_394.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_394.setText("")
-        self.label_394.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_394.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_394.setObjectName("label_394")
         self.horizontalLayout_142.addWidget(self.label_394)
         self.checkBox_outline_cdata = QtWidgets.QCheckBox(parent=self.layoutWidget_10)
@@ -9291,11 +8570,7 @@ class Ui_MDCx(object):
         self.label_390.setSizePolicy(sizePolicy)
         self.label_390.setMinimumSize(QtCore.QSize(130, 30))
         self.label_390.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_390.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_390.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_390.setObjectName("label_390")
         self.gridLayout_40.addWidget(self.label_390, 10, 0, 1, 1)
         self.horizontalLayout_138 = QtWidgets.QHBoxLayout()
@@ -9342,11 +8617,7 @@ class Ui_MDCx(object):
         self.label_419.setMinimumSize(QtCore.QSize(130, 30))
         self.label_419.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_419.setText("")
-        self.label_419.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_419.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_419.setObjectName("label_419")
         self.gridLayout_40.addWidget(self.label_419, 19, 0, 1, 1)
         self.label_417 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9358,11 +8629,7 @@ class Ui_MDCx(object):
         self.label_417.setMinimumSize(QtCore.QSize(130, 30))
         self.label_417.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_417.setText("")
-        self.label_417.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_417.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_417.setObjectName("label_417")
         self.gridLayout_40.addWidget(self.label_417, 18, 0, 1, 1)
         self.horizontalLayout_91 = QtWidgets.QHBoxLayout()
@@ -9388,11 +8655,7 @@ class Ui_MDCx(object):
         self.label_384.setSizePolicy(sizePolicy)
         self.label_384.setMinimumSize(QtCore.QSize(130, 30))
         self.label_384.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_384.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_384.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_384.setObjectName("label_384")
         self.gridLayout_40.addWidget(self.label_384, 2, 0, 1, 1)
         self.label_208 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9403,11 +8666,7 @@ class Ui_MDCx(object):
         self.label_208.setSizePolicy(sizePolicy)
         self.label_208.setMinimumSize(QtCore.QSize(130, 30))
         self.label_208.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_208.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_208.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_208.setObjectName("label_208")
         self.gridLayout_40.addWidget(self.label_208, 13, 0, 1, 1)
         self.label_161 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9419,11 +8678,7 @@ class Ui_MDCx(object):
         self.label_161.setMinimumSize(QtCore.QSize(130, 30))
         self.label_161.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_161.setText("")
-        self.label_161.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_161.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_161.setObjectName("label_161")
         self.gridLayout_40.addWidget(self.label_161, 15, 0, 1, 1)
         self.horizontalLayout_147 = QtWidgets.QHBoxLayout()
@@ -9437,11 +8692,7 @@ class Ui_MDCx(object):
         self.label_418.setMinimumSize(QtCore.QSize(0, 30))
         self.label_418.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_418.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_418.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_418.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_418.setObjectName("label_418")
         self.horizontalLayout_147.addWidget(self.label_418)
         self.lineEdit_nfo_tag_publisher = QtWidgets.QLineEdit(parent=self.layoutWidget_10)
@@ -9490,11 +8741,7 @@ class Ui_MDCx(object):
         self.label_334.setSizePolicy(sizePolicy)
         self.label_334.setMinimumSize(QtCore.QSize(130, 30))
         self.label_334.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_334.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_334.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_334.setObjectName("label_334")
         self.gridLayout_40.addWidget(self.label_334, 24, 0, 1, 1)
         self.label_385 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9505,11 +8752,7 @@ class Ui_MDCx(object):
         self.label_385.setSizePolicy(sizePolicy)
         self.label_385.setMinimumSize(QtCore.QSize(130, 30))
         self.label_385.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_385.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_385.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_385.setObjectName("label_385")
         self.gridLayout_40.addWidget(self.label_385, 4, 0, 1, 1)
         self.label_392 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9520,11 +8763,7 @@ class Ui_MDCx(object):
         self.label_392.setSizePolicy(sizePolicy)
         self.label_392.setMinimumSize(QtCore.QSize(130, 30))
         self.label_392.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_392.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_392.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_392.setObjectName("label_392")
         self.gridLayout_40.addWidget(self.label_392, 7, 0, 1, 1)
         self.horizontalLayout_40 = QtWidgets.QHBoxLayout()
@@ -9558,11 +8797,7 @@ class Ui_MDCx(object):
         self.label_403.setMinimumSize(QtCore.QSize(130, 30))
         self.label_403.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_403.setText("")
-        self.label_403.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_403.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_403.setObjectName("label_403")
         self.gridLayout_40.addWidget(self.label_403, 12, 0, 1, 1)
         self.horizontalLayout_121 = QtWidgets.QHBoxLayout()
@@ -9576,11 +8811,7 @@ class Ui_MDCx(object):
         self.label_393.setMinimumSize(QtCore.QSize(20, 0))
         self.label_393.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_393.setText("")
-        self.label_393.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_393.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_393.setObjectName("label_393")
         self.horizontalLayout_121.addWidget(self.label_393)
         self.checkBox_nfo_title_cd = QtWidgets.QCheckBox(parent=self.layoutWidget_10)
@@ -9617,11 +8848,7 @@ class Ui_MDCx(object):
         self.label_386.setSizePolicy(sizePolicy)
         self.label_386.setMinimumSize(QtCore.QSize(130, 30))
         self.label_386.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_386.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_386.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_386.setObjectName("label_386")
         self.gridLayout_40.addWidget(self.label_386, 11, 0, 1, 1)
         self.label_395 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9641,11 +8868,7 @@ class Ui_MDCx(object):
         self.label_150.setSizePolicy(sizePolicy)
         self.label_150.setMinimumSize(QtCore.QSize(130, 30))
         self.label_150.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_150.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_150.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_150.setObjectName("label_150")
         self.gridLayout_40.addWidget(self.label_150, 26, 0, 1, 1)
         self.label_433 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9657,11 +8880,7 @@ class Ui_MDCx(object):
         self.label_433.setMinimumSize(QtCore.QSize(130, 30))
         self.label_433.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_433.setText("")
-        self.label_433.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_433.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_433.setObjectName("label_433")
         self.gridLayout_40.addWidget(self.label_433, 20, 0, 1, 1)
         self.horizontalLayout_161 = QtWidgets.QHBoxLayout()
@@ -9675,11 +8894,7 @@ class Ui_MDCx(object):
         self.label_423.setMinimumSize(QtCore.QSize(0, 30))
         self.label_423.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_423.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_423.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_423.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_423.setObjectName("label_423")
         self.horizontalLayout_161.addWidget(self.label_423)
         self.lineEdit_nfo_tag_actor = QtWidgets.QLineEdit(parent=self.layoutWidget_10)
@@ -9704,15 +8919,11 @@ class Ui_MDCx(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_428.sizePolicy().hasHeightForWidth())
         self.label_428.setSizePolicy(sizePolicy)
-        self.label_428.setMinimumSize(QtCore.QSize(0, 30))
+        self.label_428.setMinimumSize(QtCore.QSize(0, 36))
         self.label_428.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_428.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_428.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
-        self.label_428.setWordWrap(False)
+        self.label_428.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.label_428.setWordWrap(True)
         self.label_428.setObjectName("label_428")
         self.gridLayout_40.addWidget(self.label_428, 23, 1, 1, 1)
         self.label_429 = QtWidgets.QLabel(parent=self.layoutWidget_10)
@@ -9724,11 +8935,7 @@ class Ui_MDCx(object):
         self.label_429.setMinimumSize(QtCore.QSize(130, 30))
         self.label_429.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_429.setText("")
-        self.label_429.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_429.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_429.setObjectName("label_429")
         self.gridLayout_40.addWidget(self.label_429, 23, 0, 1, 1)
         self.label_389 = QtWidgets.QLabel(parent=self.groupBox_81)
@@ -9763,7 +8970,7 @@ class Ui_MDCx(object):
         self.scrollArea_12.setWidgetResizable(True)
         self.scrollArea_12.setObjectName("scrollArea_12")
         self.scrollAreaWidgetContents_yanyuan = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_yanyuan.setGeometry(QtCore.QRect(0, 0, 860, 1570))
+        self.scrollAreaWidgetContents_yanyuan.setGeometry(QtCore.QRect(0, 0, 860, 1619))
         self.scrollAreaWidgetContents_yanyuan.setObjectName("scrollAreaWidgetContents_yanyuan")
         self.groupBox_43 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_yanyuan)
         self.groupBox_43.setGeometry(QtCore.QRect(30, 20, 701, 321))
@@ -9799,11 +9006,7 @@ class Ui_MDCx(object):
         self.label_104.setMinimumSize(QtCore.QSize(130, 30))
         self.label_104.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_104.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_104.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_104.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_104.setObjectName("label_104")
         self.gridLayout_25.addWidget(self.label_104, 1, 0, 1, 1)
         self.label_105 = QtWidgets.QLabel(parent=self.gridLayoutWidget_25)
@@ -9877,11 +9080,7 @@ class Ui_MDCx(object):
         self.label_298.setMinimumSize(QtCore.QSize(130, 30))
         self.label_298.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_298.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_298.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_298.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_298.setObjectName("label_298")
         self.gridLayout_25.addWidget(self.label_298, 8, 0, 1, 1)
         self.label_121 = QtWidgets.QLabel(parent=self.gridLayoutWidget_25)
@@ -9903,11 +9102,7 @@ class Ui_MDCx(object):
         self.label_306.setSizePolicy(sizePolicy)
         self.label_306.setMinimumSize(QtCore.QSize(130, 30))
         self.label_306.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_306.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_306.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_306.setObjectName("label_306")
         self.gridLayout_25.addWidget(self.label_306, 0, 0, 1, 1)
         self.label_108 = QtWidgets.QLabel(parent=self.gridLayoutWidget_25)
@@ -9919,11 +9114,7 @@ class Ui_MDCx(object):
         self.label_108.setMinimumSize(QtCore.QSize(130, 30))
         self.label_108.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_108.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_108.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_108.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_108.setObjectName("label_108")
         self.gridLayout_25.addWidget(self.label_108, 6, 0, 1, 1)
         self.label_107 = QtWidgets.QLabel(parent=self.gridLayoutWidget_25)
@@ -9935,11 +9126,7 @@ class Ui_MDCx(object):
         self.label_107.setMinimumSize(QtCore.QSize(130, 30))
         self.label_107.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_107.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_107.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_107.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_107.setObjectName("label_107")
         self.gridLayout_25.addWidget(self.label_107, 3, 0, 1, 1)
         self.lineEdit_api_key = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_25)
@@ -9969,7 +9156,7 @@ class Ui_MDCx(object):
         self.label_109.setObjectName("label_109")
         self.gridLayout_25.addWidget(self.label_109, 7, 1, 1, 1)
         self.groupBox_41 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_yanyuan)
-        self.groupBox_41.setGeometry(QtCore.QRect(30, 770, 701, 501))
+        self.groupBox_41.setGeometry(QtCore.QRect(30, 819, 701, 501))
         self.groupBox_41.setMinimumSize(QtCore.QSize(200, 0))
         self.groupBox_41.setObjectName("groupBox_41")
         self.pushButton_add_actor_pic = QtWidgets.QPushButton(parent=self.groupBox_41)
@@ -10022,11 +9209,7 @@ class Ui_MDCx(object):
         self.label_296.setSizePolicy(sizePolicy)
         self.label_296.setMinimumSize(QtCore.QSize(130, 0))
         self.label_296.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_296.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_296.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_296.setObjectName("label_296")
         self.layoutWidget_8 = QtWidgets.QWidget(parent=self.groupBox_41)
         self.layoutWidget_8.setGeometry(QtCore.QRect(20, 60, 661, 301))
@@ -10052,11 +9235,7 @@ class Ui_MDCx(object):
         self.label_293.setSizePolicy(sizePolicy)
         self.label_293.setMinimumSize(QtCore.QSize(130, 30))
         self.label_293.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_293.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_293.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_293.setObjectName("label_293")
         self.gridLayout.addWidget(self.label_293, 0, 0, 1, 1)
         self.label_101 = QtWidgets.QLabel(parent=self.layoutWidget_8)
@@ -10067,11 +9246,7 @@ class Ui_MDCx(object):
         self.label_101.setSizePolicy(sizePolicy)
         self.label_101.setMinimumSize(QtCore.QSize(130, 30))
         self.label_101.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_101.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_101.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_101.setObjectName("label_101")
         self.gridLayout.addWidget(self.label_101, 8, 0, 1, 1)
         self.horizontalLayout_93 = QtWidgets.QHBoxLayout()
@@ -10151,9 +9326,7 @@ class Ui_MDCx(object):
         self.label_download_actor_zip.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_download_actor_zip.setStyleSheet("color: rgb(10, 52, 255);")
         self.label_download_actor_zip.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_download_actor_zip.setObjectName("label_download_actor_zip")
         self.horizontalLayout_97.addWidget(self.label_download_actor_zip)
@@ -10194,11 +9367,7 @@ class Ui_MDCx(object):
         self.label_303.setSizePolicy(sizePolicy)
         self.label_303.setMinimumSize(QtCore.QSize(130, 30))
         self.label_303.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_303.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_303.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_303.setObjectName("label_303")
         self.gridLayout.addWidget(self.label_303, 1, 0, 1, 1)
         self.label_123 = QtWidgets.QLabel(parent=self.layoutWidget_8)
@@ -10220,9 +9389,7 @@ class Ui_MDCx(object):
         self.label_gfriends_local.setMinimumSize(QtCore.QSize(130, 30))
         self.label_gfriends_local.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_gfriends_local.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_gfriends_local.setObjectName("label_gfriends_local")
         self.gridLayout.addWidget(self.label_gfriends_local, 5, 0, 1, 1)
@@ -10270,11 +9437,11 @@ class Ui_MDCx(object):
         self.layoutWidget_8.raise_()
         self.frame_2.raise_()
         self.groupBox_64 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_yanyuan)
-        self.groupBox_64.setGeometry(QtCore.QRect(30, 360, 701, 391))
+        self.groupBox_64.setGeometry(QtCore.QRect(30, 360, 701, 441))
         self.groupBox_64.setMinimumSize(QtCore.QSize(200, 0))
         self.groupBox_64.setObjectName("groupBox_64")
         self.gridLayoutWidget_14 = QtWidgets.QWidget(parent=self.groupBox_64)
-        self.gridLayoutWidget_14.setGeometry(QtCore.QRect(20, 60, 661, 191))
+        self.gridLayoutWidget_14.setGeometry(QtCore.QRect(20, 60, 661, 240))
         self.gridLayoutWidget_14.setObjectName("gridLayoutWidget_14")
         self.gridLayout_14 = QtWidgets.QGridLayout(self.gridLayoutWidget_14)
         self.gridLayout_14.setContentsMargins(0, 0, 0, 0)
@@ -10295,7 +9462,7 @@ class Ui_MDCx(object):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
         )
         self.horizontalLayout_92.addItem(spacerItem9)
-        self.gridLayout_14.addLayout(self.horizontalLayout_92, 0, 1, 1, 1)
+        self.gridLayout_14.addLayout(self.horizontalLayout_92, 1, 1, 1, 1)
         self.frame_8 = QtWidgets.QFrame(parent=self.gridLayoutWidget_14)
         self.frame_8.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.frame_8.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
@@ -10309,11 +9476,7 @@ class Ui_MDCx(object):
         self.label_431.setSizePolicy(sizePolicy)
         self.label_431.setMinimumSize(QtCore.QSize(130, 30))
         self.label_431.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_431.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_431.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_431.setObjectName("label_431")
         self.gridLayout_14.addWidget(self.frame_8, 3, 0, 1, 1)
         self.horizontalLayout_155 = QtWidgets.QHBoxLayout()
@@ -10355,7 +9518,8 @@ class Ui_MDCx(object):
         self.horizontalLayout_1581 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_1581.setObjectName("horizontalLayout_1581")
         self.horizontalLayout_159 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_159.setContentsMargins(20, -1, -1, -1)
+        self.horizontalLayout_159.setContentsMargins(0, -1, -1, -1)
+        self.horizontalLayout_159.setSpacing(12)
         self.horizontalLayout_159.setObjectName("horizontalLayout_159")
         self.checkBox_actor_db = QtWidgets.QCheckBox(parent=self.gridLayoutWidget_14)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
@@ -10379,15 +9543,17 @@ class Ui_MDCx(object):
         self.label_download_actor_db.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_download_actor_db.setObjectName("label_download_actor_db")
         self.horizontalLayout_159.addWidget(self.label_download_actor_db)
-        self.horizontalLayout_160 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_160.setObjectName("horizontalLayout_160")
-        self.horizontalLayout_159.addLayout(self.horizontalLayout_160)
         self.horizontalLayout_1581.addLayout(self.horizontalLayout_159)
         spacerItem11 = QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
         )
         self.horizontalLayout_1581.addItem(spacerItem11)
         self.gridLayout_14.addLayout(self.horizontalLayout_1581, 4, 1, 1, 1)
+        self.horizontalLayout_160 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_160.setContentsMargins(0, -1, -1, -1)
+        self.horizontalLayout_160.setSpacing(12)
+        self.horizontalLayout_160.setObjectName("horizontalLayout_160")
+        self.gridLayout_14.addLayout(self.horizontalLayout_160, 0, 1, 1, 1)
         self.label_291 = QtWidgets.QLabel(parent=self.gridLayoutWidget_14)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -10396,14 +9562,11 @@ class Ui_MDCx(object):
         self.label_291.setSizePolicy(sizePolicy)
         self.label_291.setMinimumSize(QtCore.QSize(130, 30))
         self.label_291.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_291.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_291.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_291.setObjectName("label_291")
-        self.gridLayout_14.addWidget(self.label_291, 0, 0, 1, 1)
+        self.gridLayout_14.addWidget(self.label_291, 1, 0, 1, 1)
         self.horizontalLayout_98 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_98.setSpacing(0)
         self.horizontalLayout_98.setObjectName("horizontalLayout_98")
         self.label_280 = QtWidgets.QLabel(parent=self.gridLayoutWidget_14)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
@@ -10411,18 +9574,17 @@ class Ui_MDCx(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_280.sizePolicy().hasHeightForWidth())
         self.label_280.setSizePolicy(sizePolicy)
-        self.label_280.setMinimumSize(QtCore.QSize(10, 0))
+        self.label_280.setMinimumSize(QtCore.QSize(0, 0))
+        self.label_280.setMaximumSize(QtCore.QSize(0, 16777215))
         self.label_280.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_280.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.label_280.setText("")
-        self.label_280.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_280.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_280.setObjectName("label_280")
         self.horizontalLayout_98.addWidget(self.label_280)
         self.horizontalLayout_100 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_100.setContentsMargins(0, -1, -1, -1)
+        self.horizontalLayout_100.setSpacing(12)
         self.horizontalLayout_100.setObjectName("horizontalLayout_100")
         self.checkBox_actor_info_translate = QtWidgets.QCheckBox(parent=self.gridLayoutWidget_14)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
@@ -10450,7 +9612,7 @@ class Ui_MDCx(object):
         self.horizontalLayout_98.addItem(spacerItem12)
         self.gridLayout_14.addLayout(self.horizontalLayout_98, 2, 1, 1, 1)
         self.pushButton_add_actor_info = QtWidgets.QPushButton(parent=self.groupBox_64)
-        self.pushButton_add_actor_info.setGeometry(QtCore.QRect(155, 320, 181, 40))
+        self.pushButton_add_actor_info.setGeometry(QtCore.QRect(327, 369, 181, 40))
         self.pushButton_add_actor_info.setObjectName("pushButton_add_actor_info")
         self.label_295 = QtWidgets.QLabel(parent=self.groupBox_64)
         self.label_295.setGeometry(QtCore.QRect(50, 20, 631, 41))
@@ -10464,12 +9626,12 @@ class Ui_MDCx(object):
         self.label_295.setWordWrap(True)
         self.label_295.setObjectName("label_295")
         self.frame_4 = QtWidgets.QFrame(parent=self.groupBox_64)
-        self.frame_4.setGeometry(QtCore.QRect(20, 250, 661, 51))
+        self.frame_4.setGeometry(QtCore.QRect(20, 299, 661, 51))
         self.frame_4.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.frame_4.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_4.setObjectName("frame_4")
         self.layoutWidget_15 = QtWidgets.QWidget(parent=self.frame_4)
-        self.layoutWidget_15.setGeometry(QtCore.QRect(140, 10, 511, 32))
+        self.layoutWidget_15.setGeometry(QtCore.QRect(136, 10, 300, 32))
         self.layoutWidget_15.setObjectName("layoutWidget_15")
         self.horizontalLayout_101 = QtWidgets.QHBoxLayout(self.layoutWidget_15)
         self.horizontalLayout_101.setContentsMargins(0, 0, 0, 0)
@@ -10490,14 +9652,10 @@ class Ui_MDCx(object):
         self.label_299.setSizePolicy(sizePolicy)
         self.label_299.setMinimumSize(QtCore.QSize(130, 0))
         self.label_299.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_299.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_299.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_299.setObjectName("label_299")
         self.checkBox_actor_info_photo = QtWidgets.QCheckBox(parent=self.groupBox_64)
-        self.checkBox_actor_info_photo.setGeometry(QtCore.QRect(450, 320, 191, 40))
+        self.checkBox_actor_info_photo.setGeometry(QtCore.QRect(480, 309, 191, 32))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -10506,22 +9664,20 @@ class Ui_MDCx(object):
         self.checkBox_actor_info_photo.setMinimumSize(QtCore.QSize(0, 30))
         self.checkBox_actor_info_photo.setObjectName("checkBox_actor_info_photo")
         self.label_actor_info_concurrency = QtWidgets.QLabel(parent=self.groupBox_64)
-        self.label_actor_info_concurrency.setGeometry(QtCore.QRect(20, 320, 56, 40))
+        self.label_actor_info_concurrency.setGeometry(QtCore.QRect(192, 369, 56, 40))
         self.label_actor_info_concurrency.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_actor_info_concurrency.setObjectName("label_actor_info_concurrency")
         self.spinBox_actor_info_concurrency = QtWidgets.QSpinBox(parent=self.groupBox_64)
-        self.spinBox_actor_info_concurrency.setGeometry(QtCore.QRect(80, 326, 70, 28))
+        self.spinBox_actor_info_concurrency.setGeometry(QtCore.QRect(252, 375, 70, 28))
         self.spinBox_actor_info_concurrency.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.spinBox_actor_info_concurrency.setMinimum(1)
         self.spinBox_actor_info_concurrency.setMaximum(50)
         self.spinBox_actor_info_concurrency.setProperty("value", 10)
         self.spinBox_actor_info_concurrency.setObjectName("spinBox_actor_info_concurrency")
         self.groupBox_68 = QtWidgets.QGroupBox(parent=self.scrollAreaWidgetContents_yanyuan)
-        self.groupBox_68.setGeometry(QtCore.QRect(30, 1290, 701, 191))
+        self.groupBox_68.setGeometry(QtCore.QRect(30, 1339, 701, 191))
         self.groupBox_68.setMinimumSize(QtCore.QSize(200, 0))
         self.groupBox_68.setObjectName("groupBox_68")
         self.pushButton_add_actor_pic_kodi = QtWidgets.QPushButton(parent=self.groupBox_68)
@@ -10567,11 +9723,7 @@ class Ui_MDCx(object):
         self.label_415.setSizePolicy(sizePolicy)
         self.label_415.setMinimumSize(QtCore.QSize(130, 0))
         self.label_415.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_415.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_415.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_415.setObjectName("label_415")
         self.pushButton_del_actor_folder = QtWidgets.QPushButton(parent=self.groupBox_68)
         self.pushButton_del_actor_folder.setGeometry(QtCore.QRect(490, 130, 171, 40))
@@ -10619,11 +9771,7 @@ class Ui_MDCx(object):
         self.label_45.setMinimumSize(QtCore.QSize(130, 30))
         self.label_45.setMaximumSize(QtCore.QSize(130, 16777215))
         self.label_45.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_45.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_45.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_45.setObjectName("label_45")
         self.gridLayout_10.addWidget(self.label_45, 0, 0, 1, 1)
         self.plainTextEdit_cookie_javdb = QtWidgets.QPlainTextEdit(parent=self.gridLayoutWidget_10)
@@ -10662,9 +9810,7 @@ class Ui_MDCx(object):
         self.label_javdb_cookie_result.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_javdb_cookie_result.setText("")
         self.label_javdb_cookie_result.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_javdb_cookie_result.setObjectName("label_javdb_cookie_result")
         self.horizontalLayout_151.addWidget(self.label_javdb_cookie_result)
@@ -10678,11 +9824,7 @@ class Ui_MDCx(object):
         self.label_425.setMinimumSize(QtCore.QSize(130, 30))
         self.label_425.setMaximumSize(QtCore.QSize(130, 16777215))
         self.label_425.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_425.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_425.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_425.setObjectName("label_425")
         self.gridLayout_10.addWidget(self.label_425, 2, 0, 1, 1)
         self.plainTextEdit_cookie_javbus = QtWidgets.QPlainTextEdit(parent=self.gridLayoutWidget_10)
@@ -10722,9 +9864,7 @@ class Ui_MDCx(object):
         self.label_javbus_cookie_result.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_javbus_cookie_result.setText("")
         self.label_javbus_cookie_result.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_javbus_cookie_result.setObjectName("label_javbus_cookie_result")
         self.horizontalLayout_152.addWidget(self.label_javbus_cookie_result)
@@ -10739,9 +9879,7 @@ class Ui_MDCx(object):
         self.label_fc2ppvdb_cookie.setMaximumSize(QtCore.QSize(130, 16777215))
         self.label_fc2ppvdb_cookie.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_fc2ppvdb_cookie.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_fc2ppvdb_cookie.setObjectName("label_fc2ppvdb_cookie")
         self.gridLayout_10.addWidget(self.label_fc2ppvdb_cookie, 4, 0, 1, 1)
@@ -10781,9 +9919,7 @@ class Ui_MDCx(object):
         self.label_fc2ppvdb_cookie_result.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_fc2ppvdb_cookie_result.setText("")
         self.label_fc2ppvdb_cookie_result.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_fc2ppvdb_cookie_result.setObjectName("label_fc2ppvdb_cookie_result")
         self.horizontalLayout_fc2ppvdb_cookie.addWidget(self.label_fc2ppvdb_cookie_result)
@@ -10797,9 +9933,7 @@ class Ui_MDCx(object):
         self.label_75.setSizePolicy(sizePolicy)
         self.label_75.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_75.setScaledContents(True)
-        self.label_75.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_75.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_75.setWordWrap(True)
         self.label_75.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_75.setObjectName("label_75")
@@ -10809,11 +9943,7 @@ class Ui_MDCx(object):
         self.label_get_cookie_url.setMouseTracking(False)
         self.label_get_cookie_url.setStyleSheet("color: rgb(10, 52, 255);")
         self.label_get_cookie_url.setScaledContents(False)
-        self.label_get_cookie_url.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_get_cookie_url.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_get_cookie_url.setOpenExternalLinks(False)
         self.label_get_cookie_url.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
         self.label_get_cookie_url.setWordWrap(True)
@@ -10830,7 +9960,6 @@ class Ui_MDCx(object):
         self.gridLayoutWidget_9.setGeometry(QtCore.QRect(20, 30, 661, 597))
         self.gridLayoutWidget_9.setObjectName("gridLayoutWidget_9")
         self.gridLayout_9 = QtWidgets.QGridLayout(self.gridLayoutWidget_9)
-        self.gridLayout_9.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         self.gridLayout_9.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_9.setObjectName("gridLayout_9")
         self.label_103 = QtWidgets.QLabel(parent=self.gridLayoutWidget_9)
@@ -10843,9 +9972,7 @@ class Ui_MDCx(object):
         self.label_103.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         self.label_103.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         self.label_103.setWordWrap(True)
-        self.label_103.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_103.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_103.setObjectName("label_103")
         self.gridLayout_9.addWidget(self.label_103, 9, 1, 1, 3)
         self.horizontalLayout_17 = QtWidgets.QHBoxLayout()
@@ -10937,11 +10064,7 @@ class Ui_MDCx(object):
         self.label_73.setSizePolicy(sizePolicy)
         self.label_73.setMinimumSize(QtCore.QSize(0, 0))
         self.label_73.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_73.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_73.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_73.setObjectName("label_73")
         self.gridLayout_9.addWidget(self.label_73, 7, 0, 1, 1)
         self.lineEdit_proxy = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_9)
@@ -10968,9 +10091,7 @@ class Ui_MDCx(object):
         self.label_no_proxy_sites.setMinimumSize(QtCore.QSize(130, 0))
         self.label_no_proxy_sites.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_no_proxy_sites.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_no_proxy_sites.setObjectName("label_no_proxy_sites")
         self.gridLayout_9.addWidget(self.label_no_proxy_sites, 2, 0, 1, 1)
@@ -11014,11 +10135,7 @@ class Ui_MDCx(object):
         self.label_direct_sites.setSizePolicy(sizePolicy)
         self.label_direct_sites.setMinimumSize(QtCore.QSize(130, 0))
         self.label_direct_sites.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_direct_sites.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_direct_sites.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_direct_sites.setObjectName("label_direct_sites")
         self.gridLayout_9.addWidget(self.label_direct_sites, 3, 0, 1, 1)
         self.lineEdit_direct_sites = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_9)
@@ -11046,11 +10163,7 @@ class Ui_MDCx(object):
         self.label_cf_bypass.setSizePolicy(sizePolicy)
         self.label_cf_bypass.setMinimumSize(QtCore.QSize(130, 0))
         self.label_cf_bypass.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_cf_bypass.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_cf_bypass.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_cf_bypass.setObjectName("label_cf_bypass")
         self.gridLayout_9.addWidget(self.label_cf_bypass, 4, 0, 1, 1)
         self.lineEdit_cf_bypass_url = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_9)
@@ -11077,9 +10190,7 @@ class Ui_MDCx(object):
         self.label_cf_bypass_proxy.setMinimumSize(QtCore.QSize(130, 0))
         self.label_cf_bypass_proxy.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_cf_bypass_proxy.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_cf_bypass_proxy.setObjectName("label_cf_bypass_proxy")
         self.gridLayout_9.addWidget(self.label_cf_bypass_proxy, 6, 0, 1, 1)
@@ -11107,9 +10218,7 @@ class Ui_MDCx(object):
         self.label_cf_bypass_trawl.setMinimumSize(QtCore.QSize(130, 0))
         self.label_cf_bypass_trawl.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_cf_bypass_trawl.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_cf_bypass_trawl.setObjectName("label_cf_bypass_trawl")
         self.gridLayout_9.addWidget(self.label_cf_bypass_trawl, 5, 0, 1, 1)
@@ -11151,9 +10260,7 @@ class Ui_MDCx(object):
         self.label_cf_bypass_trusted_hosts.setMinimumSize(QtCore.QSize(130, 0))
         self.label_cf_bypass_trusted_hosts.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_cf_bypass_trusted_hosts.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_cf_bypass_trusted_hosts.setObjectName("label_cf_bypass_trusted_hosts")
         self.gridLayout_9.addWidget(self.label_cf_bypass_trusted_hosts, 11, 0, 1, 1)
@@ -11201,9 +10308,7 @@ class Ui_MDCx(object):
         self.label_cf_solver_sites.setMinimumSize(QtCore.QSize(130, 0))
         self.label_cf_solver_sites.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_cf_solver_sites.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter
         )
         self.label_cf_solver_sites.setObjectName("label_cf_solver_sites")
         self.gridLayout_9.addWidget(self.label_cf_solver_sites, 14, 0, 1, 1)
@@ -11234,11 +10339,7 @@ class Ui_MDCx(object):
         self.label_65.setSizePolicy(sizePolicy)
         self.label_65.setMinimumSize(QtCore.QSize(0, 0))
         self.label_65.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_65.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_65.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_65.setObjectName("label_65")
         self.gridLayout_9.addWidget(self.label_65, 8, 0, 1, 1)
         self.label_64 = QtWidgets.QLabel(parent=self.gridLayoutWidget_9)
@@ -11250,11 +10351,7 @@ class Ui_MDCx(object):
         self.label_64.setMinimumSize(QtCore.QSize(130, 0))
         self.label_64.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_64.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_64.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_64.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_64.setObjectName("label_64")
         self.gridLayout_9.addWidget(self.label_64, 1, 0, 1, 1)
         self.label_verify_ssl = QtWidgets.QLabel(parent=self.gridLayoutWidget_9)
@@ -11266,11 +10363,7 @@ class Ui_MDCx(object):
         self.label_verify_ssl.setMinimumSize(QtCore.QSize(130, 30))
         self.label_verify_ssl.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_verify_ssl.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_verify_ssl.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_verify_ssl.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_verify_ssl.setObjectName("label_verify_ssl")
         self.gridLayout_9.addWidget(self.label_verify_ssl, 10, 0, 1, 1)
         self.checkBox_verify_ssl = QtWidgets.QCheckBox(parent=self.gridLayoutWidget_9)
@@ -11299,11 +10392,7 @@ class Ui_MDCx(object):
         self.label_401.setSizePolicy(sizePolicy)
         self.label_401.setMinimumSize(QtCore.QSize(130, 30))
         self.label_401.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_401.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_401.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_401.setObjectName("label_401")
         self.gridLayout_12.addWidget(self.label_401, 0, 0, 1, 1)
         self.comboBox_custom_website = QtWidgets.QComboBox(parent=self.gridLayoutWidget)
@@ -11352,11 +10441,7 @@ class Ui_MDCx(object):
         self.label_400.setSizePolicy(sizePolicy)
         self.label_400.setMinimumSize(QtCore.QSize(130, 30))
         self.label_400.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_400.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_400.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_400.setObjectName("label_400")
         self.gridLayout_12.addWidget(self.label_400, 3, 0, 1, 1)
         self.label_110 = QtWidgets.QLabel(parent=self.gridLayoutWidget)
@@ -11388,11 +10473,7 @@ class Ui_MDCx(object):
         self.label_355.setSizePolicy(sizePolicy)
         self.label_355.setMinimumSize(QtCore.QSize(130, 30))
         self.label_355.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_355.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_355.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_355.setObjectName("label_355")
         self.gridLayout_65.addWidget(self.label_355, 2, 0, 1, 1)
         self.lineEdit_api_token_theporndb = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_11)
@@ -11418,11 +10499,7 @@ class Ui_MDCx(object):
         self.label_423_wl.setSizePolicy(sizePolicy)
         self.label_423_wl.setMinimumSize(QtCore.QSize(130, 30))
         self.label_423_wl.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_423_wl.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_423_wl.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_423_wl.setObjectName("label_423_wl")
         self.gridLayout_65.addWidget(self.label_423_wl, 0, 0, 1, 1)
         self.lineEdit_tmdb_api_base = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_11)
@@ -11448,11 +10525,7 @@ class Ui_MDCx(object):
         self.label_424_wl.setSizePolicy(sizePolicy)
         self.label_424_wl.setMinimumSize(QtCore.QSize(130, 30))
         self.label_424_wl.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_424_wl.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_424_wl.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_424_wl.setObjectName("label_424_wl")
         self.gridLayout_65.addWidget(self.label_424_wl, 1, 0, 1, 1)
         self.lineEdit_tmdb_api_key = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_11)
@@ -11478,9 +10551,7 @@ class Ui_MDCx(object):
         self.label_356.setSizePolicy(sizePolicy)
         self.label_356.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_356.setScaledContents(True)
-        self.label_356.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading | QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop
-        )
+        self.label_356.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_356.setWordWrap(True)
         self.label_356.setOpenExternalLinks(True)
         self.label_356.setTextInteractionFlags(
@@ -11507,11 +10578,7 @@ class Ui_MDCx(object):
         self.label_422.setSizePolicy(sizePolicy)
         self.label_422.setStyleSheet("color: rgb(8, 128, 128);")
         self.label_422.setScaledContents(True)
-        self.label_422.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_422.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_422.setWordWrap(True)
         self.label_422.setOpenExternalLinks(True)
         self.label_422.setTextInteractionFlags(
@@ -11667,11 +10734,7 @@ class Ui_MDCx(object):
         self.label_321.setSizePolicy(sizePolicy)
         self.label_321.setMinimumSize(QtCore.QSize(0, 0))
         self.label_321.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_321.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_321.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_321.setObjectName("label_321")
         self.gridLayout_20.addWidget(self.label_321, 3, 0, 1, 1)
         self.horizontalLayout_102 = QtWidgets.QHBoxLayout()
@@ -11751,11 +10814,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_84.sizePolicy().hasHeightForWidth())
         self.label_84.setSizePolicy(sizePolicy)
         self.label_84.setMinimumSize(QtCore.QSize(0, 30))
-        self.label_84.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_84.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_84.setObjectName("label_84")
         self.horizontalLayout_104.addWidget(self.label_84)
         self.gridLayout_20.addLayout(self.horizontalLayout_104, 4, 1, 1, 1)
@@ -11767,11 +10826,7 @@ class Ui_MDCx(object):
         self.label_308.setSizePolicy(sizePolicy)
         self.label_308.setMinimumSize(QtCore.QSize(0, 0))
         self.label_308.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_308.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_308.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_308.setObjectName("label_308")
         self.gridLayout_20.addWidget(self.label_308, 2, 0, 1, 1)
         self.label_309 = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -11782,11 +10837,7 @@ class Ui_MDCx(object):
         self.label_309.setSizePolicy(sizePolicy)
         self.label_309.setMinimumSize(QtCore.QSize(0, 0))
         self.label_309.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_309.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_309.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_309.setObjectName("label_309")
         self.gridLayout_20.addWidget(self.label_309, 4, 0, 1, 1)
         self.label_277 = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -11797,11 +10848,7 @@ class Ui_MDCx(object):
         self.label_277.setSizePolicy(sizePolicy)
         self.label_277.setMinimumSize(QtCore.QSize(0, 0))
         self.label_277.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_277.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_277.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_277.setObjectName("label_277")
         self.gridLayout_20.addWidget(self.label_277, 8, 0, 1, 1)
         self.horizontalLayout_63 = QtWidgets.QHBoxLayout()
@@ -11860,11 +10907,7 @@ class Ui_MDCx(object):
         self.label_279.setSizePolicy(sizePolicy)
         self.label_279.setMinimumSize(QtCore.QSize(0, 0))
         self.label_279.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_279.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_279.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_279.setObjectName("label_279")
         self.gridLayout_20.addWidget(self.label_279, 5, 0, 1, 1)
         self.label_task_mode = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -11875,11 +10918,7 @@ class Ui_MDCx(object):
         self.label_task_mode.setSizePolicy(sizePolicy)
         self.label_task_mode.setMinimumSize(QtCore.QSize(0, 30))
         self.label_task_mode.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_task_mode.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_task_mode.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_task_mode.setObjectName("label_task_mode")
         self.gridLayout_20.addWidget(self.label_task_mode, 6, 0, 1, 1)
         self.frame_task_mode = QtWidgets.QFrame(parent=self.gridLayoutWidget_20)
@@ -11910,11 +10949,7 @@ class Ui_MDCx(object):
         self.label_move_file.setSizePolicy(sizePolicy)
         self.label_move_file.setMinimumSize(QtCore.QSize(0, 30))
         self.label_move_file.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_move_file.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_move_file.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_move_file.setObjectName("label_move_file")
         self.gridLayout_20.addWidget(self.label_move_file, 7, 0, 1, 1)
         self.frame_move_file = QtWidgets.QFrame(parent=self.gridLayoutWidget_20)
@@ -11965,11 +11000,7 @@ class Ui_MDCx(object):
         self.label_421.setSizePolicy(sizePolicy)
         self.label_421.setMinimumSize(QtCore.QSize(0, 30))
         self.label_421.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_421.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_421.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_421.setObjectName("label_421")
         self.horizontalLayout_149.addWidget(self.label_421)
         self.gridLayout_20.addLayout(self.horizontalLayout_149, 12, 1, 1, 1)
@@ -11981,11 +11012,7 @@ class Ui_MDCx(object):
         self.label_314.setSizePolicy(sizePolicy)
         self.label_314.setMinimumSize(QtCore.QSize(0, 30))
         self.label_314.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_314.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_314.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_314.setObjectName("label_314")
         self.gridLayout_20.addWidget(self.label_314, 10, 0, 1, 1)
         self.label_243 = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -11996,11 +11023,7 @@ class Ui_MDCx(object):
         self.label_243.setSizePolicy(sizePolicy)
         self.label_243.setMinimumSize(QtCore.QSize(0, 0))
         self.label_243.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_243.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_243.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_243.setObjectName("label_243")
         self.gridLayout_20.addWidget(self.label_243, 0, 0, 1, 1)
         self.frame_3 = QtWidgets.QFrame(parent=self.gridLayoutWidget_20)
@@ -12058,11 +11081,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_52.sizePolicy().hasHeightForWidth())
         self.label_52.setSizePolicy(sizePolicy)
         self.label_52.setMinimumSize(QtCore.QSize(0, 30))
-        self.label_52.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_52.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_52.setObjectName("label_52")
         self.horizontalLayout_109.addWidget(self.label_52)
         self.lineEdit_rest_time = QtWidgets.QLineEdit(parent=self.gridLayoutWidget_20)
@@ -12088,11 +11107,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_71.sizePolicy().hasHeightForWidth())
         self.label_71.setSizePolicy(sizePolicy)
         self.label_71.setMinimumSize(QtCore.QSize(0, 30))
-        self.label_71.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_71.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_71.setObjectName("label_71")
         self.horizontalLayout_109.addWidget(self.label_71)
         self.gridLayout_20.addLayout(self.horizontalLayout_109, 3, 1, 1, 1)
@@ -12104,11 +11119,7 @@ class Ui_MDCx(object):
         self.label_313.setSizePolicy(sizePolicy)
         self.label_313.setMinimumSize(QtCore.QSize(0, 30))
         self.label_313.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_313.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_313.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_313.setObjectName("label_313")
         self.gridLayout_20.addWidget(self.label_313, 9, 0, 1, 1)
         self.label_246 = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -12119,11 +11130,7 @@ class Ui_MDCx(object):
         self.label_246.setSizePolicy(sizePolicy)
         self.label_246.setMinimumSize(QtCore.QSize(0, 30))
         self.label_246.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_246.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_246.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_246.setObjectName("label_246")
         self.gridLayout_20.addWidget(self.label_246, 11, 0, 1, 1)
         self.label_420 = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -12134,11 +11141,7 @@ class Ui_MDCx(object):
         self.label_420.setSizePolicy(sizePolicy)
         self.label_420.setMinimumSize(QtCore.QSize(0, 30))
         self.label_420.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_420.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_420.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_420.setObjectName("label_420")
         self.gridLayout_20.addWidget(self.label_420, 12, 0, 1, 1)
         self.label_426 = QtWidgets.QLabel(parent=self.gridLayoutWidget_20)
@@ -12149,11 +11152,7 @@ class Ui_MDCx(object):
         self.label_426.setSizePolicy(sizePolicy)
         self.label_426.setMinimumSize(QtCore.QSize(0, 30))
         self.label_426.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_426.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_426.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_426.setObjectName("label_426")
         self.gridLayout_20.addWidget(self.label_426, 13, 0, 1, 1)
         self.horizontalLayout_dock_2 = QtWidgets.QHBoxLayout()
@@ -12184,11 +11183,7 @@ class Ui_MDCx(object):
         self.label_427.setSizePolicy(sizePolicy)
         self.label_427.setMinimumSize(QtCore.QSize(0, 30))
         self.label_427.setStyleSheet("color: rgb(8, 128, 128);")
-        self.label_427.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignLeading
-            | QtCore.Qt.AlignmentFlag.AlignLeft
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_427.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_427.setObjectName("label_427")
         self.horizontalLayout_dock_2.addWidget(self.label_427)
         self.gridLayout_20.addLayout(self.horizontalLayout_dock_2, 13, 1, 1, 1)
@@ -12199,11 +11194,7 @@ class Ui_MDCx(object):
         sizePolicy.setHeightForWidth(self.label_nav_hide.sizePolicy().hasHeightForWidth())
         self.label_nav_hide.setSizePolicy(sizePolicy)
         self.label_nav_hide.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        self.label_nav_hide.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_nav_hide.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_nav_hide.setObjectName("label_nav_hide")
         self.gridLayout_20.addWidget(self.label_nav_hide, 14, 0, 1, 1)
         self.horizontalLayout_nav_hide = QtWidgets.QHBoxLayout()
@@ -12260,11 +11251,7 @@ class Ui_MDCx(object):
         self.label_241.setMinimumSize(QtCore.QSize(0, 0))
         self.label_241.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.label_241.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.label_241.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_241.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_241.setObjectName("label_241")
         self.pushButton_save_new_config = QtWidgets.QPushButton(parent=self.page_setting)
         self.pushButton_save_new_config.setGeometry(QtCore.QRect(270, 630, 91, 40))
@@ -12653,11 +11640,7 @@ class Ui_MDCx(object):
         self.label_local_number.setFrameShape(QtWidgets.QFrame.Shape.Box)
         self.label_local_number.setLineWidth(0)
         self.label_local_number.setText("")
-        self.label_local_number.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_local_number.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_local_number.setObjectName("label_local_number")
         self.widget_buttons = QtWidgets.QWidget(parent=self.widget_setting)
         self.widget_buttons.setGeometry(QtCore.QRect(0, 50, 210, 390))
@@ -12866,110 +11849,62 @@ class Ui_MDCx(object):
         self.label_19 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_19.setGeometry(QtCore.QRect(9, 330, 81, 40))
         self.label_19.setLineWidth(0)
-        self.label_19.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_19.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_19.setObjectName("label_19")
         self.label_359 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_359.setGeometry(QtCore.QRect(40, 140, 50, 40))
         self.label_359.setLineWidth(0)
-        self.label_359.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_359.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_359.setObjectName("label_359")
         self.label_360 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_360.setGeometry(QtCore.QRect(40, 80, 50, 40))
         self.label_360.setLineWidth(0)
-        self.label_360.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_360.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_360.setObjectName("label_360")
         self.label_361 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_361.setGeometry(QtCore.QRect(9, 220, 81, 40))
         self.label_361.setLineWidth(0)
-        self.label_361.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_361.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_361.setObjectName("label_361")
         self.label_362 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_362.setGeometry(QtCore.QRect(40, 660, 50, 40))
         self.label_362.setLineWidth(0)
-        self.label_362.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_362.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_362.setObjectName("label_362")
         self.label_363 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_363.setGeometry(QtCore.QRect(9, 800, 81, 40))
         self.label_363.setLineWidth(0)
-        self.label_363.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_363.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_363.setObjectName("label_363")
         self.label_364 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_364.setGeometry(QtCore.QRect(380, 800, 81, 40))
         self.label_364.setLineWidth(0)
-        self.label_364.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_364.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_364.setObjectName("label_364")
         self.label_365 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_365.setGeometry(QtCore.QRect(380, 920, 81, 40))
         self.label_365.setLineWidth(0)
-        self.label_365.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_365.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_365.setObjectName("label_365")
         self.label_366 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_366.setGeometry(QtCore.QRect(9, 920, 81, 40))
         self.label_366.setLineWidth(0)
-        self.label_366.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_366.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_366.setObjectName("label_366")
         self.label_367 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_367.setGeometry(QtCore.QRect(380, 980, 81, 40))
         self.label_367.setLineWidth(0)
-        self.label_367.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_367.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_367.setObjectName("label_367")
         self.label_368 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_368.setGeometry(QtCore.QRect(9, 980, 81, 40))
         self.label_368.setLineWidth(0)
-        self.label_368.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_368.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_368.setObjectName("label_368")
         self.label_369 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_369.setGeometry(QtCore.QRect(360, 80, 50, 40))
         self.label_369.setLineWidth(0)
-        self.label_369.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_369.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_369.setObjectName("label_369")
         self.comboBox_nfo = QtWidgets.QComboBox(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.comboBox_nfo.setGeometry(QtCore.QRect(420, 80, 103, 40))
@@ -12980,56 +11915,32 @@ class Ui_MDCx(object):
         self.label_371 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_371.setGeometry(QtCore.QRect(9, 490, 81, 40))
         self.label_371.setLineWidth(0)
-        self.label_371.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_371.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_371.setObjectName("label_371")
         self.label_372 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_372.setGeometry(QtCore.QRect(9, 270, 81, 40))
         self.label_372.setLineWidth(0)
-        self.label_372.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_372.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_372.setObjectName("label_372")
         self.label_375 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_375.setGeometry(QtCore.QRect(9, 1050, 81, 40))
         self.label_375.setLineWidth(0)
-        self.label_375.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_375.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_375.setObjectName("label_375")
         self.label_376 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_376.setGeometry(QtCore.QRect(-1, 1110, 91, 40))
         self.label_376.setLineWidth(0)
-        self.label_376.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_376.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_376.setObjectName("label_376")
         self.label_377 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_377.setGeometry(QtCore.QRect(-1, 1170, 91, 40))
         self.label_377.setLineWidth(0)
-        self.label_377.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_377.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_377.setObjectName("label_377")
         self.label_378 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_378.setGeometry(QtCore.QRect(0, 1230, 91, 40))
         self.label_378.setLineWidth(0)
-        self.label_378.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_378.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_378.setObjectName("label_378")
         self.label_370 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_370.setGeometry(QtCore.QRect(100, 190, 561, 20))
@@ -13052,29 +11963,17 @@ class Ui_MDCx(object):
         self.label_373 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_373.setGeometry(QtCore.QRect(9, 860, 81, 40))
         self.label_373.setLineWidth(0)
-        self.label_373.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_373.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_373.setObjectName("label_373")
         self.label_374 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_374.setGeometry(QtCore.QRect(380, 860, 81, 40))
         self.label_374.setLineWidth(0)
-        self.label_374.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_374.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_374.setObjectName("label_374")
         self.label_380 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_380.setGeometry(QtCore.QRect(540, 80, 51, 40))
         self.label_380.setLineWidth(0)
-        self.label_380.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_380.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_380.setObjectName("label_380")
         self.lineEdit_nfo_number = QtWidgets.QLineEdit(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.lineEdit_nfo_number.setGeometry(QtCore.QRect(100, 80, 241, 40))
@@ -13141,11 +12040,7 @@ class Ui_MDCx(object):
         self.label_381 = QtWidgets.QLabel(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.label_381.setGeometry(QtCore.QRect(40, 20, 50, 40))
         self.label_381.setLineWidth(0)
-        self.label_381.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight
-            | QtCore.Qt.AlignmentFlag.AlignTrailing
-            | QtCore.Qt.AlignmentFlag.AlignVCenter
-        )
+        self.label_381.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_381.setObjectName("label_381")
         self.textEdit_nfo_tag = QtWidgets.QTextEdit(parent=self.scrollAreaWidgetContents_nfo_editor)
         self.textEdit_nfo_tag.setGeometry(QtCore.QRect(100, 660, 621, 101))
