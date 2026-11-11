@@ -43,43 +43,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  init-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      # https://github.com/actions/runner/issues/1985#issuecomment-1573518052
-      - name: Set matrix
-        id: set-matrix
-        run: |
-          items=()
-
-          # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners
-
-          # macOS 只剩 Apple Silicon 一条腿：macOS 已放弃 x86_64（Intel runner 2027 秋整体
-          # 退役），再编一份 x86_64 dmg 只是白烧 runner 时间。
-          items+=('{"build": "macos", "os": "macos-latest", "arch": "aarch64"}')
-          items+=('{"build": "windows", "os": "windows-2025", "arch": "x86_64"}')
-          # Linux 固定 22.04（glibc 2.35）构建：ubuntu-latest 已滚到 26.04（glibc 2.43），
-          # 产物在 Ubuntu 22.04/24.04 上会报 `GLIBC_2.43 not found`。22.04 构建可向下兼容，
-          # 且 actions/python-versions 提供 Python 3.15 的 linux-22.04 构建。
-          items+=('{"build": "linux", "os": "ubuntu-22.04", "arch": "x86_64"}')
-
-          # 合并items到json数组
-          matrix="matrix=["
-          for ((i=0; i<${#items[@]}; i++)); do
-            matrix+=" ${items[i]}"
-            if ((i != ${#items[@]}-1)); then
-              matrix+=","
-            fi
-          done
-          matrix+="]"
-
-          # 输出matrix到GITHUB_OUTPUT
-          echo $matrix >> $GITHUB_OUTPUT
-
   build-app:
-    needs: init-matrix
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     # 某个平台 runner/依赖突然翻车时不阻塞其余平台，且 publish-release 会因
@@ -87,8 +51,17 @@ jobs:
     continue-on-error: true
     strategy:
       fail-fast: false
+      # 静态矩阵（原先由一个 ubuntu job 动态生成，白跑一次 runner 调度）：
+      # - macOS 只剩 Apple Silicon 一条腿：macOS 已放弃 x86_64（Intel runner 2027 秋整体
+      #   退役），再编一份 x86_64 dmg 只是白烧 runner 时间。
+      # - Linux 固定 22.04（glibc 2.35）构建：ubuntu-latest 已滚到 26.04（glibc 2.43），
+      #   产物在 Ubuntu 22.04/24.04 上会报 `GLIBC_2.43 not found`。22.04 构建可向下兼容，
+      #   且 actions/python-versions 提供 Python 3.15 的 linux-22.04 构建。
       matrix:
-        include: ${{fromJson(needs.init-matrix.outputs.matrix)}}
+        include:
+          - { build: macos, os: macos-latest, arch: aarch64 }
+          - { build: windows, os: windows-2025, arch: x86_64 }
+          - { build: linux, os: ubuntu-22.04, arch: x86_64 }
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -223,14 +196,13 @@ jobs:
           $releaseTag = "${{ steps.release-tag.outputs.tag }}"
           $platform = "${{ matrix.build }}"
           $arch = "${{ matrix.arch }}"
-          $sha = "${{ github.sha }}"
           $artifactPath = "dist/MDCx.exe"
 
-          # 资产文件名只带日期版本号（tag），不再带展示版本号（3.0）那一段：
-          # MDCx-<tag>-<platform>-<arch>-<sha>.exe
+          # 资产文件名只带日期版本号（tag），不再带展示版本号（3.0）与提交 sha：
+          # MDCx-<tag>-<platform>-<arch>.exe
           # 与 publish-release 的 asset_name 同一套拼法，日志里的「计划发布文件名」
           # 必须与真正上传的名字逐字一致。
-          $expectedAssetName = "MDCx-${releaseTag}-${platform}-${arch}-${sha}.exe"
+          $expectedAssetName = "MDCx-${releaseTag}-${platform}-${arch}.exe"
 
           Write-Host "检查发布产物：$artifactPath"
           Write-Host "计划发布文件名：$expectedAssetName"
@@ -404,7 +376,7 @@ jobs:
         with:
           overwrite: true
           release_name: ${{ steps.metadata.outputs.name }}
-          asset_name: MDCx-${{ steps.metadata.outputs.tag }}-macos-aarch64-${{ github.sha }}.dmg
+          asset_name: MDCx-${{ steps.metadata.outputs.tag }}-macos-aarch64.dmg
           file: dist/MDCx-aarch64.dmg
           prerelease: ${{ steps.metadata.outputs.prerelease }}
           body: "完整变更日志见 docs/Changelog.md 的 ${{ steps.changelog.outputs.date }} 区段，正文由「Publish release notes」步骤写入。"
@@ -415,7 +387,7 @@ jobs:
         with:
           overwrite: true
           release_name: ${{ steps.metadata.outputs.name }}
-          asset_name: MDCx-${{ steps.metadata.outputs.tag }}-windows-x86_64-${{ github.sha }}.exe
+          asset_name: MDCx-${{ steps.metadata.outputs.tag }}-windows-x86_64.exe
           file: dist/MDCx.exe
           prerelease: ${{ steps.metadata.outputs.prerelease }}
           body: "完整变更日志见 docs/Changelog.md 的 ${{ steps.changelog.outputs.date }} 区段，正文由「Publish release notes」步骤写入。"
@@ -426,7 +398,7 @@ jobs:
         with:
           overwrite: true
           release_name: ${{ steps.metadata.outputs.name }}
-          asset_name: MDCx-${{ steps.metadata.outputs.tag }}-linux-x86_64-${{ github.sha }}
+          asset_name: MDCx-${{ steps.metadata.outputs.tag }}-linux-x86_64
           file: dist/MDCx
           prerelease: ${{ steps.metadata.outputs.prerelease }}
           body: "完整变更日志见 docs/Changelog.md 的 ${{ steps.changelog.outputs.date }} 区段，正文由「Publish release notes」步骤写入。"
