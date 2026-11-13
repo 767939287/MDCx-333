@@ -71,9 +71,11 @@ class LogPageMixin:
             finally:
                 outer.blockSignals(False)
 
-    # 日志追加时保持滚动条位置不变（默认最上方），不自动拉到底；
+    # 日志追加按终端行为滚动（用户 2026-11-13「想学 linux 的 terminal 那样」）：
+    # 追加前已经贴着底部（含内容不足一页）→ 追加后跟随到底，新日志自动进入视野；
+    # 用户往上翻看历史（不在底部）→ 保持原位不被新日志抢走视野，看完滚回底部即恢复跟随。
     # 同时保住用户文本光标：append() 会把光标甩到末尾，后续窗口缩放/重排会
-    # ensureCursorVisible 跳到底部，这里一并恢复，之后打开保留的才是上次位置
+    # ensureCursorVisible 跳到底部，这里一并恢复。
     @staticmethod
     def _append_log_preserve_scroll(browser, html: str) -> None:
         view_cursor = browser.textCursor()
@@ -81,13 +83,14 @@ class LogPageMixin:
         saved_anchor = view_cursor.anchor()
         bar = browser.verticalScrollBar()
         scroll_pos = bar.value()
+        follow_tail = scroll_pos >= bar.maximum()
         browser.append(html)
         doc_end = max(browser.document().characterCount() - 1, 0)
         restored = browser.textCursor()
         restored.setPosition(min(saved_anchor, doc_end), QTextCursor.MoveMode.MoveAnchor)
         restored.setPosition(min(saved_pos, doc_end), QTextCursor.MoveMode.KeepAnchor)
         browser.setTextCursor(restored)
-        bar.setValue(scroll_pos)
+        bar.setValue(bar.maximum() if follow_tail else scroll_pos)
 
     def _on_main_logs_show(self, html: str) -> None:
         self._append_log_preserve_scroll(self.Ui.textBrowser_log_main, html)
