@@ -195,6 +195,7 @@
 - **带语言段的入口地址不能直接当前缀拼**：`base/web.py::site_root()` 先收敛成 `scheme://host` 再拼路径（JavLibrary `/cn`、IQQTV `/cn`、镜像 `/cn/main.php`）；missav 默认地址固定带 `/dm247/cn`，不带语言段会被站点 302 到 `/dm265/en` 英文页。
 - **javdb 三源**：javdb（网页）/ javdb_api（镜像站）/ javdb_app（App API，免 CF 最稳）。thejavdb 与 javdb 无关。App 签名机制见 `docs/Javdb_App_Signature.md`，排障锚点 = 三主机同时 4xx 或 InvalidSignature，环境变量 `MDCX_JAVDB_APP_SIG_*` 可免改码覆盖。搜索 limit ≤ 50，分页须 `movie_sort_by=release`。
 - **javdb 图源无水印体系**：`tp.spfcas.com` 是 App 专用（单字节 XOR，首字节 key），`c0.jdbstatic.com` 带水印。解密/变换集中在 `base/web.py`。加密流尺寸探测 (0,0) 属预期。
+- **改 CF bypass / solver 相关代码前先看本条**（2026-11-13 定）：`cf_clearance` = cookie + UA + 出口 IP 三件套，拆开改必然退化成「solver 成功 → 直连又挑战」的循环。四个要点：UA 平台段由运行平台决定（`align_user_agent_platform`，不许写死）、锁 UA 要连带清 `sec-ch-ua*`（`_apply_solver_identity`）、solver 必须与直连同出口（`use_proxy=bool(request_proxy)`）、挑战页 marker 用带路径的 `cdn-cgi/challenge-platform/h/b/`（CF 会给正常页注入 jsd 脚本，用域名前缀会误判）。回归：`tests/test_solver_ua_lock.py`。
 
 ## Windows 打包与发布
 

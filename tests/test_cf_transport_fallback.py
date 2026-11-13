@@ -43,7 +43,7 @@ def _mock_transport_failure(client, monkeypatch, *, bypass_ok=True):
         calls["curl"] += 1
         return None
 
-    async def fake_ensure_local_bypass():
+    async def fake_ensure_local_bypass(host: str = "") -> bool:
         calls["ensure"] += 1
         client._cf_bypass_enabled = True
         client.cf_bypass_url = "http://127.0.0.1:9"

@@ -29,6 +29,28 @@ def _qss_resources(style: str) -> str:
     )
 
 
+# 结构档位：圆角 4 档 / 字号 4 档 / 间距 3 档。QSS 里一律引用这些键，
+# 不再各处手写 px 值（换皮前 style.py 里散着 14 种圆角、6 种字号）。
+RADIUS_SCALE = {
+    "radius_sm": "4px",
+    "radius_md": "8px",
+    "radius_lg": "10px",
+    "radius_pill": "20px",
+}
+
+FONT_SCALE = {
+    "font_xs": "12px",
+    "font_sm": "13px",
+    "font_md": "14px",
+    "font_lg": "16px",
+}
+
+SPACE_SCALE = {
+    "space_xs": "2px",
+    "space_sm": "4px",
+    "space_md": "8px",
+}
+
 LIGHT_TOKENS = {
     "window": "#FFFFFF",
     "surface": "#F8FAFC",
@@ -48,10 +70,52 @@ LIGHT_TOKENS = {
     "selection_text": "#111827",
     "tree_hover": "rgba(76, 110, 255, 18)",
     "tree_border": "rgba(76, 110, 255, 170)",
+    # --- 换皮 A1 新增语义色：浅色取值 = 换皮前的实际硬编码值，保证像素级不变 ---
+    "sidebar": "#EEF3FF",
+    "sidebar_text": "#000000",
+    "panel": "rgba(246, 246, 246, 255)",
+    "panel_border": "rgba(20, 20, 20, 50)",
+    "editor_bg": "rgba(240, 245, 240, 240)",
+    "group_box": "rgba(245, 245, 246, 220)",
+    "group_box_flat": "rgba(246, 246, 246, 0)",
+    "button_neutral": "rgba(220, 220, 220, 255)",
+    "button_neutral_border": "#000000",
+    "icon_button_hover": "rgba(181, 181, 181, 120)",
+    "icon_button_pressed": "rgba(150, 150, 150, 120)",
+    "tooltip_bg": "#FFFFFF",
+    "tooltip_text": "#111827",
+    "tab_bg": "#FFFFFF",
+    "tab_selected": "#2080F7",
+    "tab_border": "#E8E8E8",
+    "indicator_border": "#B8C0CC",
+    "input_bg": "#FFFFFF",
+    "input_border": "#D8DEE9",
+    "input_focus_bg": "#FFFFFF",
+    "dropdown_bg": "#F8FAFC",
+    "dropdown_hover": "#EEF2FF",
+    "slider_groove": "#D7DDE8",
+    "slider_handle": "#FFFFFF",
+    "progress_chunk": "#5777FF",
+    "splitter_line": "#BEBEBE",
+    "log_bg_alt": "rgba(238, 245, 245, 60)",
+    "log_bg_detail": "rgba(239, 255, 252, 240)",
+    "log_bg_tail": "rgba(240, 245, 240, 240)",
+    "outline_border": "#CBD5E1",
+    "note_bg": "#FFFFFF",
+    "note_hover_bg": "#F1F5F9",
+    "note_hover_border": "#94A3B8",
+    "note_pressed_bg": "#E2E8F0",
+    "sidebar_text_muted": "#141414",
+    "poster_border": "rgba(60, 60, 60, 100)",
+    "text_soft": "rgba(0, 0, 0, 200)",
+    "page_bg": "#FFFFFF",
+    "config_footer_bg": "#FFFFFF",
 }
 
 DARK_TOKENS = {
-    "window": "#121A24",
+    # 与 page_bg 同色：window 是 centralwidget / tab 栏空白区的底色，比页面更深一档
+    # 会在顶部形成一条 #121A24 的断层（用户 2026-11-13 反馈"暗色颜色不统一"）。
+    "window": "#18222D",
     "surface": "#18222D",
     "surface_muted": "#1D2834",
     "text": "#E5E7EB",
@@ -69,11 +133,57 @@ DARK_TOKENS = {
     "selection_text": "#FFFFFF",
     "tree_hover": "rgba(102, 132, 255, 34)",
     "tree_border": "rgba(142, 163, 255, 190)",
+    # --- 换皮 A1 新增语义色：暗色取值 = 换皮前的实际硬编码值 ---
+    "sidebar": "#1F272F",
+    "sidebar_text": "#FFFFFF",
+    "panel": "#1F272F",
+    "panel_border": "rgba(240, 240, 240, 150)",
+    "editor_bg": "#18222D",
+    "group_box": "rgba(180, 180, 180, 20)",
+    "group_box_flat": "rgba(246, 246, 246, 0)",
+    "button_neutral": "rgba(220, 220, 220, 50)",
+    "button_neutral_border": "#000000",
+    "icon_button_hover": "rgba(181, 181, 181, 120)",
+    "icon_button_pressed": "rgba(150, 150, 150, 120)",
+    "tooltip_bg": "#F9FAFB",
+    "tooltip_text": "#111827",
+    "tab_bg": "#242D37",
+    "tab_selected": "#2080F7",
+    "tab_border": "#1F272F",
+    "indicator_border": "#5B6673",
+    "input_bg": "#18222D",
+    "input_border": "#2F3A46",
+    "input_focus_bg": "#1D2834",
+    "dropdown_bg": "#1D2834",
+    "dropdown_hover": "#243244",
+    "slider_groove": "#2F3A46",
+    "slider_handle": "#F8FAFC",
+    "progress_chunk": "#5777FF",
+    "splitter_line": "#BEBEBE",
+    "log_bg_alt": "#18222D",
+    "log_bg_detail": "#1F272F",
+    "log_bg_tail": "#18222D",
+    "outline_border": "#3B4654",
+    "note_bg": "#1D2834",
+    "note_hover_bg": "#253140",
+    "note_hover_border": "#566374",
+    "note_pressed_bg": "#2B3A4C",
+    "sidebar_text_muted": "#D2D2D2",
+    "poster_border": "rgba(255, 255, 255, 200)",
+    "text_soft": "rgba(255, 255, 255, 200)",
+    "page_bg": "#18222D",
+    "config_footer_bg": "#18222D",
 }
 
 
 def _tokens(dark: bool) -> dict[str, str]:
-    return DARK_TOKENS if dark else LIGHT_TOKENS
+    """返回当前主题的完整 token 表（配色 + 圆角/字号/间距档位）。"""
+    return {
+        **(DARK_TOKENS if dark else LIGHT_TOKENS),
+        **RADIUS_SCALE,
+        **FONT_SCALE,
+        **SPACE_SCALE,
+    }
 
 
 def get_theme_tokens(dark: bool) -> dict[str, str]:
@@ -192,7 +302,10 @@ def build_menu_style(dark: bool) -> str:
 def build_scrollbar_style(dark: bool) -> str:
     handle = "#4B5563" if dark else "#CBD5E1"
     handle_hover = "#64748B" if dark else "#94A3B8"
-    track = "#1F2937" if dark else "#E5E7EB"
+    # 轨道透明：议题 #153 定的 16px 宽 + 实心直角手柄保留，但不再给轨道上底色。
+    # 上底色会在设置页/信息管理页右侧画出一条贯穿整页的竖带，正好压在「保存」
+    # 按钮右侧，看起来像按钮被切掉一截（用户 2026-11-13 反馈）。
+    track = "transparent"
     # 议题 #153: 加宽(10->16px)、改直角实心、给轨道淡底色, 更接近浏览器滚动条;
     # 深/浅主题颜色由 build_scrollbar_style(dark) 统一切换。
     return f"""

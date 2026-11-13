@@ -117,7 +117,6 @@ class _Flags:
     failed_list: list[tuple[Path, str]] = field(default_factory=list)
     scrape_start_time: float = 0.0
     success_list: set[Path] = field(default_factory=set)
-    stop_other: bool = True
     stop_requested: bool = False
 
     # show
@@ -167,7 +166,6 @@ class _Flags:
         self.json_data_dic = OrderedDict()
         self.img_path = ""
         self.stop_requested = False
-        self.stop_other = True
         self.scrape_start_time = 0.0
         self.success_list = set()
         self.next_start_time = 0.0

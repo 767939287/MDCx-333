@@ -307,7 +307,6 @@ class SettingsActionsMixin:
             yield path
 
     def change_buttons_status(self):
-        Flags.stop_other = True
         self.Ui.pushButton_start_cap.setText("■ 停止")
         self.Ui.pushButton_start_cap2.setText("■ 停止")
         self.Ui.pushButton_select_media_folder.setVisible(False)

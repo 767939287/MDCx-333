@@ -2,6 +2,40 @@
 
 按日期分段记录（`## YYYY-MM-DD`，新 → 旧）。每条只写「做了什么 / 改了什么 / 修了什么」，原因与排查过程见 `docs/Development.md` 与 `DADA/MEMORY.md`。
 
+## 2026-11-13
+### 停止按钮不再「点一下立刻停」
+
+- `controllers/main_window/scrape_control.py`：停止收尾的 `finally` 同时复位 `Flags.stop_requested`。此前只复位 `signal_qt.stop`，任务级标志留 True，下一次「开始补全 / 字幕 / 移动视频 / 检查缺失番号」在开头 `_raise_if_stop_requested()` 就抛异常。
+- `_kill_threads` 整段包 try/finally：join 或日志抛异常时也会走 `show_stop_info_thread()` 复位，按钮不会永久卡在「 ■ 停止中 」。
+- 移除恒真的 `Flags.stop_other` 早退块与字段：它让停止后的统计汇总、进度条归零变成死代码。
+- `actor_db.py::pushButton_actor_db_stop_clicked`：没有在跑的维护任务时不再置位停止标志，否则明细日志被静默、后续演员补全秒停。
+- `main_window.py::_on_actor_db_finished`：复位块前移并加「主刮削没在跑」前提，避免弹窗式演员库任务结束时吞掉主刮削的停止请求。
+- `auto_scrape.py` / `tool_page.py` / `core/scraper.py`：定时刮削回查按钮态与停止标志；移动文件的取消事件在 `start()` 之前清零；间歇休息期间每秒检查停止，不再等满整个休息时长。
+
+### 演员刮削
+
+- `emby_actor_image.py`：本地头像库模式下返回的是 `str`，原来被 `cast(Path, ...)` 骗过、`.with_name()` 直接 AttributeError，导致每个演员都失败；头像下载失败而背景成功时不再返回不存在的头像路径；只有背景可用时单独上传背景，并统一清理旧背景。
+- `emby_actor_info.py`：DB 命中计数改用 `& 1`，不再把 Minnano 位一起计入。
+- `emby_actor_manager_ui.py`：预览线程改成真 Task，停止时 cancel 并 await，不再留悬空请求。
+- `missing.py`：检查缺失番号的按钮状态放进 `finally` 复位；本地番号缓存改为每 200 条落盘一次（原为每条全量重写），异常退出也会落盘。
+- `actor_db_tool.py`：检查与修复统一读取「演员数据库」sheet（不再取 `wb.active`）；剔除男优按实际删除行数统计，「保留数」按女优口径计算。
+
+### 网络检测
+
+- 多候选搜索地址逐个回退（dmm 3 / faleno 4 / xcity 2），不再只试第一个；全部候选都请求失败或被 Cloudflare 拦截才判失败。
+- 未配置地址的检测项记为「跳过」，不再算作「正常」，汇总里的「跳过 N」终于有值。
+- 汇总里「刮削探测多次超时」「刮削探测确定性失败」两行补齐 `  • ` 前缀，与其它分组对齐。
+- 停止检测后按钮不再被进度回写成「停止检测 x/y」；停止期间再点「开始检测」会提示上一次仍在停止中；复制报告的横幅宽度改为与正文一致。
+
+### Cloudflare 挑战
+
+- 复用 solver 解出的 `cf_clearance` 时同时用回 solver 的 User-Agent。此前客户端完全没用它，UA 与 clearance 不匹配，直连每次都被重新挑战。UA 平台段按运行系统重写，并清掉与之矛盾的 `sec-ch-ua*`。
+- 适配层 mirror 路径补回 `x-cf-bypasser-user-agent` 响应头（HTML 路径早已透传）。
+- 未单独配置「Bypass 代理」时，solver 改用站点本次实际走的代理，与直连保持同一出口 IP。
+- 程序生命周期内第一次调 solver、站点第一次命中挑战、外部 CF 服务适配层第一次启动，不再按 45s 掐断，改为最长 10 分钟等它自己返回。
+- 挑战页判定 marker 改为带路径的 `cdn-cgi/challenge-platform/h/b/`：CF 会给正常页面注入 jsd 脚本，旧 marker 把正常页误判为挑战页，JavLibrary 因此报「浏览器 bypass 失败」。
+- CF 相关日志统一 `🛡️ [CF] <host>` 前缀，适配层启动/就绪/失败都带站点名；「适配层恢复正常」只在真正从失败恢复时提示；bypass 成功日志补上耗时。
+
 ## 2026-11-09
 
 ### 维基简介保留子标题（h3/h4…）

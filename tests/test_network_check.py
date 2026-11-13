@@ -1854,6 +1854,153 @@ async def test_probe_crawler_capability_skipped_without_site():
     assert message == ""
 
 
+@pytest.mark.anyio
+async def test_probe_crawler_capability_falls_back_to_next_search_url(monkeypatch: pytest.MonkeyPatch):
+    """多候选搜索 URL 逐个回退：首个候选请求失败不得直接判站点失败。
+
+    dmm(3)/faleno(4)/xcity(2) 等站点的 `_generate_search_url` 会给多个候选地址，
+    真实刮削 `base._search` 是逐 URL 试到出结果为止；探测只试首个时，首选域名
+    被墙/改版就会把「换个镜像即可」的站点误报成失败。
+    """
+
+    class MultiUrlCrawler(ProbeCrawler):
+        async def _generate_search_url(self, ctx):
+            return [
+                f"{self.base_url}/mirror-a?q={ctx.input.number}",
+                f"{self.base_url}/mirror-b?q={ctx.input.number}",
+            ]
+
+    class FirstUrlFailsClient(ProbeFakeClient):
+        async def request(self, method, url, **kwargs):
+            self.calls.append({"method": method, "url": url, **kwargs})
+            if "mirror-a" in url:
+                return None, "connect timeout"
+            response = SimpleNamespace(status_code=200, text=self.text, url=url, headers={})
+            response.encoding = "utf-8"
+            return response, ""
+
+    monkeypatch.setattr("mdcx.crawlers.get_crawler", lambda site: MultiUrlCrawler)
+    spec = NetworkCheckSpec(name="AVBase", group="刮削站点", url="https://www.avbase.net", site=Website.AVBASE)
+
+    client = FirstUrlFailsClient()
+    status, message = await _probe_crawler_capability(client, spec)
+
+    assert status is NetworkCheckStatus.OK
+    assert message == "连接正常，刮削正常"
+    assert [call["url"] for call in client.calls] == [
+        f"https://www.avbase.net/mirror-a?q={nc.SCRAPE_PROBE_NUMBER}",
+        f"https://www.avbase.net/mirror-b?q={nc.SCRAPE_PROBE_NUMBER}",
+    ]
+
+
+@pytest.mark.anyio
+async def test_probe_crawler_capability_reports_failure_after_all_search_urls(monkeypatch: pytest.MonkeyPatch):
+    """全部候选都请求失败时才判失败，且每个候选都要真的试过。"""
+
+    class MultiUrlCrawler(ProbeCrawler):
+        async def _generate_search_url(self, ctx):
+            return [f"{self.base_url}/a?q={ctx.input.number}", f"{self.base_url}/b?q={ctx.input.number}"]
+
+    class AllFailClient(ProbeFakeClient):
+        async def request(self, method, url, **kwargs):
+            self.calls.append({"method": method, "url": url, **kwargs})
+            return None, "connect timeout"
+
+    monkeypatch.setattr("mdcx.crawlers.get_crawler", lambda site: MultiUrlCrawler)
+    spec = NetworkCheckSpec(name="AVBase", group="刮削站点", url="https://www.avbase.net", site=Website.AVBASE)
+
+    client = AllFailClient()
+    status, message = await _probe_crawler_capability(client, spec)
+
+    assert status is NetworkCheckStatus.WARNING
+    assert "搜索页请求失败" in message
+    assert len(client.calls) == 2, "候选地址必须逐个尝试"
+    assert "connect timeout" in message, "上报原因应取首个候选的失败原因"
+
+
+@pytest.mark.anyio
+async def test_probe_crawler_capability_continues_after_cloudflare_candidate(monkeypatch: pytest.MonkeyPatch):
+    """一个候选命中 CF 挑战页、另一个候选正常返回时判 OK（镜像组合站的常见形态）。"""
+
+    class MultiUrlCrawler(ProbeCrawler):
+        async def _generate_search_url(self, ctx):
+            return [f"{self.base_url}/a?q={ctx.input.number}", f"{self.base_url}/b?q={ctx.input.number}"]
+
+    class MixedClient(ProbeFakeClient):
+        async def request(self, method, url, **kwargs):
+            self.calls.append({"method": method, "url": url, **kwargs})
+            text = self.text
+            if "/a?" in url:
+                text = "<html><script src='/cdn-cgi/challenge-platform/h/b/x.js'></script></html>"
+            response = SimpleNamespace(status_code=200, text=text, url=url, headers={})
+            response.encoding = "utf-8"
+            return response, ""
+
+    monkeypatch.setattr("mdcx.crawlers.get_crawler", lambda site: MultiUrlCrawler)
+    spec = NetworkCheckSpec(name="AVBase", group="刮削站点", url="https://www.avbase.net", site=Website.AVBASE)
+
+    status, message = await _probe_crawler_capability(MixedClient(), spec)
+
+    assert status is NetworkCheckStatus.OK
+    assert message == "连接正常，刮削正常"
+
+
+@pytest.mark.anyio
+async def test_probe_crawler_capability_reports_cloudflare_when_all_candidates_blocked(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """全部候选都命中挑战页时才报 CF，且结论是确定性的（不再递进重试）。"""
+
+    class MultiUrlCrawler(ProbeCrawler):
+        async def _generate_search_url(self, ctx):
+            return [f"{self.base_url}/a?q={ctx.input.number}", f"{self.base_url}/b?q={ctx.input.number}"]
+
+    class ChallengeClient(ProbeFakeClient):
+        async def request(self, method, url, **kwargs):
+            self.calls.append({"method": method, "url": url, **kwargs})
+            response = SimpleNamespace(
+                status_code=200,
+                text="<html><script src='/cdn-cgi/challenge-platform/h/b/x.js'></script></html>",
+                url=url,
+                headers={},
+            )
+            response.encoding = "utf-8"
+            return response, ""
+
+    monkeypatch.setattr("mdcx.crawlers.get_crawler", lambda site: MultiUrlCrawler)
+    spec = NetworkCheckSpec(name="AVBase", group="刮削站点", url="https://www.avbase.net", site=Website.AVBASE)
+
+    status, message = await _probe_crawler_capability(ChallengeClient(), spec)
+
+    assert status is NetworkCheckStatus.WARNING
+    assert "Cloudflare" in message
+    assert not nc._is_transient_probe_result(message)
+
+
+def test_format_summary_counts_skipped_items():
+    """SKIPPED 项计入汇总的「跳过 N」，不再并进「正常」。"""
+    spec = NetworkCheckSpec(name="外部CF服务", group="辅助服务", url="")
+    text = "\n".join(
+        nc.format_summary(
+            [NetworkCheckResult(spec=spec, status=NetworkCheckStatus.SKIPPED, message="未配置，已跳过")], 1.0, False
+        )
+    )
+
+    assert "跳过 1" in text
+    assert "正常 0" in text
+
+
+@pytest.mark.anyio
+async def test_run_network_check_item_skips_item_without_url():
+    """未配置地址的检测项记 SKIPPED：既让汇总「跳过 N」有意义，也不再虚报「正常」。"""
+    spec = NetworkCheckSpec(name="外部CF服务", group="辅助服务", url="", note="未配置，可选")
+
+    result = await run_network_check_item(spec, client=ProbeFakeClient())
+
+    assert result.status is NetworkCheckStatus.SKIPPED
+    assert result.message == "未配置，可选"
+
+
 def test_compute_used_proxy_false_when_proxy_disabled():
     spec = NetworkCheckSpec(name="site", group="刮削站点", url="https://libredmm.com", use_proxy=True)
 

@@ -370,6 +370,14 @@ class ActorDbMixin:
         置位 signal_qt.stop 与 Flags.stop_requested，各维护工具的
         _is_stop_requested() 会在滑动窗口每轮响应并保存已处理部分。
         """
+        # 没有在跑的任务时绝不能置位：复位只发生在 _on_actor_db_finished，
+        # 而它只由任务结束信号触发——没任务就没有信号，标志会永久留在 True。
+        # 后果是 signal_qt.stop 让后续明细日志全被丢弃（log_console 直接 return），
+        # Flags.stop_requested 让演员补全/头像补全等任务开头就抛 ActorTaskStopped，
+        # 表现为「点一下立刻停」，且主刮削正常，极易误判成另一个 bug。
+        if not self._actor_db_running:
+            signal_qt.show_log_text("ℹ️ 当前没有正在运行的演员库维护任务")
+            return
         Flags.stop_requested = True
         signal_qt.stop = True
         signal_qt.show_log_text("⛔️ 已请求停止演员库维护任务，正在保存已处理部分...")

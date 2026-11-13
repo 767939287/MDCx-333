@@ -683,11 +683,6 @@ def test_proxy_route_all_red_still_at_end_of_no_proxy_row():
 # 全局药丸按钮三态选择器（浅色/深色主题各一处，共 6 处）：
 # Gfriends 选择目录按钮必须与本地头像库按钮相邻出现。
 _STYLE_PATH = REPO / "mdcx" / "controllers" / "main_window" / "style.py"
-_GFRIENDS_STYLE_FIXED = (
-    "#pushButton_select_actor_photo_folder,#pushButton_select_gfriends_local,#pushButton_select_actor_info_db",
-    ":hover#pushButton_select_actor_photo_folder,:hover#pushButton_select_gfriends_local,:hover#pushButton_select_actor_info_db",
-    ":pressed#pushButton_select_actor_photo_folder,:pressed#pushButton_select_gfriends_local,:pressed#pushButton_select_actor_info_db",
-)
 # 修复前（缺席）形态：两按钮选择器直接相邻、中间没有 Gfriends。
 _GFRIENDS_STYLE_BROKEN = (
     "#pushButton_select_actor_photo_folder,#pushButton_select_actor_info_db",
@@ -803,10 +798,22 @@ def test_network_group_box_hugs_content_and_following_groups_close_up() -> None:
 
 
 def test_gfriends_select_button_green_in_global_style():
-    """绿（成功）：Gfriends 选择目录按钮在全局药丸样式三态选择器中（浅色+深色共6处）。"""
+    """绿（成功）：Gfriends 选择目录按钮在全局药丸样式三态选择器中。
+
+    换皮 A1（2026-11-13）把浅色/深色两套镜像 QSS 合并成一份模板，药丸按钮的
+    默认/hover/pressed 三态由 `_sel(base, _NEUTRAL_BUTTONS)` 统一拼装，因此源码里
+    不再出现「同一段选择器写 2 次」的形态。这里改为断言三枚按钮都在
+    `_NEUTRAL_BUTTONS` 元组里，且三态确实由同一元组生成。
+    """
     style_text = _STYLE_PATH.read_text(encoding="utf-8")
-    missing = [p for p in _GFRIENDS_STYLE_FIXED if style_text.count(p) != 2]
-    assert not missing, f"全局样式缺 Gfriends 选择目录按钮: {missing}"
+    for name in (
+        "pushButton_select_actor_photo_folder",
+        "pushButton_select_gfriends_local",
+        "pushButton_select_actor_info_db",
+    ):
+        assert f'"{name}"' in style_text, f"全局样式缺 {name}"
+    for state in ("QPushButton", "QPushButton:hover", "QPushButton:pressed"):
+        assert f'_sel("{state}", _NEUTRAL_BUTTONS)' in style_text, f"药丸按钮缺 {state} 态"
 
 
 def test_gfriends_select_button_yellow_matches_local_library_button():

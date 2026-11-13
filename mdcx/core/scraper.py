@@ -1352,12 +1352,24 @@ class Scraper:
                             ):
                                 if Flags.scrape_starting > count:  # 如果突然调大了文件数量，这时跳出休眠
                                     break
+                                if signal.stop or Flags.stop_requested:
+                                    # 手动停止：不再等满整个休息时长，直接结束休息
+                                    break
                                 await asyncio.sleep(1)
                             Flags.rest_now_begin_count = count  # 休息周期结束，重置计数
                             Flags.sleep_end.set()  # 休眠结束，下一轮开始
                             Flags.next_start_time = time.time() - manager.config.thread_time
                         else:
-                            await Flags.sleep_end.wait()  # 正在休息 → 等待休眠结束
+                            # 正在休息 → 等待休眠结束。asyncio.Event.wait() 本身无法被停止标志
+                            # 打断，而此处持有 _rest_lock：不轮询的话点停止要等满整个休息时长，
+                            # 且其余任务全卡在锁上。按本文件既有习惯每秒复查一次停止标志。
+                            while not Flags.sleep_end.is_set():
+                                if signal.stop or Flags.stop_requested:
+                                    break
+                                try:
+                                    await asyncio.wait_for(Flags.sleep_end.wait(), timeout=1)
+                                except TimeoutError:
+                                    pass
                     # 未达阈值：继续刮削，无需处理
         except Exception as e:
             self._check_stop(show_name)

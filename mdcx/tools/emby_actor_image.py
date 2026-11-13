@@ -3,7 +3,7 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import Literal, cast
+from typing import Literal
 from urllib.parse import quote
 
 import aiofiles
@@ -224,8 +224,13 @@ async def _do_download_and_return(
     big: str,
     emby_on: list,
     actor_folder: Path,
-) -> tuple[Path, Path, str] | None:
-    """下载图片并返回结果"""
+) -> tuple[Path | None, Path | None, str] | None:
+    """下载图片并返回结果（只返回确实存在的文件路径）
+
+    头像下载失败而背景成功时，若把不存在的 `pic_p` 一并返回，调用方
+    `_update_emby_actor_photo_execute` 会拿它去 `.with_name()` / `cut_pic()`，
+    背景也跟着白丢。因此这里按「实际存在」重新判定输出路径。
+    """
     logs = []
     pic_ok = await download_file_with_filepath(small, pic_p, actor_folder)
     bd_ok = (
@@ -239,9 +244,29 @@ async def _do_download_and_return(
     if bd_ok:
         logs.append("🍊 使用 graphis.ne.jp 背景！ ")
         await fix_pic_async(bd_p, bd_p)
-    if pic_ok or bd_ok:
-        return pic_p, bd_p, "".join(logs)
+    # bd_p 可能来自本次下载、也可能来自「由头像派生」或旧缓存，统一按实际存在判定。
+    # 注意不能只看 isfile：旧版本遗留的背景文件也算「存在」，认它会让上层提前结束、
+    # 不再尝试旧版 graphis 页面（原来的 `if pic_ok or bd_ok` 语义）。
+    pic_out = pic_p if pic_ok else None
+    bd_out = bd_p if (bd_ok or pic_ok) and await aiofiles.os.path.isfile(bd_p) else None
+    if pic_out is not None or bd_out is not None:
+        return pic_out, bd_out, "".join(logs)
     return None
+
+
+async def _clear_old_backdrops(backdrop_tags: list, backdrop_url: str) -> None:
+    """删除该演员已有的全部背景（背景可以多张，不清理会一直累积）。
+
+    按索引逐个 DELETE：服务端删掉一张后后面的会自动前移，所以从 0 开始连续删
+    len(tags) 次即可。主路径与「只更新背景」分支共用，避免两处各写一份。
+    """
+    if not backdrop_tags:
+        return
+    headers = _build_jellyfin_headers()
+    for idx in range(len(backdrop_tags)):
+        del_url = f"{backdrop_url.rstrip('/')}/{idx}"
+        async with manager.acquire_computed() as computed:
+            await computed.async_client.request("DELETE", del_url, headers=headers, use_proxy=False)
 
 
 async def _update_emby_actor_photo_execute(actor_list: list[dict], gfriends_actor_data: dict[str, str]) -> None:
@@ -306,6 +331,23 @@ async def _update_emby_actor_photo_execute(actor_list: list[dict], gfriends_acto
                         )
                         succ += 1
                         continue
+                    if backdrop_path:
+                        # 头像确实没有，但 graphis 背景已经下好了：单独上传背景，
+                        # 不能让这张背景跟着白丢（原实现直接 continue）。
+                        await _clear_old_backdrops(actor_backdrop_imagetages, backdrop_url)
+                        backdrop_ok, backdrop_err = await _upload_actor_photo(backdrop_url, backdrop_path)
+                        _raise_if_stop_requested()
+                        if backdrop_ok:
+                            signal.show_log_text(
+                                f"\n{deal_percent} 🟠 {i}/{count_all} 只更新了背景（未找到头像）👩🏻 {actor_name} {logs}\n{actor_homepage}"
+                            )
+                            succ += 1
+                        else:
+                            signal.show_log_text(
+                                f"\n{deal_percent} 🔴 {i}/{count_all} 背景上传失败！ 👩🏻 {actor_name} {logs}\n{actor_homepage} 背景上传失败: {backdrop_err}"
+                            )
+                            fail += 1
+                        continue
                     signal.show_log_text(
                         f"\n{deal_percent} 🔴 {i}/{count_all} 没有找到头像！ 👩🏻 {actor_name}  {logs}\n{actor_homepage}"
                     )
@@ -329,7 +371,10 @@ async def _update_emby_actor_photo_execute(actor_list: list[dict], gfriends_acto
                         fail += 1
                         continue
                 pic_path = file_path
-            pic_path = cast(Path, pic_path)
+            # 本地头像库返回的是 str（os.path.join），这里必须真转换：原
+            # `cast(Path, pic_path)` 只是骗过类型检查，运行时仍是 str，
+            # 下面 `.with_name()` 直接 AttributeError → 本地头像库模式每个演员都失败。
+            pic_path = Path(pic_path)
 
             # 检查背景是否存在
             if not backdrop_path:
@@ -342,13 +387,8 @@ async def _update_emby_actor_photo_execute(actor_list: list[dict], gfriends_acto
             await asyncio.to_thread(cut_pic, pic_path)
             _raise_if_stop_requested()
 
-            # 清理旧图片（backdrop 可以多张，不清理会一直累积；按索引逐个删除）
-            if actor_backdrop_imagetages:
-                headers = _build_jellyfin_headers()
-                for idx in range(len(actor_backdrop_imagetages)):
-                    del_url = f"{backdrop_url.rstrip('/')}/{idx}"
-                    async with manager.acquire_computed() as computed:
-                        await computed.async_client.request("DELETE", del_url, headers=headers, use_proxy=False)
+            # 清理旧图片（背景可以多张，不清理会一直累积；按索引逐个删除）
+            await _clear_old_backdrops(actor_backdrop_imagetages, backdrop_url)
 
             # 头像和背景分别上传，避免头像成功时背景被跳过。
             pic_ok, pic_err = await _upload_actor_photo(pic_url, pic_path)

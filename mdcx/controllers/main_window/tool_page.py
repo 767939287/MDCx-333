@@ -188,6 +188,9 @@ class ToolPageMixin:
                 # 已结束的线程对象及时摘除，长会话不再堆积（存活线程保留，停止逻辑不变）
                 self.threads_list = [x for x in self.threads_list if x.is_alive()]
                 self.threads_list.append(t)
+                # 必须在 start 之前清零：放进线程体里的话，线程刚启动那一瞬用户点
+                # 停止（set）会被随后的 clear 抹掉，停止请求丢失、整批文件照旧移完。
+                self._move_cancel_event.clear()
                 t.start()  # 启动线程,即让线程开始执行
             except Exception:
                 signal_qt.show_traceback_log(traceback.format_exc())
@@ -195,8 +198,8 @@ class ToolPageMixin:
 
     def _move_file_thread(self):
         signal_qt.change_buttons_status.emit()
-        # 协作式停止事件：每次移动开始时清零，停止按钮处理器中置位
-        self._move_cancel_event.clear()
+        # 协作式停止事件由调用方（pushButton_move_mp4_clicked）在 start 之前清零，
+        # 这里不能再 clear，否则会抹掉启动瞬间的停止请求。
         try:
             self._move_files_core()
         except Exception:

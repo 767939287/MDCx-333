@@ -34,6 +34,7 @@ from .manual import ManualConfig
 from .network_fingerprint import (
     BrowserFingerprint,
     RequestPurpose,
+    align_user_agent_platform,
     build_fingerprint_headers,
     infer_request_purpose,
     merge_headers,
@@ -58,6 +59,20 @@ _CHUNK_DOWNLOAD_CONCURRENCY = 6  # 分块下载并发数（可调，权衡速度
 _STREAM_TASK_JOIN_TIMEOUT = 0.5
 _WEB_DIC_DOMAINS_BY_VALUE: dict[str, frozenset[str]] | None = None
 _PROXY_DOMAIN_TO_SITE_VALUES: dict[str, frozenset[str]] | None = None
+
+# UA 客户端提示头：这些头描述的是「哪个浏览器/平台」，必须与 User-Agent 自洽。
+# 锁定 solver UA 时留着指纹那套值（如 iOS 指纹 + Linux UA）会被 CF 交叉校验识破。
+_UA_HINT_HEADERS: tuple[str, ...] = (
+    "sec-ch-ua",
+    "sec-ch-ua-arch",
+    "sec-ch-ua-bitness",
+    "sec-ch-ua-full-version",
+    "sec-ch-ua-full-version-list",
+    "sec-ch-ua-mobile",
+    "sec-ch-ua-model",
+    "sec-ch-ua-platform",
+    "sec-ch-ua-platform-version",
+)
 
 
 def _web_dic_domains_by_value() -> dict[str, frozenset[str]]:
@@ -672,6 +687,16 @@ class AsyncWebClient:
         )
         self._cf_bypass_min_interval = 2.0
         self._cf_bypass_timeout = 45.0
+        # 「第一次」调 solver 不按 45s 卡：冷启动 + 解挑战经常超过 45s，客户端先超时
+        # 会让 solver 白跑（用户 2026-11-13：solver 处理要等它完成，程序生命周期内
+        # 第一次 / 每个站点第一次命中挑战都不考虑时间）。
+        # 不用 None 无限等：服务端假死会把整个任务钉死；给 10 分钟硬上限，
+        # 后端自身 maxTimeout(60s) 正常会先返回，这个值只是兵底。
+        self._cf_bypass_first_timeout = 600.0
+        self._cf_solver_first_call_done = False
+        # 适配层是否处于「请求失败但服务仍在」的降级态：只在首次失败与恢复时各提示一次，
+        # 不让每次 solver 成功都打一条「恢复正常」（那会让人以为适配层一直在反复挂掉）。
+        self._local_bypass_degraded = False
         self._cf_bypass_retries = 2
         self._cf_mirror_max_redirects = 8
         self._cf_request_bypass_rounds = 2
@@ -686,6 +711,10 @@ class AsyncWebClient:
         # 键用 pool_base_key 而非裸 host：同 host 不同 scheme/port/proxy 分池隔离，
         # 轮换/重置时按池精确丢弃，互不误伤。
         self._solver_cookie_jar: dict[str, dict[str, str]] = {}
+        # solver 解出 clearance 时用的 UA：cf_clearance 与 UA 绑定（FlareSolverr
+        # README 明确要求复用 clearance 必须用 solver 的 UA，否则“you will see the
+        # challenge”）。锁 UA 与 cookie jar 同池同生命周期，回灌直连时必须一起用。
+        self._solver_user_agent_jar: dict[str, str] = {}
         # 指纹钉住：pool_base_key -> (host, fingerprint_id)。bypass/浏览器解挑战成功后
         # 钉住当前指纹（与 jar/透传 cookie 配对使用），钉住期间跳过 lifetime 过期轮换；
         # 钉住 TTL 与正常 lifetime 同界（过期解钉丢 jar），下次再遇挑战
@@ -698,6 +727,23 @@ class AsyncWebClient:
         # 代理连通性只探测一次(成功/失败都算), 避免每站点各报一遍传输层错误
         self._proxy_probe_done = False
 
+    def _solver_call_timeout(self, host: str) -> float:
+        """本次 solver 请求该等多久。
+
+        三类「第一次」都等到底（放宽到 `_cf_bypass_first_timeout`），其余仍用
+        `_cf_bypass_timeout`(45s)：
+          1) 程序生命周期内第一次调 solver；
+          2) 该站点第一次命中挑战（`_cf_host_challenge_hits` 在 `request()` 里是
+             先 +1 再调 bypass，所以这里读到的 1 就是首次）；
+          3) 适配层刚启动完——第一次启动已在 `_ensure_local_bypass` 里等到底，
+             紧接着的首个 solver 请求同样不能按 45s 卡。
+        """
+        if not self._cf_solver_first_call_done:
+            return self._cf_bypass_first_timeout
+        if self._cf_host_challenge_hits.get(host, 0) <= 1:
+            return self._cf_bypass_first_timeout
+        return self._cf_bypass_timeout
+
     def _maybe_prewarm_local_bypass(self, host: str) -> None:
         """#9: 非阻塞后台预热 TRAWL/FlareSolverr 适配层。
 
@@ -709,38 +755,49 @@ class AsyncWebClient:
         task = self._trawl_prewarm_task
         if task is not None and not task.done():
             return
-        self._trawl_prewarm_task = asyncio.ensure_future(self._ensure_local_bypass())
+        self._trawl_prewarm_task = asyncio.ensure_future(self._ensure_local_bypass(host))
         self._log_cf("后台预热 TRAWL 适配层", host)
 
     def _record_local_bypass_success(self) -> None:
-        """TRAWL 适配层请求成功：清空失败计数，恢复可用状态。"""
+        """TRAWL 适配层请求成功：恢复可用状态。
+
+        只在「之前失败过」时打日志：每次 solver 成功都打「恢复正常」会让人以为适配层
+        一直在反复挂掉（原先 mirror 与 /html 成功各调一次，日志里满屏都是这一句）。
+        """
         if not self._trawl_adapter_enabled:
             return
         if self._trawl_adapter_server and self._trawl_adapter_server.is_running:
             self.cf_bypass_url = self._trawl_adapter_server.url
             self._cf_bypass_enabled = True
-            self._log("TRAWL 适配层恢复正常 (ready)")
+            if self._local_bypass_degraded:
+                self._local_bypass_degraded = False
+                self._log_cf("TRAWL 适配层恢复正常 (ready)")
 
     def _record_local_bypass_failure(self) -> None:
-        """TRAWL 适配层请求失败（连接/超时）：不做停用处理，仅记录日志。
+        """TRAWL 适配层请求失败（连接/超时）：不做停用处理，仅降级标记。
 
         适配层服务本身可能正常，只是目标站点 CF 解不了；停用由启动失败时的
-        _trawl_adapter_enabled=False 控制。
+        _trawl_adapter_enabled=False 控制。失败日志只打首次，避免同样一句话刷屏。
         """
-        if self._trawl_adapter_enabled:
-            self._log("TRAWL 适配层请求失败")
+        if self._trawl_adapter_enabled and not self._local_bypass_degraded:
+            self._local_bypass_degraded = True
+            self._log_cf("TRAWL 适配层请求失败（恢复成功后会再提示）")
 
     def _local_bypass_is_dead(self) -> bool:
         """TRAWL 适配层当前是否已失效（启动失败后不再重复尝试）。"""
         return not self._trawl_adapter_enabled
 
-    async def _ensure_local_bypass(self) -> bool:
+    async def _ensure_local_bypass(self, host: str = "") -> bool:
+        """确保 TRAWL/FlareSolverr 适配层就绪。
+
+        host 仅用于日志前缀：多站点并发时能看出是谁触发的启动。
+        """
         if not self._trawl_adapter_enabled:
             return False
         if self._cf_bypass_enabled:
             return True
         if self._local_bypass_is_dead():
-            self._log("TRAWL 适配层处于失效状态，跳过本次启动")
+            self._log_cf("TRAWL 适配层处于失效状态，跳过本次启动", host)
             return False
         if self._trawl_adapter_server and self._trawl_adapter_server.is_running:
             self.cf_bypass_url = self._trawl_adapter_server.url
@@ -758,18 +815,24 @@ class AsyncWebClient:
                 return True
 
             if TrawlAdapterServer is None:
-                self._log("cf_bypass 模块不可用，TRAWL 适配层无法启动")
+                self._log_cf("cf_bypass 模块不可用，TRAWL 适配层无法启动", host)
                 self._trawl_adapter_enabled = False
                 return False
-            trawl_server = TrawlAdapterServer(trawl_url=self._trawl_url, backend=self._trawl_backend, log_fn=self._log)
+            # 适配层自己的日志（[TRAWL适配] …）也进 CF 日志流：不然启动/就绪那几条
+            # 既没有 [CF] 前缀也没有 host，和大局里其他 CF 日志完全不搭。
+            trawl_server = TrawlAdapterServer(
+                trawl_url=self._trawl_url,
+                backend=self._trawl_backend,
+                log_fn=lambda msg: self._log_cf(msg, host),
+            )
             ok, result = await trawl_server.start()
             if ok:
                 self._trawl_adapter_server = trawl_server
                 self.cf_bypass_url = result
                 self._cf_bypass_enabled = True
-                self._log(f"TRAWL 适配层已集成: {result}")
+                # 适配层自己已打过「已就绪」，这里不再重复一条「已集成」
                 return True
-            self._log(f"TRAWL 适配层启动失败: {result}")
+            self._log_cf(f"TRAWL 适配层启动失败: {result}", host)
             self._trawl_adapter_enabled = False
             return False
 
@@ -909,6 +972,7 @@ class AsyncWebClient:
             # 传输层重建时 state 已失效：钉住/jar 与其配对，一并丢弃防孤儿错配（B4）
             self._pinned_fingerprint_by_pool_base.clear()
             self._solver_cookie_jar.clear()
+            self._solver_user_agent_jar.clear()
             await self._pool_manager.reset_all(reason)
         else:
             pool_base_key, _, failed_fingerprint_id = pool_key.partition("|fp=")
@@ -917,6 +981,7 @@ class AsyncWebClient:
             self._fingerprint_states_by_pool_base.pop(pool_base_key, None)
             self._pinned_fingerprint_by_pool_base.pop(pool_base_key, None)
             self._solver_cookie_jar.pop(pool_base_key, None)
+            self._solver_user_agent_jar.pop(pool_base_key, None)
             await self._pool_manager.reset(pool_key, reason)
 
     async def _record_transport_failure(self, error_msg: str, *, pool_key: str) -> None:
@@ -948,6 +1013,7 @@ class AsyncWebClient:
                 # 解钉并丢 jar，走正常轮换，避免永久用坏 cookie 请求（B7）
                 self._pinned_fingerprint_by_pool_base.pop(pool_base_key, None)
                 self._solver_cookie_jar.pop(pool_base_key, None)
+                self._solver_user_agent_jar.pop(pool_base_key, None)
                 self._log_cf("🧹 钉住指纹已过期，解钉并丢弃 jar，正常轮换", pinned[0])
                 state = None
             else:
@@ -1014,6 +1080,9 @@ class AsyncWebClient:
             pinned_host, _ = pinned
             # jar 按池键隔离：只丢本池的，不影响同 host 其他池（B9）
             dropped = self._solver_cookie_jar.pop(pool_base_key, None)
+            # clearance 与 UA 成对失效：cookie 丢了就必须把锁定的 UA 一起丢，
+            # 否则下一轮会拿着过期 UA 去撞新指纹，两边都不匹配。
+            self._solver_user_agent_jar.pop(pool_base_key, None)
             self._log_cf(
                 f"🧹 解钉并丢弃失效 cookie（{len(dropped or {})} 个），轮换指纹重试",
                 pinned_host,
@@ -1343,6 +1412,20 @@ class AsyncWebClient:
                     jar[name] = morsel.value
                     stored += 1
         if stored:
+            # cf_clearance 与 UA 绑定（FlareSolverr README）：没锁 UA 的话 cookie 回灌
+            # 直连只会换来下一次挑战，所以两者必须成对存取。
+            solver_ua = ""
+            try:
+                solver_ua = self._extract_header_case_insensitive(
+                    {str(k): str(v) for k, v in response.headers.items()}, "x-cf-bypasser-user-agent"
+                ).strip()
+            except Exception:
+                solver_ua = ""
+            if solver_ua:
+                # 平台段不写死：solver 容器是 Linux，照抄它的 `X11; Linux x86_64`
+                # 与本机环境不符。平台段一律按运行系统重写，版本号沿用 solver。
+                self._solver_user_agent_jar[pool_base_key] = align_user_agent_platform(solver_ua)
+            ua_text = "，UA 已锁定" if solver_ua else ""
             if fingerprint is not None:
                 # 钉住 + 重建 state：bypass 前 _force_rotate 已清 state 并 exclude 了该指纹，
                 # 不重建则钉住永不命中（B2）。重建后配对立即生效。
@@ -1350,9 +1433,9 @@ class AsyncWebClient:
                     self._excluded_fingerprint_by_pool_base.pop(pool_base_key, None)
                 self._fingerprint_states_by_pool_base[pool_base_key] = self._fresh_fingerprint_state(host, fingerprint)
                 self._pinned_fingerprint_by_pool_base[pool_base_key] = (host, fingerprint.fingerprint_id)
-                self._log_cf(f"🍪 solver cookie 已存 jar（{stored} 个），同池指纹已钉住", host)
+                self._log_cf(f"🍪 solver cookie 已存 jar（{stored} 个），同池指纹已钉住{ua_text}", host)
             else:
-                self._log_cf(f"🍪 solver cookie 已存 jar（{stored} 个），本次无指纹可钉", host)
+                self._log_cf(f"🍪 solver cookie 已存 jar（{stored} 个），本次无指纹可钉{ua_text}", host)
         return stored
 
     def _fresh_fingerprint_state(self, host: str, fingerprint: BrowserFingerprint) -> _FingerprintState:
@@ -1412,6 +1495,20 @@ class AsyncWebClient:
             if str(k).lower() == key_lower:
                 return headers.pop(k, "")
         return ""
+
+    def _apply_solver_identity(self, headers: dict[str, str], pool_base_key: str) -> None:
+        """该池解过挑战就锁定 solver 的 UA，并把配套的 UA 提示头一并去掉。
+
+        clearance 与 UA 绑定，UA 换了却留着指纹那套 `sec-ch-ua*`，浏览器画像会
+        自相矛盾（实测指纹随机到 iOS Safari、锁定 UA 是 Linux Chrome）——CF 交叉
+        校验直接判 challenge。
+        """
+        solver_ua = self._solver_user_agent_jar.get(pool_base_key)
+        if not solver_ua:
+            return
+        headers["User-Agent"] = solver_ua
+        for name in _UA_HINT_HEADERS:
+            self._pop_header_case_insensitive(headers, name)
 
     def _build_cookie_header(self, cookies: dict[str, str] | None) -> str:
         if not cookies:
@@ -1612,8 +1709,20 @@ class AsyncWebClient:
             self._log(f"🟡 写入 response.headers 失败（curl-cffi 可能改了 API）: {_e!s}")
 
     def _resolve_cf_bypass_proxy(self, *, use_proxy: bool) -> str:
-        # CF Bypass 代理独立于常规代理设置，仅当配置了 cf_bypass_proxy 时使用
-        return (self.cf_bypass_proxy or "").strip()
+        """solver 该走哪个代理。
+
+        优先级：显式配置的「Bypass 代理」> 站点本次实际使用的全局代理。
+        必须与直连出口保持一致：cf_clearance 绑定出口 IP，solver 用另一个 IP 解出来的
+        cookie 回灌直连必然失效，表现为「solver 成功 → 直连又挑战」的无限循环
+        （javlibrary 实测：solver 在 FlareSolverr 容器出口、直连走 socks5 代理）。
+        传进来的 `use_proxy` 是「本次请求真的走代理」，不是「是否配置了 Bypass 代理」。
+        """
+        explicit = (self.cf_bypass_proxy or "").strip()
+        if explicit:
+            return explicit
+        if use_proxy:
+            return (self.proxy or "").strip()
+        return ""
 
     def _prepare_mirror_headers(
         self,
@@ -1939,6 +2048,7 @@ class AsyncWebClient:
         *,
         use_proxy: bool,
         bypass_cache: bool = False,
+        timeout: float | None = None,
     ) -> tuple[Response | None, str]:
         if not self._cf_bypass_enabled:
             return None, "未配置 bypass 地址"
@@ -1957,7 +2067,7 @@ class AsyncWebClient:
             f"{self.cf_bypass_url}/html",
             use_proxy=False,
             allow_redirects=True,
-            timeout=self._cf_bypass_timeout,
+            timeout=timeout or self._cf_bypass_timeout,
             params=params,
             enable_cf_bypass=False,
         )
@@ -2057,6 +2167,10 @@ class AsyncWebClient:
     ) -> tuple[Response | None, str]:
         lock = await self._get_cf_host_lock(host)
         async with lock:
+            # 本次 solver 等多久在这里定格：「第一次」判定用完就置位，
+            # 之后（含同 host 的重试轮）按正常 45s，不会每轮都等满 10 分钟。
+            solver_timeout = self._solver_call_timeout(host)
+            self._cf_solver_first_call_done = True
             while True:
                 now = time.monotonic()
                 last_attempt = self._cf_last_bypass_attempt_at.get(host, 0.0)
@@ -2092,7 +2206,7 @@ class AsyncWebClient:
                     bypass_cache=force_bypass_cache,
                     data=data,
                     json_data=json_data,
-                    timeout=timeout,
+                    timeout=timeout or solver_timeout,
                     allow_redirects=allow_redirects,
                 )
                 if bypass_response is not None:
@@ -2112,7 +2226,7 @@ class AsyncWebClient:
                             bypass_cache=True,
                             data=data,
                             json_data=json_data,
-                            timeout=timeout,
+                            timeout=timeout or solver_timeout,
                             allow_redirects=allow_redirects,
                         )
                     if bypass_response is not None:
@@ -2136,7 +2250,10 @@ class AsyncWebClient:
                     else:
                         self._log_cf(f"↩️ mirror 失败，回退 /html: {mirror_error}", host)
                     bypass_response, html_error = await self._call_bypass_html(
-                        target_url, use_proxy=use_proxy, bypass_cache=html_bypass_cache
+                        target_url,
+                        use_proxy=use_proxy,
+                        bypass_cache=html_bypass_cache,
+                        timeout=solver_timeout,
                     )
                     if bypass_response is not None:
                         self._cf_host_challenge_hits[host] = 0
@@ -2272,6 +2389,9 @@ class AsyncWebClient:
                     req_headers = dict(prepared_headers)
                     # solver-cookie jar：同池后续直连自动带上 bypass 解出的 cookie
                     req_cookies = self._merge_cookies(cookies, self._solver_cookie_jar.get(pool_base_key))
+                    # clearance 与 UA 绑定：该池解过挑战就沿用 solver 的 UA（覆盖指纹 UA），
+                    # 同时清掉与它矛盾的 UA 提示头，否则 CF 认为 cookie 换了个浏览器。
+                    self._apply_solver_identity(req_headers, pool_base_key)
                     # solver-first：名单内 / 命中过挑战的站点不再打直连，直接走外部 CF 服务
                     # （用户 2026-11-08：不让触发直连）。solver 失败才回退直连。
                     if (
@@ -2284,6 +2404,7 @@ class AsyncWebClient:
                     ):
                         target_url = self._merge_url_params(url, params)
                         self._log_cf(f"🌐 站点 {host} 走 Solver（solver-first，跳过直连）", host)
+                        bypass_started = time.monotonic()
                         bypass_response, bypass_error = await self._try_bypass_cloudflare(
                             host=host,
                             method=method,
@@ -2294,7 +2415,7 @@ class AsyncWebClient:
                             json_data=json_data,
                             timeout=timeout,
                             allow_redirects=allow_redirects,
-                            use_proxy=bool((self.cf_bypass_proxy or "").strip()),
+                            use_proxy=bool(request_proxy),
                         )
                         bypass_round += 1
                         if bypass_response is not None:
@@ -2303,7 +2424,8 @@ class AsyncWebClient:
                                 "x-mdcx-bypass-mode",
                             )
                             self._log_cf(
-                                f"✅ Solver 成功（模式: {bypass_mode or 'unknown'}），"
+                                f"✅ Solver 成功（模式: {bypass_mode or 'unknown'}，"
+                                f"耗时 {time.monotonic() - bypass_started:.1f}s），"
                                 f"接下来 {int(self._cf_solver_reuse_ttl)}s 内先直连复用 cookie",
                                 host,
                             )
@@ -2373,7 +2495,7 @@ class AsyncWebClient:
                         and not self._cf_bypass_enabled
                     ):
                         self._log_cf("触发 TRAWL 适配层启动", host)
-                        started = await self._ensure_local_bypass()
+                        started = await self._ensure_local_bypass(host)
                         if not started:
                             self._log_cf("TRAWL 适配层启动失败，跳过 bypass", host)
 
@@ -2391,6 +2513,7 @@ class AsyncWebClient:
                             self._log_cf(f"🚫 {error_msg}", host)
                         else:
                             target_url = self._merge_url_params(url, params)
+                            bypass_started = time.monotonic()
                             bypass_response, bypass_error = await self._try_bypass_cloudflare(
                                 host=host,
                                 method=method,
@@ -2401,7 +2524,7 @@ class AsyncWebClient:
                                 json_data=json_data,
                                 timeout=timeout,
                                 allow_redirects=allow_redirects,
-                                use_proxy=bool((self.cf_bypass_proxy or "").strip()),
+                                use_proxy=bool(request_proxy),
                             )
                             bypass_round += 1
 
@@ -2428,7 +2551,8 @@ class AsyncWebClient:
                                     )
                                 else:
                                     self._log_cf(
-                                        f"✅ bypass 成功（模式: {bypass_mode or 'unknown'}），直接使用 bypass 响应",
+                                        f"✅ bypass 成功（模式: {bypass_mode or 'unknown'}，"
+                                        f"耗时 {time.monotonic() - bypass_started:.1f}s），直接使用 bypass 响应",
                                         host,
                                     )
                                     # solver 响应 Set-Cookie 存 jar + 钉住当前池指纹，
@@ -2532,11 +2656,12 @@ class AsyncWebClient:
             ):
                 self._log_cf(f"⚠️ 直连传输失败且无响应，尝试 bypass 兜底: {method} {url}", host)
                 if self._trawl_adapter_enabled and not self._cf_bypass_enabled:
-                    started = await self._ensure_local_bypass()
+                    started = await self._ensure_local_bypass(host)
                     if not started:
                         self._log_cf("TRAWL 适配层启动失败，跳过 bypass", host)
                 if self._cf_bypass_enabled:
                     target_url = self._merge_url_params(url, params)
+                    bypass_started = time.monotonic()
                     bypass_response, bypass_error = await self._try_bypass_cloudflare(
                         host=host,
                         method=method,
@@ -2547,7 +2672,7 @@ class AsyncWebClient:
                         json_data=json_data,
                         timeout=timeout,
                         allow_redirects=allow_redirects,
-                        use_proxy=bool((self.cf_bypass_proxy or "").strip()),
+                        use_proxy=bool(request_proxy),
                     )
                     bypass_headers = (
                         {str(k): str(v) for k, v in bypass_response.headers.items()}
@@ -2563,7 +2688,8 @@ class AsyncWebClient:
                     ):
                         bypass_mode = self._extract_header_case_insensitive(bypass_headers, "x-mdcx-bypass-mode")
                         self._log_cf(
-                            f"✅ bypass 兜底成功（模式: {bypass_mode or 'unknown'}），直接使用 bypass 响应",
+                            f"✅ bypass 兜底成功（模式: {bypass_mode or 'unknown'}，"
+                            f"耗时 {time.monotonic() - bypass_started:.1f}s），直接使用 bypass 响应",
                             host,
                         )
                         # 与主路径一致：solver cookie 存 jar + 钉住（B8；fingerprint 取末轮值）

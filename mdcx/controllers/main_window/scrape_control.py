@@ -78,13 +78,6 @@ class ScrapeControlMixin:
         signal_qt.reset_buttons_status.emit()
         try:
             Flags.rest_time_convert = Flags.rest_time_convert_
-            if Flags.stop_other:
-                signal_qt.show_scrape_info("⛔️ 已手动停止！")
-                signal_qt.show_log_text(
-                    "⛔️ 已手动停止！\n================================================================================"
-                )
-                self.set_label_file_path.emit("⛔️ 已手动停止！")
-                return
             signal_qt.exec_set_processbar.emit(0)
             end_time = time.time()
             used_time = str(round((end_time - Flags.start_time), 2))
@@ -116,6 +109,11 @@ class ScrapeControlMixin:
             signal_qt.show_log_text(traceback.format_exc())
         finally:
             signal_qt.stop = False
+            # 停止收尾必须同时复位任务级标志：只复位 signal_qt.stop 的话
+            # Flags.stop_requested 会一直是 True，下一次「开始补全 / 字幕 /
+            # 移动视频 / 检查缺失番号」在开头 _raise_if_stop_requested() 就抛
+            # 异常，表现为「点一下立刻停」（P0）。
+            Flags.stop_requested = False
 
     def show_stop_info_thread(
         self,
@@ -146,29 +144,36 @@ class ScrapeControlMixin:
         )
         signal_qt.stop = True
 
-        # 对全部线程使用一个总等待窗口，避免线程数量放大停止耗时。
-        wait_deadline = time.monotonic() + 12.0
-        for each in self.threads_list:
-            remaining = wait_deadline - time.monotonic()
-            if remaining <= 0:
-                break
-            each.join(timeout=remaining)
+        # 整段包 try/finally：join / 日志任一环节抛异常也必须走 show_stop_info_thread
+        # 复位两侧停止标志，否则按钮会永久停在「 ■ 停止中 」，连带自动刮削
+        # （auto_scrape 用按钮文案判断是否有任务在跑）永久跳过。
+        try:
+            # 对全部线程使用一个总等待窗口，避免线程数量放大停止耗时。
+            wait_deadline = time.monotonic() + 12.0
+            for each in self.threads_list:
+                remaining = wait_deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                each.join(timeout=remaining)
 
-        self.stop_used_time = get_used_time(start_time)
-        stopped_count = sum(not each.is_alive() for each in self.threads_list)
-        signal_qt.show_log_text(f" 🕷 已停止线程：{stopped_count}/{total_kills}")
-        if stopped_count == total_kills:
-            signal_qt.show_traceback_log(f"所有线程已停止！！！({self.stop_used_time}s)\n ⛔️ 刮削已手动停止！\n")
-            signal_qt.show_log_text(f" ⛔️ {get_current_time()} 所有线程已停止！({self.stop_used_time}s)")
-        else:
-            remaining = ", ".join(each.name for each in self.threads_list if each.is_alive())
-            signal_qt.show_traceback_log(f"线程停止超时({self.stop_used_time}s)：{remaining}")
-            signal_qt.show_log_text(f" ⚠️ {get_current_time()} 线程停止超时：{remaining}")
-        thread_remain_list = []
-        [thread_remain_list.append(t.name) for t in threading.enumerate()]  # 剩余线程名字列表
-        thread_remain = ", ".join(thread_remain_list)
-        signal_qt.show_traceback_log(f"剩余线程 ({len(thread_remain_list)}): {thread_remain}")
-        self.show_stop_info_thread()
+            self.stop_used_time = get_used_time(start_time)
+            stopped_count = sum(not each.is_alive() for each in self.threads_list)
+            signal_qt.show_log_text(f" 🕷 已停止线程：{stopped_count}/{total_kills}")
+            if stopped_count == total_kills:
+                signal_qt.show_traceback_log(f"所有线程已停止！！！({self.stop_used_time}s)\n ⛔️ 刮削已手动停止！\n")
+                signal_qt.show_log_text(f" ⛔️ {get_current_time()} 所有线程已停止！({self.stop_used_time}s)")
+            else:
+                remaining = ", ".join(each.name for each in self.threads_list if each.is_alive())
+                signal_qt.show_traceback_log(f"线程停止超时({self.stop_used_time}s)：{remaining}")
+                signal_qt.show_log_text(f" ⚠️ {get_current_time()} 线程停止超时：{remaining}")
+            thread_remain_list = []
+            [thread_remain_list.append(t.name) for t in threading.enumerate()]  # 剩余线程名字列表
+            thread_remain = ", ".join(thread_remain_list)
+            signal_qt.show_traceback_log(f"剩余线程 ({len(thread_remain_list)}): {thread_remain}")
+        except Exception:
+            signal_qt.show_traceback_log(traceback.format_exc())
+        finally:
+            self.show_stop_info_thread()
 
     # 进度条
     def set_processbar(self, value):

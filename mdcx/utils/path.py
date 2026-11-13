@@ -10,6 +10,7 @@ def safe_rmtree(path: str | Path) -> None:
       - 空路径
       - 解析后为文件系统根/盘符根(如 C:\\ 或 /), 即 p.parent == p
       - 恰好等于用户主目录本身(如 C:\\Users\\name)
+      - 恰好等于程序当前工作目录或其父目录(空路径/相对路径经 resolve() 会落到这里)
 
     注意: 只拦截"主目录本身", 不拦截主目录下的子目录 —— Windows 上媒体库
     常位于主目录之下(如 C:\\Users\\name\\Videos), 拦截整棵子树会误伤正常删除。
@@ -34,6 +35,14 @@ def safe_rmtree(path: str | Path) -> None:
         home = None
     if home is not None and p == home:
         raise PermissionError(f"safe_rmtree: 拒绝删除用户主目录 {p}")
+    # 拒绝程序当前工作目录及其父目录: 空路径 / 相对路径经 Path(".").resolve() 恰好
+    # 落在这里, 删掉它等于把整个运行目录(含配置、日志、userdata)清空。
+    try:
+        cwd = Path.cwd().resolve()
+    except OSError, RuntimeError:
+        cwd = None
+    if cwd is not None and p in (cwd, cwd.parent):
+        raise PermissionError(f"safe_rmtree: 拒绝删除程序当前工作目录 {p}")
     shutil.rmtree(p)
 
 

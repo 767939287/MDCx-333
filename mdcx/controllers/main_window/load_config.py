@@ -105,8 +105,12 @@ def load_config(self: MyMAinWindow):
             _combo.addItems(all_config_files)
             if config_file in all_config_files:
                 _combo.setCurrentIndex(all_config_files.index(config_file))
-            else:
+            elif "config.json" in all_config_files:
                 _combo.setCurrentIndex(all_config_files.index("config.json"))
+            else:
+                # 目录里可能没有 config.json（另存为 myconfig.json 后删掉原名），
+                # 此时回落首个条目，不能让 index() 抛 ValueError 把启动打断。
+                _combo.setCurrentIndex(0)
             _combo.blockSignals(False)
 
         # region media

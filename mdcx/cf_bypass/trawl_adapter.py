@@ -31,6 +31,11 @@ except ImportError:  # 仅在冻结模式(in-process)下需要
 logger = logging.getLogger(__name__)
 ADAPTER_HOST = "127.0.0.1"
 SERVER_START_TIMEOUT = 60
+# 首次启动等到底：冷启动要起 uvicorn 子进程、连 TRAWL/FlareSolverr，
+# 60s 经常不够（用户 2026-11-13：solver 第一次不考虑时间）。
+# 不用无上限无限等：uvicorn 假死会永久挂住；`_wait_ready` 本身会在
+# 子进程/线程退出时立刻返回失败，这个值只是最后的硬上限。
+SERVER_FIRST_START_TIMEOUT = 600
 HEALTH_CHECK_INTERVAL = 0.5
 BACKEND_REQUEST_TIMEOUT = 65.0
 DEFAULT_MAX_TIMEOUT_MS = 60_000
@@ -501,6 +506,13 @@ async def _handle_mirror(client, trawl_url, backend, scope, path, query_string, 
 
     final_url = data.get("url") or target_url
     response_headers.append((b"x-cf-bypasser-final-url", final_url.encode("utf-8")))
+    # solver 的 UA 必须回传：cf_clearance 与 UA 绑定（FlareSolverr README
+    # 明确要求复用 clearance 时必须用 solver 的 UA，否则立刻重新挑战）。
+    # HTML 路径早就带了这个头，mirror 路径以前漏了——mirror 模式下 cookie
+    # 存了也用不上，表现为「solver 成功 → 直连又挑战」循环。
+    solver_user_agent = (data.get("userAgent") or "").strip()
+    if solver_user_agent:
+        response_headers.append((b"x-cf-bypasser-user-agent", solver_user_agent.encode("utf-8")))
 
     body_bytes = data.get("body")
     if not body_bytes:
@@ -545,6 +557,8 @@ class TrawlAdapterServer:
         self._url: str = ""
         self._started = False
         self._closing = False
+        # 本实例是否已经尝试过启动：第一次启动放宽到 SERVER_FIRST_START_TIMEOUT
+        self._start_attempted = False
         self._log_fn = log_fn or (lambda msg: logger.info(msg))
         self._atexit_registered = False
 
@@ -575,6 +589,10 @@ class TrawlAdapterServer:
             return False, f"缺少依赖: {', '.join(missing)}\n请运行: pip install {' '.join(missing)}"
         return True, ""
 
+    def _start_wait_timeout(self) -> int:
+        """启动健康检查等多久：第一次启动等到底，之后回到 60s。"""
+        return SERVER_START_TIMEOUT if self._start_attempted else SERVER_FIRST_START_TIMEOUT
+
     async def start(self) -> tuple[bool, str]:
         if self.is_running:
             return True, self._url
@@ -587,12 +605,14 @@ class TrawlAdapterServer:
 
         self._port = _find_free_port()
         self._url = f"http://{ADAPTER_HOST}:{self._port}"
+        wait_timeout = self._start_wait_timeout()
+        self._start_attempted = True
         self._log(f"启动外部 CF 适配层 {self._url} -> {self._trawl_url} (backend={self._backend}) ...")
 
         if IS_PYINSTALLER:
-            ok, err = await self._start_in_process()
+            ok, err = await self._start_in_process(wait_timeout)
         else:
-            ok, err = await self._start_subprocess()
+            ok, err = await self._start_subprocess(wait_timeout)
         if not ok:
             return False, err
 
@@ -600,7 +620,7 @@ class TrawlAdapterServer:
         self._log(f"外部 CF 适配层已就绪: {self._url}")
         return True, self._url
 
-    async def _start_subprocess(self) -> tuple[bool, str]:
+    async def _start_subprocess(self, wait_timeout: int = SERVER_START_TIMEOUT) -> tuple[bool, str]:
         import asyncio as _asyncio
 
         kwargs: dict = {}
@@ -628,7 +648,7 @@ class TrawlAdapterServer:
             **kwargs,
         )
         self._register_atexit()
-        ready, error = await self._wait_ready()
+        ready, error = await self._wait_ready(wait_timeout)
         if not ready:
             await self.stop()
             return False, error
@@ -648,7 +668,7 @@ class TrawlAdapterServer:
             except Exception:
                 pass
 
-    async def _start_in_process(self) -> tuple[bool, str]:
+    async def _start_in_process(self, wait_timeout: int = SERVER_START_TIMEOUT) -> tuple[bool, str]:
         import uvicorn
 
         try:
@@ -665,7 +685,7 @@ class TrawlAdapterServer:
         except Exception as e:
             return False, f"启动外部 CF 适配层线程失败: {e}"
 
-        ready, error = await self._wait_ready()
+        ready, error = await self._wait_ready(wait_timeout)
         if not ready:
             await self.stop()
             return False, error
@@ -691,7 +711,7 @@ class TrawlAdapterServer:
                 # "启动超时 (60s): " 这种无信息尾巴。
                 last_error = f"{type(e).__name__}: {e}" if str(e) else type(e).__name__
             await asyncio.sleep(HEALTH_CHECK_INTERVAL)
-        return False, f"外部 CF 适配层启动超时 ({SERVER_START_TIMEOUT}s): {last_error}"
+        return False, f"外部 CF 适配层启动超时 ({timeout}s): {last_error}"
 
     async def stop(self) -> None:
         if self._closing:

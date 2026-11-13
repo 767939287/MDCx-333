@@ -968,7 +968,9 @@ def _check_actor_db_issues(db_path: Path) -> dict:
         wb = _xl.load_workbook(db_path, read_only=True, data_only=True)
     except Exception:
         return issues
-    ws = wb.active
+    # 不能取 wb.active：带男优备份等辅助 sheet 时 active 可能不是「演员数据库」，
+    # 会让检查结果对应错表（而写侧统一走 get_actor_db_sheet）。
+    ws = get_actor_db_sheet(wb)
     rows = list(ws.iter_rows(min_row=2, values_only=True))
     wb.close()
 
@@ -1107,7 +1109,9 @@ def auto_fix_actor_db(db_path: Path) -> dict:
     issues = _check_actor_db_issues(db_path)
 
     wb = _xl.load_workbook(db_path)
-    ws = wb.active
+    # 与 _check_actor_db_issues 同口径：issues 里的行号来自「演员数据库」sheet，
+    # 这里必须操作同一张表，否则修到别的辅助 sheet 上。
+    ws = get_actor_db_sheet(wb)
     fixed_counter: dict[str, int] = {}
 
     def _incr(cat):
@@ -2263,12 +2267,18 @@ async def clean_male_actors(*, limit: int = 5000, concurrency: int = 5) -> Clean
             if not candidate_rows:
                 _log_line(" ✅ [剔除男演员] 没有需要 TMDB 校验的 tmdbid 行")
                 result.checked = len(name_male_rows)
-                result.removed_male = len(name_male_rows)
                 result.kept = 0
                 if name_male_rows:
+                    # 与主路径同口径：删除阶段也可能被停止打断，按实际删除行数统计
+                    removed = 0
                     for row_idx in sorted(name_male_rows, reverse=True):
+                        if _is_stop_requested():
+                            _log_line(" ⛔️ [剔除男演员] 已手动停止，未执行删除")
+                            break
                         backup_ws.append([c.value for c in ws[row_idx]])
                         ws.delete_rows(row_idx)
+                        removed += 1
+                    result.removed_male = removed
                     _format_db_worksheet(ws)
                     save_actor_db_workbook(wb, db_path)
                 wb.close()
@@ -2342,16 +2352,22 @@ async def clean_male_actors(*, limit: int = 5000, concurrency: int = 5) -> Clean
             if _is_stop_requested():
                 _log_line(" ⛔️ [剔除男演员] 已手动停止，未执行删除")
             else:
+                # 删除阶段可能被停止打断，故按实际删除的行数统计，不用候选集合大小
+                removed = 0
                 for row_idx in sorted(all_male_rows, reverse=True):
                     if _is_stop_requested():
                         _log_line(" ⛔️ [剔除男演员] 删除阶段被停止，已处理部分")
                         break
                     backup_ws.append([c.value for c in ws[row_idx]])
                     ws.delete_rows(row_idx)
-                result.removed_male = len(all_male_rows)
+                    removed += 1
+                result.removed_male = removed
 
             result.checked = len(candidate_rows) + len(name_male_rows)
+            # 「保留」是女优口径：命中男优的行即使因停止没删掉，也不该算成女优保留
             result.kept = result.checked - len(all_male_rows)
+            if result.removed_male < len(all_male_rows):
+                _log_line(f" ⚠️ [剔除男演员] 有 {len(all_male_rows) - result.removed_male} 行男优因停止未删除")
 
             _format_db_worksheet(ws)
             save_actor_db_workbook(wb, db_path)

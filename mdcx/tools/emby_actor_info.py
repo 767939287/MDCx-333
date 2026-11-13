@@ -139,8 +139,10 @@ async def update_emby_actor_info() -> None:
             flag, msg = await done_task
             _raise_if_stop_requested()
             updated += flag != 0
+            # flag 位布局：bit0=wiki / bit1=db / bit2=minnano / bit3=local / bit4=javdb
+            # 原 `(flag >> 1) & 3` 会把 bit2（Minnano）一起算进 DB，导致 DB 命中数虚高。
             wiki += flag & 1
-            db += (flag >> 1) & 3
+            db += (flag >> 1) & 1
             local += (flag >> 3) & 1
             completed += 1
             signal.show_log_text(msg)

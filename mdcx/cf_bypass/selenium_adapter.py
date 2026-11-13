@@ -29,7 +29,13 @@ logger = logging.getLogger(__name__)
 CF_MARKERS: tuple[str, ...] = (
     "just a moment",
     "cf-chl",
-    "cdn-cgi/challenge-platform",
+    # 必须带 `/h/b/` 路径段：CF 对所有经它代理的**正常**页面也会注入
+    # `/cdn-cgi/challenge-platform/scripts/jsd/main.js`（浏览器完整性检测脚本），
+    # 只用域名前缀会把正常页面判成挑战页。实证：javlibrary 搜索页 solver 已解出
+    # 53KB 正常 HTML（title 正常），却因命中该前缀去走需要 Edge 的浏览器 bypass
+    # 并失败，报「被 Cloudflare 拦截，浏览器 bypass 失败」。中央判据用的是同一个
+    # 带路径标记，这里保持一致。
+    "cdn-cgi/challenge-platform/h/b/",
     "attention required",
     "enable javascript and cookies",
     "checking your browser before accessing",

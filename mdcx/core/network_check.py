@@ -777,7 +777,19 @@ async def _probe_crawler_capability(
         headers = crawler._get_headers(ctx) or None
         cookies = crawler._get_cookies(ctx) or None
 
+        # 多候选搜索 URL（dmm 3 个 / faleno 4 个 / xcity 2 个）必须逐个回退：
+        # 真实刮削 `base._search` 就是逐 URL 试到出结果为止，探测只试首个的话，
+        # 首选域名被墙/改版就会把「换个镜像即可」的站点误报成失败。
+        # 用一个总预算（秒数等于单次探测超时）兜住候选循环：首选被墙通常是快速
+        # DNS/RST 失败，后续候选仍能拿到机会；真等到超时说明链路有问题，不再
+        # 逐个候选白等 —— 单站耗时不会按候选数成倍上涨。
+        deadline = time.perf_counter() + timeout
+        failures: list[str] = []
+        parsed_empty = False
         for search_url in search_urls:
+            if time.perf_counter() >= deadline:
+                failures.append("站点可达但搜索页请求失败: 候选搜索地址探测超时")
+                break
             response, error = await client.request(
                 "GET",
                 search_url,
@@ -788,7 +800,10 @@ async def _probe_crawler_capability(
                 retry_count=1,
             )
             if response is None:
-                return NetworkCheckStatus.WARNING, f"站点可达但搜索页请求失败: {_clean_probe_error(error)}"
+                failure = f"站点可达但搜索页请求失败: {_clean_probe_error(error)}"
+                if failure not in failures:
+                    failures.append(failure)
+                continue
             search_text = ""
             try:
                 response.encoding = spec.encoding
@@ -796,14 +811,34 @@ async def _probe_crawler_capability(
             except Exception:
                 search_text = ""
             if _is_cloudflare_challenge(search_text):
-                return NetworkCheckStatus.WARNING, "站点可达但搜索页被 Cloudflare 拦截"
+                # 单个候选被拦不代表整站不可用（镜像域名可能没被拦），继续试下一个
+                failure = "站点可达但搜索页被 Cloudflare 拦截"
+                if failure not in failures:
+                    failures.append(failure)
+                continue
             selector = Selector(text=search_text)
             detail_urls = await crawler._parse_search_page(ctx, selector, search_url)
             if detail_urls:
                 return NetworkCheckStatus.OK, "连接正常，刮削正常"
-            # 重写 _search（POST 搜索）的爬虫 GET 探测拿不到结果，
-            # 回退真实刮削路径再确认一次。
-            return await _probe_crawler_by_run(crawler, input_data, timeout)
+            parsed_empty = True
+        if parsed_empty:
+            # 至少有一个候选把页面取回来了、只是解析不到结果：可能是重写
+            # `_search`（POST 搜索）的爬虫，或页面结构差异，回退真实刮削路径再确认。
+            status, message = await _probe_crawler_by_run(crawler, input_data, timeout)
+            if (
+                status is not None
+                and status != NetworkCheckStatus.OK
+                and any("Cloudflare" in item for item in failures)
+            ):
+                # 另一些候选取到的是 CF 挑战页：说明「换个域名也未必通」，把线索带上，
+                # 免得用户只盯着页面结构。刻意用「CF 挑战页」而不是「Cloudflare」，
+                # 让汇总仍按确定性失败归类（结构问题重试改变不了）。
+                message = f"{message}（另有候选搜索地址命中 CF 挑战页，可考虑配置外部CF服务）"
+            return status, message
+        if failures:
+            # 全部候选都请求失败 / 被 Cloudflare 拦截：如实上报首个原因
+            return NetworkCheckStatus.WARNING, failures[0]
+        return await _probe_crawler_by_run(crawler, input_data, timeout)
     except NotImplementedError:
         return NetworkCheckStatus.WARNING, "站点可达但无法自动探测刮削，可用设置页指定网址实测"
     except CrawlerException as exc:
@@ -849,6 +884,9 @@ _DETERMINISTIC_PROBE_MARKERS = (
     "official uncensored data failed",
     "页面解析失败",
     "没有获取到番号标题",
+    # 「候选里有的地址命中 CF 挑战页」是确定性信息：换候选也解不开挑战，
+    # 重试只会白白多等一档
+    "命中 CF 挑战页",
 )
 
 
@@ -1138,12 +1176,12 @@ def format_summary(
             lines.append(f"  • 节点/IP 被封 ×{cause_counts['node_blocked']}：请更换代理节点或改用其他出口重试")
         if cause_counts["probe_timeout"]:
             lines.append(
-                f"刮削探测多次超时×{cause_counts['probe_timeout']}：站点能连上但刮削响应过慢，"
+                f"  • 刮削探测多次超时×{cause_counts['probe_timeout']}：站点能连上但刮削响应过慢，"
                 f"已按{scrape_probe_ladder_text()}自动重试，多为代理节点质量或站点负载，可换节点/稍后再测"
             )
         if cause_counts["probe_failed"]:
             lines.append(
-                f"刮削探测确定性失败×{cause_counts['probe_failed']}：站点能连上，但按真实番号实刮仍失败"
+                f"  • 刮削探测确定性失败×{cause_counts['probe_failed']}：站点能连上，但按真实番号实刮仍失败"
                 "（多为页面结构/番号形态不匹配），重试不会改变结果，请看该行「均失败」后的根因"
             )
         if cause_counts["unreachable"]:
@@ -1213,7 +1251,9 @@ async def _build_site_specs() -> list[NetworkCheckSpec]:
                     group="站点检测",
                     url="",
                     site=site,
-                    note="连接正常，刮削正常",
+                    # 语义随 run_network_check_item 的空地址分支改为 SKIPPED：
+                    # 没有默认域名也没配自定义网址，本项无可检测对象
+                    note="未配置网址，已跳过",
                 )
             )
             continue
@@ -1463,7 +1503,10 @@ async def run_network_check_item(
     if spec.warning_if_missing:
         return NetworkCheckResult(spec=spec, status=NetworkCheckStatus.WARNING, message=spec.warning_if_missing)
     if not spec.url:
-        return NetworkCheckResult(spec=spec, status=NetworkCheckStatus.OK, message=spec.note or "连接正常，刮削正常")
+        # 没有地址 = 本项没有可检测的对象（未配置的 CF Bypass / 外部CF服务、
+        # 没有默认域名的站点）：记 SKIPPED。原先返回 OK 有两个副作用——
+        # 汇总里的「跳过 N」永远是 0，未配置项反而在报告里显示成「正常」。
+        return NetworkCheckResult(spec=spec, status=NetworkCheckStatus.SKIPPED, message=spec.note or "未配置，已跳过")
 
     used_proxy = _compute_used_proxy(spec)
     start_time = time.perf_counter()

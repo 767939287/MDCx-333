@@ -233,7 +233,11 @@ class LayoutMasterMixin:
         sp_h = setting_page.height()
         sp_w = setting_page.width()
         bottom = max(sp_h - (692 - 630), 100)  # 控件组设计基线 y=630
-        ui.label_config.setGeometry(0, max(sp_h - (692 - 620), 90), max(sp_w - 21, 400), 72)
+        # 宽度取满页宽：设置页 tab 内的 QScrollArea 高度是满页高，滚动条会一路
+        # 画到页底、穿过页脚横线；浮框只到 sp_w - 21 时正好差 21px 遮不住它
+        # （工具页的 scrollArea_10 高度是 page_h - 75，滚动条到不了页脚，所以没有
+        # 这个问题）。浮框盖满右缘后，页脚区域内的滚动条被遮掉。
+        ui.label_config.setGeometry(0, max(sp_h - (692 - 620), 90), max(sp_w, 400), 72)
         ui.comboBox_change_config.move(100, max(bottom + 5, 105))
         ui.pushButton_save_config.move(max(sp_w - 241 - 89, 500), bottom)
         # 另存为/恢复默认向右移动，使三段间距相等：
@@ -266,7 +270,7 @@ class LayoutMasterMixin:
             tp_h = tool_area.height()
             tp_w = tool_area.width()
             t_bottom = max(tp_h - (692 - 630), 100)
-            ui.label_config_tool.setGeometry(0, max(tp_h - (692 - 620), 90), max(tp_w - 21, 400), 72)
+            ui.label_config_tool.setGeometry(0, max(tp_h - (692 - 620), 90), max(tp_w, 400), 72)
             ui.comboBox_change_config_tool.move(100, max(t_bottom + 5, 105))
             ui.pushButton_save_config_tool.move(max(tp_w - 241 - 89, 500), t_bottom)
             # 与 page_setting 一致：三段间距相等

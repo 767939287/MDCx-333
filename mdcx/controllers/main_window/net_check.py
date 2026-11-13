@@ -184,28 +184,35 @@ class NetCheckMixin:
         QApplication.clipboard().setText(text)
         signal_qt.show_net_info("✅ 检测报告已复制到剪贴板（含版本/系统概要，代理地址已脱敏，可直接粘贴到 issue 求助）")
 
-    @staticmethod
-    def _build_net_diagnostic_header() -> list[str]:
-        """生成复制到剪贴板的诊断报告头部：版本/系统/脱敏后的网络配置概要。"""
+    def _build_net_diagnostic_header(self) -> list[str]:
+        """生成复制到剪贴板的诊断报告头部：版本/系统/脱敏后的网络配置概要。
+
+        分隔线宽度与报告正文同源（`_net_report_separator_width`）：原来这里写死
+        88 列，而正文按面板可视宽自适应，复制出的报告首尾横幅与中间分隔线长短不一。
+        """
         from mdcx.utils import mask_proxy_url
 
         config = manager.config
         use_proxy = bool(config.use_proxy and config.proxy)
         proxy_info = mask_proxy_url(config.proxy) if use_proxy else "未启用"
+        separator = "=" * self._net_report_separator_width()
         return [
-            "=" * 88,
+            separator,
             "MDCx 网络诊断报告（提 issue 时可直接粘贴本段全部内容）",
             f"  版本: {VERSION_NAME} ({LOCAL_VERSION})",
             f"  系统: {platform.system()} {platform.release()} ({platform.machine()})",
             f"  时间: {time.strftime('%Y-%m-%d %H:%M:%S')}",
             f"  代理: {proxy_info}    CloudFlare Bypass: {'已配置' if config.cf_bypass_url.strip() else '未配置'}"
             f"    外部CF服务: {'已配置' if config.cf_bypass_trawl_url.strip() else '未配置'}",
-            "=" * 88,
+            separator,
         ]
 
     def _on_net_check_progress(self, done: int, total: int):
         """主线程：检测进行中，按钮文本显示进度百分比。"""
-        if total > 0 and self.network_check_future is not None:
+        # 已点「停止」后按钮已经回到「开始检测」、cancel_event 也已置位，此时再回写
+        # 「停止检测 x/y」会让用户以为停止没生效（review 记录的实际现象）。
+        cancel_event = self.network_check_cancel_event
+        if total > 0 and self.network_check_future is not None and not (cancel_event and cancel_event.is_set()):
             self.Ui.pushButton_check_net.setText(f"停止检测 {done}/{total}")
 
     def _on_net_check_item(self):
@@ -234,7 +241,9 @@ class NetCheckMixin:
     def pushButton_check_net_clicked(self):
         if self.Ui.pushButton_check_net.text() == "开始检测":
             if self.network_check_future is not None:
-                # 上一个检测线程尚未结束，避免并发启动多个实例
+                # 不能静默 return：点过「停止」后 worker 还要跑一会儿才退出，
+                # 此时用户再点「开始检测」会毫无反应（review 记录）。
+                signal_qt.show_net_info("\n⏳ 上一次检测仍在停止中，请等它结束后再开始")
                 return
             self.Ui.pushButton_check_net.setText("停止检测")
             self.Ui.pushButton_check_net.setStyleSheet(

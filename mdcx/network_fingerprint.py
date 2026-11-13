@@ -1,11 +1,45 @@
 from __future__ import annotations
 
 import random
+import re
+import sys
 from dataclasses import dataclass
 from typing import Literal
 from urllib.parse import urlsplit
 
 RequestPurpose = Literal["document", "api", "asset", "download"]
+
+
+# UA 平台段一律由「运行系统」决定，不用指纹/外部值
+_UA_PLATFORM_SEGMENTS: dict[str, str] = {
+    "Windows": "Windows NT 10.0; Win64; x64",
+    "macOS": "Macintosh; Intel Mac OS X 10_15_7",
+    "Linux": "X11; Linux x86_64",
+}
+
+# 只匹配 UA 最前面的 `Mozilla/5.0 (...)` 平台段，不动后面的 `(KHTML, like Gecko)`
+_UA_PLATFORM_RE = re.compile(r"^Mozilla/5\.0 \([^)]*\)")
+
+
+def os_ua_platform_segment() -> str:
+    """当前运行系统对应的 UA 平台段。"""
+    if sys.platform == "win32":
+        return _UA_PLATFORM_SEGMENTS["Windows"]
+    if sys.platform == "darwin":
+        return _UA_PLATFORM_SEGMENTS["macOS"]
+    return _UA_PLATFORM_SEGMENTS["Linux"]
+
+
+def align_user_agent_platform(user_agent: str) -> str:
+    """UA 平台段一律由运行系统决定（Windows / macOS / Linux），只保留 solver 的浏览器版本。
+
+    solver（FlareSolverr 容器）跑在 Linux，返回的 UA 必然是 `X11; Linux x86_64`；
+    直接照抄与本机环境不符，所以平台段按运行系统重写，版本号沿用 solver
+    （clearance 绑定的是浏览器版本）。
+    """
+    if not user_agent:
+        return user_agent
+    return _UA_PLATFORM_RE.sub(f"Mozilla/5.0 ({os_ua_platform_segment()})", user_agent, count=1)
 
 
 @dataclass(frozen=True)

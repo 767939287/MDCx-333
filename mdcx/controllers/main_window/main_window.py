@@ -932,6 +932,19 @@ class MyMAinWindow(
         """
         self._actor_db_running.discard(task_id)
 
+        # 演员库任务全部结束后复位停止标志。
+        # pushButton_actor_db_stop_clicked 只置位不复位，若在非刮削状态点击停止，
+        # signal_qt.stop / Flags.stop_requested 将永久为 True，导致日志静默、下一任务秒停。
+        # 必须放在下面那个 early return **之前**：run_in_background 恒带 btn_attr，
+        # task_id 几乎总在 _ACTOR_DB_IDLE_TEXT_MAP 里，放在函数末尾等于永不执行。
+        #
+        # 但「主刮削没在跑」是复位的前提：change_buttons_status 只禁用 5 个演员库按钮，
+        # actor_db_check 等弹窗式任务刮削期间仍可启动，而弹窗 exec() 的嵌套事件循环里
+        # 用户完全可能点「停止刮削」——这里无条件复位会把那个停止请求抹掉。
+        if not self._actor_db_running and self.Ui.pushButton_start_cap.text() == "开始":
+            Flags.stop_requested = False
+            signal_qt.stop = False
+
         if task_id and task_id in self._ACTOR_DB_IDLE_TEXT_MAP:
             btn_attr = task_id
             btn = getattr(self.Ui, f"pushButton_{btn_attr}")
@@ -948,14 +961,6 @@ class MyMAinWindow(
                 btn.setEnabled(True)
             if sig is not None:
                 sig.emit(idle_text)
-
-        # 演员库任务全部结束后复位停止标志。
-        # pushButton_actor_db_stop_clicked 只置位不复位，若在非刮削状态点击停止，
-        # signal_qt.stop / Flags.stop_requested 将永久为 True，导致日志静默、下一任务秒停。
-        # 演员库任务与主刮削互斥（change_buttons_status 会禁用 actor_db 按钮），此处复位安全。
-        if not self._actor_db_running:
-            Flags.stop_requested = False
-            signal_qt.stop = False
 
     # endregion
 

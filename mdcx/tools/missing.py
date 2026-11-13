@@ -111,11 +111,29 @@ async def _try_write_cache_async(p: str | Path, content: str, start_time: float)
         signal.show_log_text(f"   ⚠️ 缓存文件写入失败（不影响本次查询结果，但下次会重新扫描）：{e}")
 
 
+async def _flush_number_cache(p: str | Path, local_movies: dict[str, tuple[str, bool]], start_time: float) -> None:
+    """把本地番号缓存整体落盘（写失败只记日志，不中断查询）。"""
+    await _try_write_cache_async(
+        p,
+        json.dumps(local_movies, ensure_ascii=False, sort_keys=True, indent=4, separators=(",", ": ")),
+        start_time,
+    )
+
+
 async def check_missing_number(actor_flag):
-    """
-    检查缺失番号
+    """检查缺失番号。
+
+    真正的逻辑在 `_check_missing_number_impl`：按钮状态必须在这里的 finally 里复位，
+    否则遍历/查询途中一旦抛异常，按钮会永久保持「置灰」状态。
     """
     signal.change_buttons_status.emit()
+    try:
+        await _check_missing_number_impl(actor_flag)
+    finally:
+        signal.reset_buttons_status.emit()
+
+
+async def _check_missing_number_impl(actor_flag):
     start_time = time.time()
     local_movies: dict[str, tuple[str, bool]] = {}
 
@@ -148,48 +166,49 @@ async def check_missing_number(actor_flag):
     async with aiofiles.open(local_number_list, encoding="utf-8") as data:
         json_data = json.loads(await data.read())
         json_data = cast("dict[str, tuple[str, bool]]", json_data)
-    for movie in all_movies:
-        nfo_path = movie.with_suffix(".nfo")
-        number = ""
-        has_sub = False
-        if r := json_data.get(movie.as_posix()):
-            number, has_sub = r
-        else:
-            if await aiofiles.os.path.exists(nfo_path):
-                async with aiofiles.open(nfo_path, encoding="utf-8") as f:
-                    nfo_content = await f.read()
-                number_result = re.findall(r"<num>(.+)</num>", nfo_content)
-                if number_result:
-                    number = number_result[0]
+    pending_new = 0
+    try:
+        for movie in all_movies:
+            nfo_path = movie.with_suffix(".nfo")
+            number = ""
+            has_sub = False
+            if r := json_data.get(movie.as_posix()):
+                number, has_sub = r
+            else:
+                if await aiofiles.os.path.exists(nfo_path):
+                    async with aiofiles.open(nfo_path, encoding="utf-8") as f:
+                        nfo_content = await f.read()
+                    number_result = re.findall(r"<num>(.+)</num>", nfo_content)
+                    if number_result:
+                        number = number_result[0]
 
-                    if "<genre>中文字幕</genre>" in nfo_content or "<tag>中文字幕</tag>" in nfo_content:
-                        has_sub = True
-                    else:
-                        has_sub = False
-            if not number:
-                file_info = await get_file_info_v2(movie, copy_sub=False)
-                has_sub = file_info.has_sub
-                number = file_info.number
-            cn_word_icon = "🀄️" if has_sub else ""
-            signal.show_log_text(f"   发现新番号：{number:<10} {cn_word_icon}")
-        temp_number = re.findall(r"\d{3,}([a-zA-Z]+-\d+)", number)  # 去除前缀，因为 javdb 不带前缀
-        number = temp_number[0] if temp_number else number
-        local_movies[movie.as_posix()] = (number, has_sub)  # 用新表，更新完重新写入到本地文件中
-        Flags.local_number_set.add(number)  # 添加到本地番号集合
-        if has_sub:
-            Flags.local_number_cnword_set.add(number)  # 添加到本地有字幕的番号集合
+                        if "<genre>中文字幕</genre>" in nfo_content or "<tag>中文字幕</tag>" in nfo_content:
+                            has_sub = True
+                        else:
+                            has_sub = False
+                if not number:
+                    file_info = await get_file_info_v2(movie, copy_sub=False)
+                    has_sub = file_info.has_sub
+                    number = file_info.number
+                cn_word_icon = "🀄️" if has_sub else ""
+                signal.show_log_text(f"   发现新番号：{number:<10} {cn_word_icon}")
+                pending_new += 1
+            temp_number = re.findall(r"\d{3,}([a-zA-Z]+-\d+)", number)  # 去除前缀，因为 javdb 不带前缀
+            number = temp_number[0] if temp_number else number
+            local_movies[movie.as_posix()] = (number, has_sub)  # 用新表，更新完重新写入到本地文件中
+            Flags.local_number_set.add(number)  # 添加到本地番号集合
+            if has_sub:
+                Flags.local_number_cnword_set.add(number)  # 添加到本地有字幕的番号集合
 
-        await _try_write_cache_async(
-            local_number_list,
-            json.dumps(
-                local_movies,
-                ensure_ascii=False,
-                sort_keys=True,
-                indent=4,
-                separators=(",", ": "),
-            ),
-            start_time,
-        )
+            # 原来每条视频都全量重写一遍缓存（O(n²) 写盘），改为每 200 条落一次，
+            # 循环后再兜底落一次：既保留进度持久化，又把 IO 次数降到 O(n/200)。
+            if pending_new >= 200:
+                await _flush_number_cache(local_number_list, local_movies, start_time)
+                pending_new = 0
+    finally:
+        # 异常退出也要把已算出的条目落盘：否则缓存停在旧快照，下次全量重扫（白跑）。
+        if pending_new:
+            await _flush_number_cache(local_number_list, local_movies, start_time)
     signal.show_log_text(f"🎉 获取完毕！共获取番号数量（{len(local_movies)}）({get_used_time(start_time_local)}s)")
 
     # 查询演员番号
@@ -218,4 +237,3 @@ async def check_missing_number(actor_flag):
         signal.show_log_text("\n🔴 没有要查询的演员！")
 
     signal.show_log_text(f"\n🎉 查询完毕！共用时({get_used_time(start_time)}s)")
-    signal.reset_buttons_status.emit()

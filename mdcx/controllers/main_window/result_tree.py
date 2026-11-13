@@ -439,7 +439,9 @@ class ResultTreeMixin:
         for item in self._get_selected_result_items():
             show_name = item.text(0)
             show_data = self.json_array.get(show_name)
-            if show_data is None or not show_data.file_info.file_path:
+            # Path 没有 __bool__，`not Path()` 恒为 False；这里必须显式比空路径，
+            # 否则空 file_path 会带着 "." 一路走到「删除文件夹」(safe_rmtree)。
+            if show_data is None or show_data.file_info.file_path == Path():
                 continue
             result.append((item, show_name, show_data, show_data.file_info.file_path))
         return result

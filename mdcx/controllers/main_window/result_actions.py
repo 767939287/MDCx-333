@@ -315,6 +315,10 @@ class ResultActionsMixin:
         file_paths = [file_path for _, file_path in delete_targets]
         folder_to_show_names: dict[Path, list[str]] = {}
         for show_name, file_path in delete_targets:
+            if file_path == Path() or not file_path.is_absolute():
+                # 空路径 / 相对路径经 split_path 得到 "."，再往下就是删掉进程当前目录。
+                signal_qt.show_log_text(f" ⚠️ 跳过无有效绝对路径的条目: {show_name or '(空)'}")
+                continue
             folder_path = Path(split_path(file_path)[0])
             folder_to_show_names.setdefault(folder_path, [])
             if show_name:

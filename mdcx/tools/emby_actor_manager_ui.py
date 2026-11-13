@@ -1063,14 +1063,24 @@ class PreparePreviewThread(_CancellableWorkerThread):
 
         completed = 0
         cancelled = False
-        tasks = [guarded(actor) for actor in targets]
-        for coro in asyncio.as_completed(tasks):
-            if self._cancel:
-                cancelled = True
-                break
-            completed += 1
-            actor = await coro
-            self.progress.emit(completed, total, f"处理中: {actor.name} ({completed}/{total})")
+        # 必须建成真 Task：原来这里放的是裸协程，as_completed 内部包成 Task 后无人持有，
+        # 点「停止」break 出去时这些协程既不会被取消也不会被等待 → 悬空请求继续跑，
+        # 退出 loop 时还会报 "Task was destroyed but it is pending!"。
+        tasks = [asyncio.create_task(guarded(actor)) for actor in targets]
+        try:
+            for coro in asyncio.as_completed(tasks):
+                if self._cancel:
+                    cancelled = True
+                    break
+                completed += 1
+                actor = await coro
+                self.progress.emit(completed, total, f"处理中: {actor.name} ({completed}/{total})")
+        finally:
+            # 停止 / 异常退出：取消并等待仍在跑的协程收尾；正常跑完时这里什么都不做。
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
         return cancelled
 
     async def _try_fetch_image(self, actor: ActorInfo, force: bool):

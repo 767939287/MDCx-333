@@ -2,8 +2,23 @@
 
 通用主题令牌与通用 QSS 构件（_qss_resources / LIGHT_TOKENS / DARK_TOKENS / _tokens /
 get_theme_tokens / apply_application_palette / build_tree_widget_style / build_menu_style /
-build_scrollbar_style）已经搬到中立层 mdcx/ui_theme.py，这里导入并重新导出，既有导入
-路径不变；只有需要访问 self.Ui 的主窗口专属样式留在这里。
+build_scrollbar_style）在中立层 mdcx/ui_theme.py，这里导入并重新导出，既有导入路径不变。
+
+换皮 A1（2026-11-13）：浅色 / 深色两套几乎镜像的 QSS 合并为**一份模板**
+`build_app_stylesheet(self, dark)`，按 token 渲染后一次性打给 centralwidget。
+
+合并前是 6 个容器（widget_setting / page_main / page_tool / page_about / page_setting /
+centralwidget）各 setStyleSheet 一次，同一批控件被 polish 3~4 遍；合并后子容器不再
+单独下发样式。原来"各页各设一份"的规则用 `#page_tool ...` / `#page_setting ...` 这类
+祖先选择器限定回原容器，避免 `*` / `QGroupBox` 等无前缀规则外溢到主界面。
+
+有意统一的外观差异（换皮前两套 QSS 不一致的地方）：
+- 输入框圆角：浅色 10px / 暗色 20px / 工具页 15px → 统一 `radius_lg`(10px)
+- 输入框字号：浅色 14px / 暗色 13px → 统一 `font_md`(14px)
+- 按钮 hover/pressed：原选择器缺 `QPushButton` 前缀（`:hover#foo`）导致部分按钮无反馈
+  → 全部补全类型前缀
+- `padding: 2px, 2px`（逗号非法，Qt 丢弃声明）→ 改 `padding: 2px`
+- 补齐 disabled 态（输入框 / 勾选框 / 中性按钮 / 滑块）
 """
 
 from typing import TYPE_CHECKING
@@ -32,6 +47,7 @@ __all__ = [
     "_tokens",
     "apply_application_palette",
     "apply_nfo_lib_top_button_style",
+    "build_app_stylesheet",
     "build_menu_style",
     "build_scrollbar_style",
     "build_tree_widget_style",
@@ -43,6 +59,152 @@ __all__ = [
 
 if TYPE_CHECKING:
     from .main_window import MyMAinWindow
+
+
+# 左侧导航按钮
+_NAV_BUTTONS = (
+    "pushButton_main",
+    "pushButton_log",
+    "pushButton_tool",
+    "pushButton_setting",
+    "pushButton_net",
+    "pushButton_about",
+    "pushButton_emby_manager_nav",
+    "pushButton_nfo_library",
+)
+
+# 主界面标题类标签（原浅色 QSS 里 label_poster1 被重复列了一次，这里去重）
+_MAIN_TITLE_LABELS = (
+    "label_number1",
+    "label_actor1",
+    "label_title1",
+    "label_poster1",
+    "label_number",
+    "label_actor",
+    "label_title",
+)
+
+# 右上角图标按钮（无底色，hover 才出现灰底）
+_ICON_BUTTONS = (
+    "pushButton_right_menu",
+    "pushButton_play",
+    "pushButton_open_folder",
+    "pushButton_open_nfo",
+    "pushButton_show_hide_logs",
+    "pushButton_save_failed_list",
+    "pushButton_tree_clear",
+    "pushButton_clear_logs",
+)
+
+# 灰底胶囊按钮（选目录 / 各种工具入口）
+_NEUTRAL_BUTTONS = (
+    "pushButton_save_new_config",
+    "pushButton_save_new_config_tool",
+    "pushButton_init_config",
+    "pushButton_init_config_tool",
+    "pushButton_success_list_close",
+    "pushButton_success_list_save",
+    "pushButton_success_list_clear",
+    "pushButton_show_tips_close",
+    "pushButton_nfo_close",
+    "pushButton_nfo_save",
+    "pushButton_show_pic_actor",
+    "pushButton_add_actor_pic",
+    "pushButton_add_actor_info",
+    "pushButton_add_actor_pic_kodi",
+    "pushButton_del_actor_folder",
+    "pushButton_move_mp4",
+    "pushButton_select_file",
+    "pushButton_actor_db_pick_nfo_dir",
+    "pushButton_actor_db_sync_aliases",
+    "pushButton_select_local_library",
+    "pushButton_select_netdisk_path",
+    "pushButton_select_localdisk_path",
+    "pushButton_creat_symlink",
+    "pushButton_find_missing_number",
+    "pushButton_select_thumb",
+    "pushButton_start_single_file",
+    "pushButton_select_file_clear_info",
+    "pushButton_add_sub_for_all_video",
+    "pushButton_view_failed_list",
+    "pushButton_select_media_folder",
+    "pushButton_select_media_folder_setting_page",
+    "pushButton_select_data_dir",
+    "pushButton_select_softlink_folder",
+    "pushButton_select_sucess_folder",
+    "pushButton_select_failed_folder",
+    "pushButton_view_success_file",
+    "pushButton_select_subtitle_folder",
+    "pushButton_select_actor_photo_folder",
+    "pushButton_select_gfriends_local",
+    "pushButton_select_actor_info_db",
+    "pushButton_select_config_folder",
+    "pushButton_add_all_extrafanart_copy",
+    "pushButton_del_all_extrafanart_copy",
+    "pushButton_add_all_extras",
+    "pushButton_del_all_extras",
+    "pushButton_add_all_theme_videos",
+    "pushButton_del_all_theme_videos",
+    "pushButton_check_and_clean_files",
+    "pushButton_search_by_number",
+    "pushButton_search_by_url",
+    "pushButton_cover_backfill_start",
+)
+
+# 蓝底胶囊按钮（保存 / 信息管理页操作）
+_PRIMARY_BUTTONS = (
+    "pushButton_save_config",
+    "pushButton_save_config_tool",
+    "pushButton_nfo_lib_save",
+    "pushButton_nfo_lib_batch_save",
+    "pushButton_nfo_lib_crop",
+)
+
+# 蓝底强调按钮（开始 / 检测网络 / 失败列表）
+_START_BUTTONS = (
+    "pushButton_start_cap",
+    "pushButton_start_cap2",
+    "pushButton_check_net",
+    "pushButton_scraper_failed_list",
+)
+
+# 设置页各 tab 的内容容器（原浅/暗两份 QSS 各列一遍）
+_SETTING_PAGES = (
+    "tab1",
+    "tab2",
+    "tab3",
+    "tab4",
+    "tab5",
+    "tab",
+    "tab_2",
+    "tab_3",
+    "tab_4",
+    "tab_5",
+    "tab_6",
+    "tab_7",
+    "scrollAreaWidgetContents_guaxiaomulu",
+    "scrollAreaWidgetContents_guaxiaomoshi",
+    "scrollAreaWidgetContents_guaxiaowangzhan",
+    "scrollAreaWidgetContents_xiazai",
+    "scrollAreaWidgetContents_mingming",
+    "scrollAreaWidgetContents_fanyi",
+    "scrollAreaWidgetContents_zimu",
+    "scrollAreaWidgetContents_shuiyin",
+    "scrollAreaWidgetContents_nfo",
+    "scrollAreaWidgetContents_yanyuan",
+    "scrollAreaWidgetContents_wangluo",
+    "scrollAreaWidgetContents_gaoji",
+)
+
+_FONT_FAMILY = "Consolas, 'PingFang SC', 'Microsoft YaHei UI', 'Noto Color Emoji', 'Segoe UI Emoji'"
+
+
+def _sel(base: str, names: tuple[str, ...]) -> str:
+    """把一组 objectName 拼成 `base#name1, base#name2, ...` 选择器。
+
+    每个选择器都必须带完整前缀：`#a, :hover#b` 这种写法在 Qt 里只有首项生效。
+    """
+    return ", ".join(f"{base}#{name}" for name in names)
 
 
 def _apply_log_document_style(self: MyMAinWindow, dark: bool) -> None:
@@ -75,28 +237,28 @@ def _nfo_lib_top_button_qss(dark: bool) -> str:
     外观与「软件设置 → 高级 → 选择目录」（pushButton_select_config_folder）保持一致，
     单独下发是为了在套用样式前后按控件原始尺寸钉死宽高，避免顶栏整体位移。
     """
-    background = "rgba(220, 220,220, 50)" if dark else "rgba(220, 220,220, 255)"
+    t = _tokens(dark)
     # 注意：每个选择器都要带上完整前缀，`#a,#b:hover` 会让 hover 状态作用在整组上
     return f"""
         QPushButton#pushButton_nfo_lib_select_dir,
         QPushButton#pushButton_nfo_lib_refresh{{
-            font-size:14px;
-            background-color: {background};
-            border-color:black;
+            font-size:{t["font_md"]};
+            background-color: {t["button_neutral"]};
+            border-color:{t["button_neutral_border"]};
             border-width:8px;
-            border-radius:20px;
-            padding: 2px, 2px;
+            border-radius:{t["radius_pill"]};
+            padding: {t["space_xs"]};
         }}
         QPushButton:hover#pushButton_nfo_lib_select_dir,
         QPushButton:hover#pushButton_nfo_lib_refresh{{
-            color: white;
-            background-color: rgba(76,110,255,240);
+            color: #FFFFFF;
+            background-color: {t["accent"]};
             font-weight:bold;
         }}
         QPushButton:pressed#pushButton_nfo_lib_select_dir,
         QPushButton:pressed#pushButton_nfo_lib_refresh{{
-            background-color:#4C6EE0;
-            border-color:black;
+            background-color:{t["accent_pressed"]};
+            border-color:{t["button_neutral_border"]};
             border-width:14px;
             font-weight:bold;
         }}
@@ -122,284 +284,275 @@ def apply_nfo_lib_top_button_style(self: MyMAinWindow, dark: bool) -> None:
         button.setFixedSize(natural)
 
 
-def set_style(self: MyMAinWindow):
-    if self.dark_mode:
-        self.set_dark_style()
-        return
+def build_app_stylesheet(self: MyMAinWindow, dark: bool) -> str:
+    """渲染主窗口的**唯一**一份 QSS（浅色 / 深色由 token 决定）。"""
+    t = _tokens(dark)
+    arrow = "chevron_down_dark.svg" if dark else "chevron_down_light.svg"
 
-    apply_application_palette(False)
-    _apply_log_document_style(self, False)
-    self.Ui.treeWidget_number.setStyleSheet(build_tree_widget_style(False))
+    nav = _sel("#widget_setting QPushButton", _NAV_BUTTONS)
+    main_titles = _sel("#page_main QLabel", _MAIN_TITLE_LABELS)
+    setting_pages = _sel("#page_setting QWidget", _SETTING_PAGES)
 
-    # 控件美化 左侧栏样式
-    self.Ui.widget_setting.setStyleSheet(f"""
-        QWidget#widget_setting{{
-            background: #EEF3FF;
+    icon = _sel("QPushButton", _ICON_BUTTONS)
+    icon_hover = _sel("QPushButton:hover", _ICON_BUTTONS)
+    icon_pressed = _sel("QPushButton:pressed", _ICON_BUTTONS)
+
+    neutral = _sel("QPushButton", _NEUTRAL_BUTTONS)
+    neutral_hover = _sel("QPushButton:hover", _NEUTRAL_BUTTONS)
+    neutral_pressed = _sel("QPushButton:pressed", _NEUTRAL_BUTTONS)
+    neutral_disabled = _sel("QPushButton:disabled", _NEUTRAL_BUTTONS)
+
+    primary = _sel("QPushButton", _PRIMARY_BUTTONS)
+    primary_hover = _sel("QPushButton:hover", _PRIMARY_BUTTONS)
+    primary_pressed = _sel("QPushButton:pressed", _PRIMARY_BUTTONS)
+
+    start = _sel("QPushButton", _START_BUTTONS)
+    start_hover = _sel("QPushButton:hover", _START_BUTTONS)
+    start_pressed = _sel("QPushButton:pressed", _START_BUTTONS)
+
+    return _qss_resources(f"""
+        * {{
+            font-family: {_FONT_FAMILY};
+            font-size: {t["font_sm"]};
+            color: {t["text"]};
+        }}
+
+        QWidget#centralwidget {{
+            background: {t["window"]};
+            border: {self.window_border}px solid {t["panel_border"]};
+            border-radius: {self.window_radius}px;
+        }}
+
+        /* ---- 左侧导航栏 ---- */
+        QWidget#widget_setting {{
+            background: {t["sidebar"]};
             border-top-left-radius: {self.window_radius}px;
             border-bottom-left-radius: {self.window_radius}px;
         }}
-        QPushButton#pushButton_main,#pushButton_log,#pushButton_tool,#pushButton_setting,#pushButton_net,#pushButton_about,#pushButton_emby_manager_nav,#pushButton_nfo_library{{
-            font-size: 14px;
-            color: black;
+        {nav} {{
+            font-size: {t["font_md"]};
+            color: {t["sidebar_text"]};
             border-width: 9px;
             border-color: gray;
-            border-radius: 10px;
-            text-align : left;
+            border-radius: {t["radius_lg"]};
+            text-align: left;
             qproperty-iconSize: 20px 20px;
             padding-left: 20px;
         }}
-        QLabel#label_show_version{{
-            font-size: 13px;
-            color: rgba(20, 20, 20, 250);
+        #widget_setting QLabel#label_show_version {{
+            font-size: {t["font_sm"]};
+            color: {t["sidebar_text_muted"]};
             border: 0px solid rgba(255, 255, 255, 80);
         }}
-        """)
-    # 主界面
-    self.Ui.page_main.setStyleSheet("""
-        QLabel#label_number1,#label_actor1,#label_title1,#label_poster1,#label_number,#label_actor,#label_title,#label_poster1{
-            font-size: 16px;
-            font-weight: bold;
-            background-color: rgba(246, 246, 246, 0);
-            border: 0px solid rgba(0, 0, 0, 80);
-        }
-        QLabel#label_file_path{
-            font-size: 16px;
-            color: black;
-            background-color: rgba(246, 246, 246, 0);
-            font-weight: bold;
-            border: 0px solid rgba(0, 0, 0, 80);
-        }
-        QLabel#label_poster_size{
-            color: rgba(0, 0, 0, 200);
-        }
-        QLabel#label_poster,#label_thumb{
-            border: 1px solid rgba(60, 60, 60, 100);
-        }
-        QGroupBox{
-            background-color: rgba(246, 246, 246, 0);
-        }
-        """)
-    # 工具页
-    self.Ui.page_tool.setStyleSheet("""
-        * {
-            font-size: 13px;
-        }
-        QScrollArea{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 0);
-        }
-        QWidget#scrollAreaWidgetContents_gongju{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 255);
-        }
 
-        QLabel{
-            font-size:13px;
-            border: 0px solid rgba(0, 0, 0, 80);
-        }
-        QLineEdit{
-            font-size:13px;
-            border:0px solid rgba(130, 30, 30, 20);
-            border-radius: 15px;
-        }
-        QComboBox{
-            combobox-popup: 0;
-            font-size: 13px;
-            color: black;
-        }
-        QGroupBox{
-            background-color: rgba(245,245,246,220);
-            border-radius: 10px;
-        }
-        """)
-    # 使用帮助页
-    self.Ui.page_about.setStyleSheet("""
-        * {
-            font-size: 13px;
-        }
-        QTextBrowser{
-            font-family: Consolas, 'PingFang SC', 'Microsoft YaHei UI', 'Noto Color Emoji', 'Segoe UI Emoji';
-            font-size: 13px;
-            border: 0px solid #BEBEBE;
-            background-color: rgba(246,246,246,0);
-            padding: 2px, 2px;
-        }
-        """)
-    # 设置页
-    self.Ui.page_setting.setStyleSheet(
-        _qss_resources("""
-        * {
-            font-size:13px;
-        }
-        QScrollArea{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 255);
-        }
-        QTabWidget{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 255);
-        }
-        QTabWidget::tab-bar {
+        /* ---- 主界面 ---- */
+        {main_titles} {{
+            font-size: {t["font_lg"]};
+            font-weight: bold;
+            background-color: {t["group_box_flat"]};
+            border: 0px solid {t["panel_border"]};
+        }}
+        #page_main QLabel#label_file_path {{
+            font-size: {t["font_lg"]};
+            color: {t["text"]};
+            background-color: {t["group_box_flat"]};
+            font-weight: bold;
+            border: 0px solid {t["panel_border"]};
+        }}
+        #page_main QLabel#label_poster_size {{
+            color: {t["text_soft"]};
+        }}
+        #page_main QLabel#label_poster, #page_main QLabel#label_thumb {{
+            border: 1px solid {t["poster_border"]};
+        }}
+        #page_main QGroupBox {{
+            background-color: {t["group_box_flat"]};
+        }}
+
+        /* ---- 工具页 ---- */
+        #page_tool * {{
+            font-size: {t["font_sm"]};
+        }}
+        #page_tool QScrollArea {{
+            background-color: {t["group_box_flat"]};
+            border-color: {t["group_box_flat"]};
+        }}
+        #page_tool QWidget#scrollAreaWidgetContents_gongju {{
+            background-color: {t["group_box_flat"]};
+            border-color: {t["window"]};
+        }}
+        #page_tool QLabel {{
+            font-size: {t["font_sm"]};
+            border: 0px solid {t["panel_border"]};
+        }}
+        #page_tool QGroupBox {{
+            background-color: {t["group_box"]};
+            border-radius: {t["radius_lg"]};
+        }}
+
+        /* ---- 使用帮助页 ---- */
+        #page_about * {{
+            font-size: {t["font_sm"]};
+        }}
+        #page_about QTextBrowser {{
+            font-family: {_FONT_FAMILY};
+            font-size: {t["font_sm"]};
+            border: 0px solid {t["splitter_line"]};
+            background-color: {t["group_box_flat"]};
+            padding: {t["space_xs"]};
+        }}
+
+        /* ---- 设置页 ---- */
+        #page_setting * {{
+            font-size: {t["font_sm"]};
+        }}
+        #page_setting QScrollArea {{
+            background-color: {t["group_box_flat"]};
+            border-color: {t["group_box_flat"]};
+        }}
+        /* tab 栏所在区域由 QTabWidget 自身背景绘制：不设会透出 centralwidget 的
+           window 色（暗色 #121A24），比页面底色 #18222D 更黑，顶部出现一条断层。 */
+        #page_setting QTabWidget {{
+            background: {t["page_bg"]};
+            border: 0px solid {t["page_bg"]};
+        }}
+        /* Tab 子控件选择器（QTabBar::tab / QTabWidget::tab-bar / ::pane）带祖先 ID
+           前缀时 Qt 匹配不到，会退回系统 palette（暗色下表现为 #121A24 一条更黑的
+           横带）。主窗口只有设置页有 QTabWidget，故写成无前缀全局规则。
+           tests/test_ui_structure.py 不校验这几条，改前缀前先手测顶部 tab 栏底色。 */
+        QTabWidget::tab-bar {{
             alignment: center;
-        }
-        QTabBar::tab{
-            color: black;
-            border:1px solid #E8E8E8;
+        }}
+        QTabWidget::pane {{
+            border: 0px solid {t["group_box_flat"]};
+            background: {t["page_bg"]};
+        }}
+        QTabBar::tab {{
+            color: {t["text"]};
+            border: 1px solid {t["tab_border"]};
             min-height: 3ex;
             min-width: 6ex;
-            padding: 2px;
-            background-color:#FFFFFF;
-            border-radius: 1px;
-        }
-        QTabBar::tab:selected{
-            color: white;
-            font-weight:bold;
-            border-bottom: 2px solid #2080F7;
-            background-color:#2080F7;
-            border-radius: 1px;
-        }
-        QWidget#tab1,#tab2,#tab3,#tab4,#tab5,#tab,#tab_2,#tab_3,#tab_4,#tab_5,#tab_6,#tab_7,#scrollAreaWidgetContents_guaxiaomulu,#scrollAreaWidgetContents_guaxiaomoshi,#scrollAreaWidgetContents_guaxiaowangzhan,#scrollAreaWidgetContents_xiazai,#scrollAreaWidgetContents_mingming,#scrollAreaWidgetContents_fanyi,#scrollAreaWidgetContents_zimu,#scrollAreaWidgetContents_shuiyin,#scrollAreaWidgetContents_nfo,#scrollAreaWidgetContents_yanyuan,#scrollAreaWidgetContents_wangluo,#scrollAreaWidgetContents_gaoji{
-            background-color: rgba(255, 255, 255, 255);
-            border-color: rgba(246, 246, 246, 255);
-        }
-        QLabel{
-            font-size:13px;
-            border:0px solid rgba(0, 0, 0, 80);
-        }
-        QLabel#label_config,#label_config_tool{
-            font-size:13px;
-            border:0px solid rgba(230, 230, 230, 80);
-            background: rgba(246, 246, 246, 220);
-        }
+            padding: {t["space_xs"]};
+            background-color: {t["tab_bg"]};
+            border-radius: {t["radius_sm"]};
+        }}
+        QTabBar::tab:selected {{
+            color: #FFFFFF;
+            font-weight: bold;
+            border-bottom: 2px solid {t["tab_selected"]};
+            background-color: {t["tab_selected"]};
+            border-radius: {t["radius_sm"]};
+        }}
+        QTabBar::tab:hover:!selected {{
+            border: 1px solid {t["accent"]};
+        }}
+        {setting_pages} {{
+            background-color: {t["page_bg"]};
+            border-color: {t["group_box_flat"]};
+        }}
+        #page_setting QLabel {{
+            font-size: {t["font_sm"]};
+            border: 0px solid {t["panel_border"]};
+        }}
+        #page_setting QLabel#label_config,
+        #page_tool QLabel#label_config_tool {{
+            font-size: {t["font_sm"]};
+            /* 两页页脚同款：底色跟页面一致（工具页原本就无底色），只用一条上边框
+               与滚动内容分开。写作 `#page_setting ... #label_config_tool` 是错的，
+               那个标签实际在 page_tool 里，会被前缀挡掉。 */
+            background: {t["config_footer_bg"]};
+            border-top: 1px solid {t["border"]};
+        }}
+        #page_setting QPushButton {{
+            color: {t["text"]};
+        }}
+        #page_setting QGroupBox {{
+            background-color: {t["group_box"]};
+            border-radius: {t["radius_lg"]};
+        }}
+        #page_setting QRadioButton, #page_setting QCheckBox {{
+            font-size: {t["font_sm"]};
+        }}
+        #page_setting QPlainTextEdit {{
+            font-size: {t["font_sm"]};
+        }}
 
-        QLineEdit{
-            font-size:13px;
-            border:0px solid rgba(130, 30, 30, 20);
-            border-radius: 15px;
-        }
-        QRadioButton{
-            font-size:13px;
-        }
-        QComboBox{
-            combobox-popup: 0;
-            font-size:13px;
-        }
-        QCheckBox{
-            font-size:13px;
-        }
-        QCheckBox::indicator, QRadioButton::indicator{
-            width: 14px;
-            height: 14px;
-            border: 1px solid #B8C0CC;
-            background: #FFFFFF;
-        }
-        QCheckBox::indicator{
-            border-radius: 3px;
-        }
-        QRadioButton::indicator{
-            border-radius: 7px;
-        }
-        QCheckBox::indicator:checked{
-            background: #4C6EFF;
-            border: 1px solid #4C6EFF;
-            image: url(resources/Img/check_indicator.svg);
-        }
-        QRadioButton::indicator:checked{
-            background: #4C6EFF;
-            border: 1px solid #4C6EFF;
-            image: url(resources/Img/radio_indicator.svg);
-        }
-        QCheckBox::indicator:hover, QRadioButton::indicator:hover{
-            border: 1px solid #4C6EFF;
-        }
-        QPlainTextEdit{
-            font-size:13px;
-        }
-        QGroupBox{
-            background-color: rgba(245,245,246,220);
-            border-radius: 10px;
-        }
-        """)
-    )
-    # 整个页面
-    self.Ui.centralwidget.setStyleSheet(
-        _qss_resources(f"""
-        * {{
-            font-family: Consolas, 'PingFang SC', 'Microsoft YaHei UI', 'Noto Color Emoji', 'Segoe UI Emoji';
-            font-size:13px;
-            color: black;
+        /* ---- 结果树 / 日志面板 ---- */
+        QTreeWidget {{
+            background-color: {t["group_box_flat"]};
+            font-size: {t["font_xs"]};
+            border: 0px solid rgb(120, 120, 120);
         }}
-        QTreeWidget
-        {{
-            background-color: rgba(246, 246, 246, 0);
-            font-size: 12px;
-            border:0px solid rgb(120,120,120);
+        QTextBrowser#textBrowser_log_main, QTextBrowser#textBrowser_net_main {{
+            font-size: {t["font_sm"]};
+            border: 0px solid {t["splitter_line"]};
+            background-color: {t["group_box_flat"]};
+            padding: {t["space_xs"]};
         }}
-        QWidget#centralwidget{{
-            background: #FFFFFF;
-            border: {self.window_border}px solid rgba(20,20,20,50);
-            border-radius: {self.window_radius}px;
-       }}
-        QTextBrowser#textBrowser_log_main,#textBrowser_net_main{{
-            font-size:13px;
-            border: 0px solid #BEBEBE;
-            background-color: rgba(246,246,246,0);
-            padding: 2px, 2px;
-        }}
-        QTextBrowser#textBrowser_log_main_2{{
-            font-size:13px;
+        QTextBrowser#textBrowser_log_main_2 {{
+            font-size: {t["font_sm"]};
             border-radius: 0px;
-            border-top: 1px solid #BEBEBE;
-            background-color: rgba(238,245,245,60);
-            padding: 2px, 2px;
+            border-top: 1px solid {t["splitter_line"]};
+            background-color: {t["log_bg_alt"]};
+            padding: {t["space_xs"]};
         }}
-        QTextBrowser#textBrowser_log_main_3{{
-            font-size:13px;
+        QTextBrowser#textBrowser_log_main_3 {{
+            font-size: {t["font_sm"]};
             border-radius: 0px;
-            border-right: 1px solid #EDEDED;
-            background-color: rgba(239,255,252,240);
-            padding: 2px, 2px;
+            border-right: 1px solid {t["border"]};
+            background-color: {t["log_bg_detail"]};
+            padding: {t["space_xs"]};
         }}
-        QTextBrowser#textBrowser_show_success_list,#textBrowser_show_tips{{
-            font-size: 13px;
-            background-color: rgba(240, 245, 240, 240);
-            border: 1px solid #BEBEBE;
-            padding: 2px;
+        QTextBrowser#textBrowser_show_success_list, QTextBrowser#textBrowser_show_tips {{
+            font-size: {t["font_sm"]};
+            border: 1px solid {t["splitter_line"]};
+            background-color: {t["log_bg_tail"]};
+            padding: {t["space_xs"]};
         }}
-        QWidget#widget_show_success,#widget_show_tips,#widget_nfo{{
-            background-color: rgba(246,246,246,255);
-            border: 1px solid rgba(20,20,20,50);
-            border-radius: 10px;
-       }}
-        QWidget#scrollAreaWidgetContents_nfo_editor{{
-            background-color: rgba(240, 245, 240, 240);
-            border: 0px solid rgba(0,0,0,150);
+        QWidget#widget_show_success, QWidget#widget_show_tips, QWidget#widget_nfo {{
+            background-color: {t["panel"]};
+            border: 1px solid {t["panel_border"]};
+            border-radius: {t["radius_lg"]};
         }}
-        QLineEdit, QPlainTextEdit, QTextEdit, QDoubleSpinBox, QSpinBox{{
-            font-size:14px;
-            background:white;
-            border-radius:10px;
-            border: 1px solid #D8DEE9;
+        QWidget#scrollAreaWidgetContents_nfo_editor {{
+            background-color: {t["editor_bg"]};
+            border: 0px solid {t["panel_border"]};
+        }}
+
+        /* ---- 输入控件 ---- */
+        QLineEdit, QPlainTextEdit, QTextEdit, QDoubleSpinBox, QSpinBox {{
+            font-size: {t["font_md"]};
+            background: {t["input_bg"]};
+            border-radius: {t["radius_lg"]};
+            border: 1px solid {t["input_border"]};
             padding: 4px 8px;
-            selection-background-color: #4C6EFF;
+            selection-background-color: {t["accent"]};
         }}
-        QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus, QDoubleSpinBox:focus, QSpinBox:focus{{
-            border: 1px solid #4C6EFF;
-            background: #FFFFFF;
+        QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus, QDoubleSpinBox:focus, QSpinBox:focus {{
+            border: 1px solid {t["accent"]};
+            background: {t["input_focus_bg"]};
         }}
-        QTextEdit#textEdit_nfo_outline,#textEdit_nfo_originalplot,#textEdit_nfo_tag{{
-            font-size:14px;
-            background:white;
-            border: 1px solid #D8DEE9;
+        QLineEdit:disabled, QPlainTextEdit:disabled, QTextEdit:disabled, QDoubleSpinBox:disabled, QSpinBox:disabled {{
+            color: {t["text_disabled"]};
+            border: 1px solid {t["border"]};
+        }}
+        QTextEdit#textEdit_nfo_outline, QTextEdit#textEdit_nfo_originalplot, QTextEdit#textEdit_nfo_tag {{
+            font-size: {t["font_md"]};
+            background: {t["input_bg"]};
+            border: 1px solid {t["input_border"]};
             padding: 4px 8px;
         }}
-        QComboBox{{
+
+        /* ---- 下拉框 ---- */
+        QComboBox {{
             combobox-popup: 0;
-            background: #FFFFFF;
-            border: 1px solid #D8DEE9;
-            border-radius: 8px;
+            font-size: {t["font_sm"]};
+            color: {t["text"]};
+            background: {t["input_bg"]};
+            border: 1px solid {t["input_border"]};
+            border-radius: {t["radius_md"]};
             padding: 3px 30px 3px 8px;
-            selection-background-color: #4C6EFF;
+            selection-background-color: {t["accent"]};
         }}
         /* 「分屏缩放」下拉框：外框宽度被「隐藏演员管理」的 sizeHint 钉死（真机 102px），
            加宽这条路已被用户否掉，只能从控件内部腾地方。通用 QComboBox 的
@@ -407,718 +560,260 @@ def set_style(self: MyMAinWindow):
            扣过箭头宽），102px 的框里文本区只剩 35px，而「跟随系统」要 52px，于是被
            截成「跟随系」。把冗余右内边距清零后文本区 35→65px，外框宽度、箭头位置
            都不动（见 tests/test_advanced_scale_combo_width.py）。 */
-        QComboBox#comboBox_ui_scale{{
-            padding: 3px 0px 3px 8px;
-        }}
-        QComboBox::drop-down{{
-            subcontrol-origin: padding;
-            subcontrol-position: top right;
-            width: 26px;
-            border-left: 1px solid #D8DEE9;
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-            background: #F8FAFC;
-        }}
-        QComboBox::drop-down:hover{{
-            background: #EEF2FF;
-        }}
-        QComboBox::down-arrow{{
-            image: url(resources/Img/chevron_down_light.svg);
-            width: 14px;
-            height: 14px;
-        }}
-        QComboBox:focus{{
-            border: 1px solid #4C6EFF;
-        }}
-        QComboBox QAbstractItemView{{
-            background: #FFFFFF;
-            border: 1px solid #D8DEE9;
-            selection-background-color: #4C6EFF;
-            selection-color: white;
-            outline: 0;
-        }}
-        QComboBox QAbstractItemView::item{{
-            min-height: 24px;
-            padding: 4px 8px;
-            color: #111827;
-        }}
-        QComboBox QAbstractItemView::item:selected{{
-            color: #FFFFFF;
-            background: #4C6EFF;
-        }}
-        QCheckBox::indicator, QRadioButton::indicator{{
-            width: 14px;
-            height: 14px;
-            border: 1px solid #B8C0CC;
-            background: #FFFFFF;
-        }}
-        QCheckBox::indicator{{
-            border-radius: 3px;
-        }}
-        QRadioButton::indicator{{
-            border-radius: 7px;
-        }}
-        QCheckBox::indicator:checked{{
-            background: #4C6EFF;
-            border: 1px solid #4C6EFF;
-            image: url(resources/Img/check_indicator.svg);
-        }}
-        QRadioButton::indicator:checked{{
-            background: #4C6EFF;
-            border: 1px solid #4C6EFF;
-            image: url(resources/Img/radio_indicator.svg);
-        }}
-        QCheckBox::indicator:hover, QRadioButton::indicator:hover{{
-            border: 1px solid #4C6EFF;
-        }}
-        QToolTip{{
-            border: 1px solid #D8DEE9;
-            border-radius: 8px;
-            background: #FFFFFF;
-            color: #111827;
-            padding: 6px 10px;
-        }}
-        QPushButton#pushButton_right_menu,#pushButton_play,#pushButton_open_folder,#pushButton_open_nfo,#pushButton_show_hide_logs,#pushButton_save_failed_list,#pushButton_tree_clear,#pushButton_clear_logs{{
-            background-color: rgba(181, 181, 181, 0);
-            border-radius:10px;
-            border: 0px solid rgba(0, 0, 0, 80);
-        }}
-        QPushButton:hover#pushButton_right_menu,:hover#pushButton_play,:hover#pushButton_open_folder,:hover#pushButton_open_nfo,:hover#pushButton_show_hide_logs,:hover#pushButton_save_failed_list,:hover#pushButton_tree_clear,:hover#pushButton_clear_logs{{
-            background-color: rgba(181, 181, 181, 120);
-        }}
-        QPushButton:pressed#pushButton_right_menu,:pressed#pushButton_play,:pressed#pushButton_open_folder,:pressed#pushButton_open_nfo,:pressed#pushButton_show_hide_logs,:pressed#pushButton_save_failed_list,:pressed#pushButton_tree_clear,:pressed#pushButton_clear_logs{{
-            background-color: rgba(150, 150, 150, 120);
-        }}
-        QPushButton#pushButton_field_tips_nfo{{
-            color: #111827;
-            background: #FFFFFF;
-            border: 1px solid #CBD5E1;
-            border-radius: 6px;
-            padding: 3px 10px;
-        }}
-        QPushButton:hover#pushButton_field_tips_nfo{{
-            color: #FFFFFF;
-            background: #4C6EFF;
-            border: 1px solid #4C6EFF;
-        }}
-        QPushButton:pressed#pushButton_field_tips_nfo{{
-            color: #FFFFFF;
-            background: #3F5FE6;
-            border: 1px solid #3F5FE6;
-        }}
-        QPushButton#pushButton_scrape_note{{
-            color: #111827;
-            background: #FFFFFF;
-            border: 1px solid #CBD5E1;
-            border-radius: 6px;
-            padding: 3px 10px;
-        }}
-        QPushButton:hover#pushButton_scrape_note{{
-            color: #111827;
-            background: #F1F5F9;
-            border: 1px solid #94A3B8;
-        }}
-        QPushButton:pressed#pushButton_scrape_note{{
-            color: #111827;
-            background: #E2E8F0;
-            border: 1px solid #94A3B8;
-        }}
-        QPushButton#pushButton_save_new_config,#pushButton_save_new_config_tool,#pushButton_init_config,#pushButton_init_config_tool,#pushButton_success_list_close,#pushButton_success_list_save,#pushButton_success_list_clear,#pushButton_show_tips_close,#pushButton_nfo_close,#pushButton_nfo_save,#pushButton_show_pic_actor,#pushButton_add_actor_pic,#pushButton_add_actor_info,#pushButton_add_actor_pic_kodi,#pushButton_del_actor_folder,#pushButton_move_mp4,#pushButton_select_file,#pushButton_actor_db_pick_nfo_dir,#pushButton_actor_db_sync_aliases,#pushButton_select_local_library,#pushButton_select_netdisk_path,#pushButton_select_localdisk_path,#pushButton_creat_symlink,#pushButton_find_missing_number,#pushButton_select_thumb,#pushButton_start_single_file,#pushButton_select_file_clear_info,#pushButton_add_sub_for_all_video,#pushButton_view_failed_list,#pushButton_select_media_folder,#pushButton_select_media_folder_setting_page,#pushButton_select_data_dir,#pushButton_select_softlink_folder,#pushButton_select_sucess_folder,#pushButton_select_failed_folder,#pushButton_view_success_file,#pushButton_select_subtitle_folder,#pushButton_select_actor_photo_folder,#pushButton_select_gfriends_local,#pushButton_select_actor_info_db,#pushButton_select_config_folder,#pushButton_add_all_extrafanart_copy,#pushButton_del_all_extrafanart_copy,#pushButton_add_all_extras,#pushButton_del_all_extras,#pushButton_add_all_theme_videos,#pushButton_del_all_theme_videos,#pushButton_check_and_clean_files,#pushButton_search_by_number,#pushButton_search_by_url,#pushButton_cover_backfill_start{{
-            font-size:14px;
-            background-color: rgba(220, 220,220, 255);
-            border-color:black;
-            border-width:8px;
-            border-radius:20px;
-            padding: 2px, 2px;
-        }}
-        QPushButton:hover#pushButton_show_pic_actor,:hover#pushButton_add_actor_pic,:hover#pushButton_add_actor_info,:hover#pushButton_add_actor_pic_kodi,:hover#pushButton_del_actor_folder,:hover#pushButton_add_sub_for_all_video,:hover#pushButton_view_failed_list,:hover#pushButton_select_media_folder,:hover#pushButton_select_media_folder_setting_page,:hover#pushButton_select_data_dir,:hover#pushButton_select_softlink_folder,:hover#pushButton_select_sucess_folder,:hover#pushButton_select_failed_folder,:hover#pushButton_view_success_file,:hover#pushButton_select_subtitle_folder,:hover#pushButton_select_actor_photo_folder,:hover#pushButton_select_gfriends_local,:hover#pushButton_select_actor_info_db,:hover#pushButton_select_config_folder,:hover#pushButton_add_all_extrafanart_copy,:hover#pushButton_del_all_extrafanart_copy,:hover#pushButton_add_all_extras,:hover#pushButton_del_all_extras,:hover#pushButton_add_all_theme_videos,:hover#pushButton_del_all_theme_videos,:hover#pushButton_check_and_clean_files,:hover#pushButton_search_by_number,:hover#pushButton_search_by_url{{
-            color: white;
-            background-color: rgba(76,110,255,240);
-            font-weight:bold;
-        }}
-        QPushButton:pressed#pushButton_show_pic_actor,:pressed#pushButton_add_actor_pic,:pressed#pushButton_add_actor_info,:pressed#pushButton_add_actor_pic_kodi,:pressed#pushButton_del_actor_folder,:pressed#pushButton_add_sub_for_all_video,:pressed#pushButton_view_failed_list,:pressed#pushButton_select_media_folder,:pressed#pushButton_select_media_folder_setting_page,:pressed#pushButton_select_data_dir,:pressed#pushButton_select_softlink_folder,:pressed#pushButton_select_sucess_folder,:pressed#pushButton_select_failed_folder,:pressed#pushButton_view_success_file,:pressed#pushButton_select_subtitle_folder,:pressed#pushButton_select_actor_photo_folder,:pressed#pushButton_select_gfriends_local,:pressed#pushButton_select_actor_info_db,:pressed#pushButton_select_config_folder,:pressed#pushButton_add_all_extrafanart_copy,:pressed#pushButton_del_all_extrafanart_copy,:pressed#pushButton_add_all_extras,:pressed#pushButton_del_all_extras,:pressed#pushButton_add_all_theme_videos,:pressed#pushButton_del_all_theme_videos,:pressed#pushButton_check_and_clean_files,:pressed#pushButton_search_by_number,:pressed#pushButton_search_by_url{{
-            background-color:#4C6EE0;
-            border-color:black;
-            border-width:14px;
-            font-weight:bold;
-        }}
-        QPushButton#pushButton_save_config,#pushButton_save_config_tool,#pushButton_nfo_lib_save,#pushButton_nfo_lib_batch_save,#pushButton_nfo_lib_crop{{
-            color: white;
-            font-size:14px;
-            background-color:#4C6EFF;
-            border-radius:25px;
-            padding: 2px, 2px;
-        }}
-        QPushButton:hover#pushButton_save_config,:hover#pushButton_save_config_tool,:hover#pushButton_save_new_config,:hover#pushButton_save_new_config_tool,:hover#pushButton_init_config,:hover#pushButton_init_config_tool,:hover#pushButton_success_list_close,:hover#pushButton_success_list_save,:hover#pushButton_success_list_clear,:hover#pushButton_show_tips_close,:hover#pushButton_nfo_close,:hover#pushButton_nfo_save,:hover#pushButton_nfo_lib_save,:hover#pushButton_nfo_lib_batch_save,:hover#pushButton_nfo_lib_crop,:hover#pushButton_scraper_failed_list{{
-            color: white;
-            background-color: rgba(76,110,255,240);
-            font-weight:bold;
-            }}
-        QPushButton:pressed#pushButton_save_config,:pressed#pushButton_save_config_tool,:pressed#pushButton_save_new_config,:pressed#pushButton_save_new_config_tool,:pressed#pushButton_init_config,:pressed#pushButton_init_config_tool,:pressed#pushButton_success_list_close,:pressed#pushButton_success_list_save,:pressed#pushButton_success_list_clear,:pressed#pushButton_show_tips_close,:pressed#pushButton_nfo_close,:pressed#pushButton_nfo_save,:pressed#pushButton_nfo_lib_save,:pressed#pushButton_nfo_lib_batch_save,:pressed#pushButton_nfo_lib_crop,:pressed#pushButton_scraper_failed_list{{
-            background-color:#4C6EE0;
-            border-color:black;
-            border-width:14px;
-            font-weight:bold;
-        }}
-        QPushButton#pushButton_start_cap,#pushButton_start_cap2,#pushButton_check_net,#pushButton_scraper_failed_list{{
-            color: white;
-            font-size:14px;
-            background-color:#4C6EFF;
-            border-radius:20px;
-            padding: 2px, 2px;
-            font-weight:bold;
-        }}
-        QPushButton:hover#pushButton_start_cap,:hover#pushButton_start_cap2,:hover#pushButton_check_net,:hover#pushButton_move_mp4,:hover#pushButton_select_file,:hover#pushButton_actor_db_pick_nfo_dir,:hover#pushButton_actor_db_sync_aliases,:hover#pushButton_select_local_library,:hover#pushButton_select_netdisk_path,:hover#pushButton_select_localdisk_path,:hover#pushButton_creat_symlink,:hover#pushButton_find_missing_number,:hover#pushButton_select_thumb,:hover#pushButton_start_single_file,:hover#pushButton_select_file_clear_info,:hover#pushButton_cover_backfill_start{{
-            color: white;
-            background-color: rgba(76,110,255,240);
-            font-weight:bold;
-            }}
-        QPushButton:pressed#pushButton_start_cap,:pressed#pushButton_start_cap2,:pressed#pushButton_check_net,:pressed#pushButton_move_mp4,:pressed#pushButton_select_file,:pressed#pushButton_actor_db_pick_nfo_dir,:pressed#pushButton_actor_db_sync_aliases,:pressed#pushButton_select_local_library,:pressed#pushButton_select_netdisk_path,:pressed#pushButton_select_localdisk_path,:pressed#pushButton_creat_symlink,:pressed#pushButton_find_missing_number,:pressed#pushButton_select_thumb,:pressed#pushButton_start_single_file,:press#pushButton_select_file_clear_info,:pressed#pushButton_cover_backfill_start{{
-            background-color:#4C6EE0;
-            border-color:black;
-            border-width:12px;
-            font-weight:bold;
-        }}
-        QSlider::groove:horizontal{{
-            height: 6px;
-            border-radius: 3px;
-            background: #D7DDE8;
-        }}
-        QSlider::sub-page:horizontal{{
-            border-radius: 3px;
-            background: #4C6EFF;
-        }}
-        QSlider::add-page:horizontal{{
-            border-radius: 3px;
-            background: #D7DDE8;
-        }}
-        QSlider::handle:horizontal{{
-            width: 16px;
-            height: 16px;
-            margin: -5px 0;
-            border-radius: 8px;
-            border: 2px solid #4C6EFF;
-            background: #FFFFFF;
-        }}
-        QSlider::handle:horizontal:hover{{
-            border: 2px solid #2F55EA;
-            background: #F8FAFF;
-        }}
-        {build_scrollbar_style(False)}
-        QProgressBar::chunk{{
-            background-color: #5777FF;
-            width: 3px; /*区块宽度*/
-            margin: 0px;
-        }}
-        """)
-    )
-    self.Ui.treeWidget_number.setStyleSheet(build_tree_widget_style(False))
-    apply_nfo_lib_top_button_style(self, False)
-
-
-def set_dark_style(self: MyMAinWindow):
-    apply_application_palette(True)
-    _apply_log_document_style(self, True)
-    self.Ui.treeWidget_number.setStyleSheet(build_tree_widget_style(True))
-
-    # 控件美化 左侧栏样式 使用暗黑模式
-    self.Ui.widget_setting.setStyleSheet(f"""
-        QWidget#widget_setting{{
-            background: #1F272F;
-            border-top-left-radius: {self.window_radius}px;
-            border-bottom-left-radius: {self.window_radius}px;
-        }}
-        QPushButton#pushButton_main,#pushButton_log,#pushButton_tool,#pushButton_setting,#pushButton_net,#pushButton_about,#pushButton_emby_manager_nav,#pushButton_nfo_library{{
-            font-size: 14px;
-            color: white;
-            border-width: 9px;
-            border-color: gray;
-            border-radius: 10px;
-            text-align : left;
-            qproperty-iconSize: 20px 20px;
-            padding-left: 20px;
-        }}
-        QLabel#label_show_version{{
-            font-size: 13px;
-            color: rgba(210, 210, 210, 250);
-            border: 0px solid rgba(255, 255, 255, 80);
-        }}
-        """)
-    # 主界面
-    self.Ui.page_main.setStyleSheet("""
-        QLabel#label_number1,#label_actor1,#label_title1,#label_poster1,#label_number,#label_actor,#label_title,#label_poster1{
-            font-size: 16px;
-            font-weight: bold;
-            background-color: rgba(246, 246, 246, 0);
-            border: 0px solid rgba(0, 0, 0, 80);
-        }
-        QLabel#label_file_path{
-            font-size: 16px;
-            color: white;
-            background-color: rgba(246, 246, 246, 0);
-            font-weight: bold;
-            border: 0px solid rgba(0, 0, 0, 80);
-        }
-        QLabel#label_poster_size{
-            color: rgba(255, 255, 255, 200);
-        }
-        QLabel#label_poster,#label_thumb{
-            border: 1px solid rgba(255, 255, 255, 200);
-        }
-        QGroupBox{
-            background-color: rgba(246, 246, 246, 0);
-        }
-        """)
-    # 工具页
-    self.Ui.page_tool.setStyleSheet("""
-        * {
-            font-size: 13px;
-        }
-        QScrollArea{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 0);
-        }
-        QWidget#scrollAreaWidgetContents_gongju{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 255);
-        }
-
-        QLabel{
-            font-size:13px;
-            border: 0px solid rgba(0, 0, 0, 80);
-        }
-
-        QGroupBox{
-            background-color: rgba(180, 180, 180, 20);
-            border-radius: 10px;
-        }
-        """)
-    # 使用帮助页
-    self.Ui.page_about.setStyleSheet("""
-        * {
-            font-size: 13px;
-        }
-        QTextBrowser{
-            font-family: Consolas, 'PingFang SC', 'Microsoft YaHei UI', 'Noto Color Emoji', 'Segoe UI Emoji';
-            font-size: 13px;
-            border: 0px solid #BEBEBE;
-            background-color: rgba(246,246,246,0);
-            padding: 2px, 2px;
-        }
-        """)
-    # 设置页
-    self.Ui.page_setting.setStyleSheet(
-        _qss_resources("""
-        * {
-            font-size:13px;
-        }
-        QScrollArea{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 0);
-        }
-        QTabWidget{
-            background-color: rgba(246, 246, 246, 0);
-            border-color: rgba(246, 246, 246, 0);
-        }
-        QTabWidget::tab-bar {
-            alignment: center;
-        }
-        QTabBar::tab{
-            border:1px solid #1F272F;
-            min-height: 3ex;
-            min-width: 6ex;
-            padding: 2px;
-            background-color:#242D37;
-            border-radius: 2px;
-        }
-        QTabBar::tab:selected{
-            font-weight:bold;
-            border-bottom: 2px solid #2080F7;
-            background-color:#2080F7;
-            border-radius: 1px;
-        }
-        QWidget#tab1,#tab2,#tab3,#tab4,#tab5,#tab,#tab_2,#tab_3,#tab_4,#tab_5,#tab_6,#tab_7,#scrollAreaWidgetContents_guaxiaomulu,#scrollAreaWidgetContents_guaxiaomoshi,#scrollAreaWidgetContents_guaxiaowangzhan,#scrollAreaWidgetContents_xiazai,#scrollAreaWidgetContents_mingming,#scrollAreaWidgetContents_fanyi,#scrollAreaWidgetContents_zimu,#scrollAreaWidgetContents_shuiyin,#scrollAreaWidgetContents_nfo,#scrollAreaWidgetContents_yanyuan,#scrollAreaWidgetContents_wangluo,#scrollAreaWidgetContents_gaoji{
-            background-color: #18222D;
-            border-color: rgba(246, 246, 246, 0);
-        }
-        QLabel{
-            font-size:13px;
-            border:0px solid rgba(0, 0, 0, 80);
-        }
-        QLabel#label_config,#label_config_tool{
-            font-size:13px;
-            border:0px solid rgba(0, 0, 0, 80);
-            background: rgba(31,39,47,230);
-        }
-        QLineEdit{
-            font-size:13px;
-            border:0px solid rgba(130, 30, 30, 20);
-            border-radius: 15px;
-        }
-        QRadioButton{
-            font-size:13px;
-        }
-        QCheckBox{
-            font-size:13px;
-        }
-        QCheckBox::indicator, QRadioButton::indicator{
-            width: 14px;
-            height: 14px;
-            border: 1px solid #5B6673;
-            background: #18222D;
-        }
-        QCheckBox::indicator{
-            border-radius: 3px;
-        }
-        QRadioButton::indicator{
-            border-radius: 7px;
-        }
-        QCheckBox::indicator:checked{
-            background: #6684FF;
-            border: 1px solid #6684FF;
-            image: url(resources/Img/check_indicator.svg);
-        }
-        QRadioButton::indicator:checked{
-            background: #6684FF;
-            border: 1px solid #6684FF;
-            image: url(resources/Img/radio_indicator.svg);
-        }
-        QCheckBox::indicator:hover, QRadioButton::indicator:hover{
-            border: 1px solid #8EA3FF;
-        }
-        QPlainTextEdit{
-            font-size:13px;
-            background:#18222D;
-            border-radius: 4px;
-        }
-        QGroupBox{
-            background-color: rgba(180, 180, 180, 20);
-            border-radius: 10px;
-        }
-        QPushButton{
-            color: #E5E7EB;
-        }
-        QPushButton#pushButton_field_tips_nfo{
-            color: #E5E7EB;
-            background: #1D2834;
-            border: 1px solid #3B4654;
-            border-radius: 6px;
-            padding: 3px 10px;
-        }
-        QPushButton:hover#pushButton_field_tips_nfo{
-            color: #FFFFFF;
-            background: #6684FF;
-            border: 1px solid #6684FF;
-        }
-        QPushButton:pressed#pushButton_field_tips_nfo{
-            color: #FFFFFF;
-            background: #4C6EE0;
-            border: 1px solid #4C6EE0;
-        }
-        QPushButton#pushButton_scrape_note{
-            color: #E5E7EB;
-            background: #1D2834;
-            border: 1px solid #3B4654;
-            border-radius: 6px;
-            padding: 3px 10px;
-        }
-        QPushButton:hover#pushButton_scrape_note{
-            color: #E5E7EB;
-            background: #253140;
-            border: 1px solid #566374;
-        }
-        QPushButton:pressed#pushButton_scrape_note{
-            color: #E5E7EB;
-            background: #2B3A4C;
-            border: 1px solid #566374;
-        }
-        """)
-    )
-    # 整个页面
-    self.Ui.centralwidget.setStyleSheet(
-        _qss_resources(f"""
-        * {{
-            font-family: Consolas, 'PingFang SC', 'Microsoft YaHei UI', 'Noto Color Emoji', 'Segoe UI Emoji';
-            font-size:13px;
-            color: white;
-        }}
-        QTreeWidget
-        {{
-            background-color: rgba(246, 246, 246, 0);
-            font-size: 12px;
-            border:0px solid rgb(120,120,120);
-        }}
-        QWidget#centralwidget{{
-            background: #18222D;
-            border: {self.window_border}px solid rgba(20,20,20,50);
-            border-radius: {self.window_radius}px;
-       }}
-        QTextBrowser#textBrowser_log_main,#textBrowser_net_main{{
-            font-size:13px;
-            border: 0px solid #BEBEBE;
-            background-color: rgba(246,246,246,0);
-            padding: 2px, 2px;
-        }}
-        QTextBrowser#textBrowser_log_main_2{{
-            font-size:13px;
-            border-radius: 0px;
-            border-top: 1px solid #BEBEBE;
-            background-color: #18222D;
-            padding: 2px, 2px;
-        }}
-        QTextBrowser#textBrowser_log_main_3{{
-            font-size:13px;
-            border-radius: 0px;
-            border-right: 1px solid #20303F;
-            background-color: #1F272F;
-            padding: 2px, 2px;
-        }}
-        QTextBrowser#textBrowser_show_success_list,#textBrowser_show_tips{{
-            font-size: 13px;
-            border: 1px solid #BEBEBE;
-            background-color: #18222D;
-            padding: 2px;
-        }}
-        QWidget#widget_show_success,#widget_show_tips,#widget_nfo{{
-            background-color: #1F272F;
-            border: 1px solid rgba(240,240,240,150);
-            border-radius: 10px;
-       }}
-        QWidget#scrollAreaWidgetContents_nfo_editor{{
-            background-color: #18222D;
-            border: 0px solid rgba(0,0,0,150);
-        }}
-        QLineEdit, QPlainTextEdit, QTextEdit, QDoubleSpinBox, QSpinBox{{
-            font-size:13px;
-            background:#18222D;
-            border-radius:20px;
-            border: 1px solid #2F3A46;
-            padding: 4px 8px;
-            selection-background-color: #4C6EFF;
-        }}
-        QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus, QDoubleSpinBox:focus, QSpinBox:focus{{
-            border: 1px solid #6684FF;
-            background: #1D2834;
-        }}
-        QTextEdit#textEdit_nfo_outline,#textEdit_nfo_originalplot,#textEdit_nfo_tag{{
-            font-size:13px;
-            background:#18222D;
-            border: 1px solid #2F3A46;
-            padding: 4px 8px;
-        }}
-        QToolTip{{
-            border: 1px solid #2F3A46;
-            border-radius: 8px;
-            background: #F9FAFB;
-            color: #111827;
-            padding: 6px 10px;
-        }}
-        QCheckBox::indicator, QRadioButton::indicator{{
-            width: 14px;
-            height: 14px;
-            border: 1px solid #5B6673;
-            background: #18222D;
-        }}
-        QCheckBox::indicator{{
-            border-radius: 3px;
-        }}
-        QRadioButton::indicator{{
-            border-radius: 7px;
-        }}
-        QCheckBox::indicator:checked{{
-            background: #6684FF;
-            border: 1px solid #6684FF;
-            image: url(resources/Img/check_indicator.svg);
-        }}
-        QRadioButton::indicator:checked{{
-            background: #6684FF;
-            border: 1px solid #6684FF;
-            image: url(resources/Img/radio_indicator.svg);
-        }}
-        QCheckBox::indicator:hover, QRadioButton::indicator:hover{{
-            border: 1px solid #8EA3FF;
-        }}
-        QPushButton#pushButton_right_menu,#pushButton_play,#pushButton_open_folder,#pushButton_open_nfo,#pushButton_show_hide_logs,#pushButton_save_failed_list,#pushButton_tree_clear,#pushButton_clear_logs{{
-            background-color: rgba(181, 181, 181, 0);
-            border-radius:10px;
-            border: 0px solid rgba(0, 0, 0, 80);
-        }}
-        QPushButton:hover#pushButton_right_menu,:hover#pushButton_play,:hover#pushButton_open_folder,:hover#pushButton_open_nfo,:hover#pushButton_show_hide_logs,:hover#pushButton_save_failed_list,:hover#pushButton_tree_clear,:hover#pushButton_clear_logs{{
-            background-color: rgba(181, 181, 181, 120);
-        }}
-        QPushButton:pressed#pushButton_right_menu,:pressed#pushButton_play,:pressed#pushButton_open_folder,:pressed#pushButton_open_nfo,:pressed#pushButton_show_hide_logs,:pressed#pushButton_save_failed_list,:pressed#pushButton_tree_clear,:pressed#pushButton_clear_logs{{
-            background-color: rgba(150, 150, 150, 120);
-        }}
-        QPushButton#pushButton_field_tips_nfo{{
-            color: #E5E7EB;
-            background: #1D2834;
-            border: 1px solid #3B4654;
-            border-radius: 6px;
-            padding: 3px 10px;
-        }}
-        QPushButton:hover#pushButton_field_tips_nfo{{
-            color: #FFFFFF;
-            background: #6684FF;
-            border: 1px solid #6684FF;
-        }}
-        QPushButton:pressed#pushButton_field_tips_nfo{{
-            color: #FFFFFF;
-            background: #4C6EE0;
-            border: 1px solid #4C6EE0;
-        }}
-        QPushButton#pushButton_scrape_note{{
-            color: #E5E7EB;
-            background: #1D2834;
-            border: 1px solid #3B4654;
-            border-radius: 6px;
-            padding: 3px 10px;
-        }}
-        QPushButton:hover#pushButton_scrape_note{{
-            color: #E5E7EB;
-            background: #253140;
-            border: 1px solid #566374;
-        }}
-        QPushButton:pressed#pushButton_scrape_note{{
-            color: #E5E7EB;
-            background: #2B3A4C;
-            border: 1px solid #566374;
-        }}
-        QPushButton#pushButton_save_new_config,#pushButton_save_new_config_tool,#pushButton_init_config,#pushButton_init_config_tool,#pushButton_success_list_close,#pushButton_success_list_save,#pushButton_success_list_clear,#pushButton_show_tips_close,#pushButton_nfo_close,#pushButton_nfo_save,#pushButton_show_pic_actor,#pushButton_add_actor_pic,#pushButton_add_actor_info,#pushButton_add_actor_pic_kodi,#pushButton_del_actor_folder,#pushButton_move_mp4,#pushButton_select_file,#pushButton_actor_db_pick_nfo_dir,#pushButton_actor_db_sync_aliases,#pushButton_select_local_library,#pushButton_select_netdisk_path,#pushButton_select_localdisk_path,#pushButton_creat_symlink,#pushButton_find_missing_number,#pushButton_select_thumb,#pushButton_start_single_file,#pushButton_select_file_clear_info,#pushButton_add_sub_for_all_video,#pushButton_view_failed_list,#pushButton_select_media_folder,#pushButton_select_media_folder_setting_page,#pushButton_select_data_dir,#pushButton_select_softlink_folder,#pushButton_select_sucess_folder,#pushButton_select_failed_folder,#pushButton_view_success_file,#pushButton_select_subtitle_folder,#pushButton_select_actor_photo_folder,#pushButton_select_gfriends_local,#pushButton_select_actor_info_db,#pushButton_select_config_folder,#pushButton_add_all_extrafanart_copy,#pushButton_del_all_extrafanart_copy,#pushButton_add_all_extras,#pushButton_del_all_extras,#pushButton_add_all_theme_videos,#pushButton_del_all_theme_videos,#pushButton_check_and_clean_files,#pushButton_search_by_number,#pushButton_search_by_url,#pushButton_cover_backfill_start{{
-            font-size:14px;
-            background-color: rgba(220, 220,220, 50);
-            border-color:black;
-            border-width:8px;
-            border-radius:20px;
-            padding: 2px, 2px;
-        }}
-        QPushButton:hover#pushButton_show_pic_actor,:hover#pushButton_add_actor_pic,:hover#pushButton_add_actor_info,:hover#pushButton_add_actor_pic_kodi,:hover#pushButton_del_actor_folder,:hover#pushButton_add_sub_for_all_video,:hover#pushButton_view_failed_list,:hover#pushButton_scraper_failed_list,:hover#pushButton_select_media_folder,:hover#pushButton_select_media_folder_setting_page,:hover#pushButton_select_data_dir,:hover#pushButton_select_softlink_folder,:hover#pushButton_select_sucess_folder,:hover#pushButton_select_failed_folder,:hover#pushButton_view_success_file,:hover#pushButton_select_subtitle_folder,:hover#pushButton_select_actor_photo_folder,:hover#pushButton_select_gfriends_local,:hover#pushButton_select_actor_info_db,:hover#pushButton_select_config_folder,:hover#pushButton_add_all_extrafanart_copy,:hover#pushButton_del_all_extrafanart_copy,:hover#pushButton_add_all_extras,:hover#pushButton_del_all_extras,:hover#pushButton_add_all_theme_videos,:hover#pushButton_del_all_theme_videos,:hover#pushButton_check_and_clean_files,:hover#pushButton_search_by_number,:hover#pushButton_search_by_url{{
-            color: white;
-            background-color: rgba(76,110,255,240);
-            font-weight:bold;
-        }}
-        QPushButton:pressed#pushButton_show_pic_actor,:pressed#pushButton_add_actor_pic,:pressed#pushButton_add_actor_info,:pressed#pushButton_add_actor_pic_kodi,:pressed#pushButton_del_actor_folder,:pressed#pushButton_add_sub_for_all_video,:pressed#pushButton_view_failed_list,:pressed#pushButton_scraper_failed_list,:pressed#pushButton_select_media_folder,:pressed#pushButton_select_media_folder_setting_page,:pressed#pushButton_select_data_dir,:pressed#pushButton_select_softlink_folder,:pressed#pushButton_select_sucess_folder,:pressed#pushButton_select_failed_folder,:pressed#pushButton_view_success_file,:pressed#pushButton_select_subtitle_folder,:pressed#pushButton_select_actor_photo_folder,:pressed#pushButton_select_gfriends_local,:pressed#pushButton_select_actor_info_db,:pressed#pushButton_select_config_folder,:pressed#pushButton_add_all_extrafanart_copy,:pressed#pushButton_del_all_extrafanart_copy,:pressed#pushButton_add_all_extras,:pressed#pushButton_del_all_extras,:pressed#pushButton_add_all_theme_videos,:pressed#pushButton_del_all_theme_videos,:pressed#pushButton_check_and_clean_files,:pressed#pushButton_search_by_number,:pressed#pushButton_search_by_url{{
-            background-color:#4C6EE0;
-            border-color:black;
-            border-width:14px;
-            font-weight:bold;
-        }}
-        QPushButton#pushButton_save_config,#pushButton_save_config_tool,#pushButton_nfo_lib_save,#pushButton_nfo_lib_batch_save,#pushButton_nfo_lib_crop{{
-            color: white;
-            font-size:14px;
-            background-color:#4C6EFF;
-            border-radius:25px;
-            padding: 2px, 2px;
-        }}
-        QPushButton:hover#pushButton_save_config,:hover#pushButton_save_config_tool,:hover#pushButton_save_new_config,:hover#pushButton_save_new_config_tool,:hover#pushButton_init_config,:hover#pushButton_init_config_tool,:hover#pushButton_success_list_close,:hover#pushButton_success_list_save,:hover#pushButton_success_list_clear,:hover#pushButton_show_tips_close,:hover#pushButton_nfo_close,:hover#pushButton_nfo_save,:hover#pushButton_nfo_lib_save,:hover#pushButton_nfo_lib_batch_save,:hover#pushButton_nfo_lib_crop{{
-            color: white;
-            background-color: rgba(76,110,255,240);
-            font-weight:bold;
-        }}
-        QPushButton:pressed#pushButton_save_config,:pressed#pushButton_save_config_tool,:pressed#pushButton_save_new_config,:pressed#pushButton_save_new_config_tool,:pressed#pushButton_init_config,:pressed#pushButton_init_config_tool,:pressed#pushButton_success_list_close,:pressed#pushButton_success_list_save,:pressed#pushButton_success_list_clear,pressed#pushButton_show_tips_close,:pressed#pushButton_nfo_close,:pressed#pushButton_nfo_save,pressed#pushButton_nfo_lib_save,pressed#pushButton_nfo_lib_batch_save,pressed#pushButton_nfo_lib_crop{{
-            background-color:#4C6EE0;
-            border-color:black;
-            border-width:14px;
-            font-weight:bold;
-        }}
-        QPushButton#pushButton_start_cap,#pushButton_start_cap2,#pushButton_check_net,#pushButton_scraper_failed_list{{
-            color: white;
-            font-size:14px;
-            background-color:#4C6EFF;
-            border-radius:20px;
-            padding: 2px, 2px;
-            font-weight:bold;
-        }}
-        QPushButton:hover#pushButton_start_cap,:hover#pushButton_start_cap2,:hover#pushButton_check_net,:hover#pushButton_move_mp4,:hover#pushButton_select_file,:hover#pushButton_actor_db_pick_nfo_dir,:hover#pushButton_actor_db_sync_aliases,:hover#pushButton_select_local_library,:hover#pushButton_select_netdisk_path,:hover#pushButton_select_localdisk_path,:hover#pushButton_creat_symlink,:hover#pushButton_find_missing_number,:hover#pushButton_select_thumb,:hover#pushButton_start_single_file,:hover#pushButton_select_file_clear_info,:hover#pushButton_cover_backfill_start{{
-            color: white;
-            background-color: rgba(76,110,255,240);
-            font-weight:bold;
-            }}
-        QPushButton:pressed#pushButton_start_cap,:pressed#pushButton_start_cap2,:pressed#pushButton_check_net,:pressed#pushButton_move_mp4,:pressed#pushButton_select_file,:pressed#pushButton_actor_db_pick_nfo_dir,:pressed#pushButton_actor_db_sync_aliases,:pressed#pushButton_select_local_library,:pressed#pushButton_select_netdisk_path,:pressed#pushButton_select_localdisk_path,:pressed#pushButton_creat_symlink,:pressed#pushButton_find_missing_number,:pressed#pushButton_select_thumb,:pressed#pushButton_start_single_file,:press#pushButton_select_file_clear_info,:pressed#pushButton_cover_backfill_start{{
-            background-color:#4C6EE0;
-            border-color:black;
-            border-width:12px;
-            font-weight:bold;
-        }}
-        QSlider::groove:horizontal{{
-            height: 6px;
-            border-radius: 3px;
-            background: #2F3A46;
-        }}
-        QSlider::sub-page:horizontal{{
-            border-radius: 3px;
-            background: #6684FF;
-        }}
-        QSlider::add-page:horizontal{{
-            border-radius: 3px;
-            background: #2F3A46;
-        }}
-        QSlider::handle:horizontal{{
-            width: 16px;
-            height: 16px;
-            margin: -5px 0;
-            border-radius: 8px;
-            border: 2px solid #6684FF;
-            background: #F8FAFC;
-        }}
-        QSlider::handle:horizontal:hover{{
-            border: 2px solid #8EA3FF;
-            background: #FFFFFF;
-        }}
-        QComboBox{{
-            combobox-popup: 0;
-            font-size:13px;
-            color: white;
-            background:#18222D;
-            border: 1px solid #2F3A46;
-            border-radius: 8px;
-            padding: 3px 30px 3px 8px;
-        }}
-        /* 暗色同理：右内边距与 26px 箭头重复占位，会让「跟随系统」被截字。 */
-        QComboBox#comboBox_ui_scale{{
+        QComboBox#comboBox_ui_scale {{
             padding: 3px 0px 3px 8px;
         }}
         QComboBox::drop-down {{
             subcontrol-origin: padding;
-            subcontrol-position: right;
+            subcontrol-position: top right;
             width: 26px;
-            border-left: 1px solid #2F3A46;
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-            background: #1D2834;
+            border-left: 1px solid {t["input_border"]};
+            border-top-right-radius: {t["radius_md"]};
+            border-bottom-right-radius: {t["radius_md"]};
+            background: {t["dropdown_bg"]};
         }}
         QComboBox::drop-down:hover {{
-            background: #243244;
+            background: {t["dropdown_hover"]};
         }}
         QComboBox::down-arrow {{
-            image: url(resources/Img/chevron_down_dark.svg);
+            image: url(resources/Img/{arrow});
             width: 14px;
             height: 14px;
         }}
-
+        QComboBox:focus {{
+            border: 1px solid {t["accent"]};
+        }}
+        QComboBox:disabled {{
+            color: {t["text_disabled"]};
+            border: 1px solid {t["border"]};
+        }}
         QComboBox QAbstractItemView {{
-            color:white;
-            background: #1F272F;
-            border: 1px solid #2F3A46;
-            selection-color:white;
-            selection-background-color: #6684FF;
+            background: {t["panel"]};
+            border: 1px solid {t["input_border"]};
+            selection-background-color: {t["accent"]};
+            selection-color: #FFFFFF;
             outline: 0;
         }}
         QComboBox QAbstractItemView::item {{
             min-height: 24px;
             padding: 4px 8px;
-            color: #E5E7EB;
+            color: {t["text"]};
         }}
         QComboBox QAbstractItemView::item:selected {{
             color: #FFFFFF;
-            background: #6684FF;
+            background: {t["accent"]};
         }}
-        {build_scrollbar_style(True)}
-        QProgressBar::chunk{{
-            background-color: #5777FF;
+
+        /* ---- 勾选框 / 单选框 ---- */
+        QCheckBox::indicator, QRadioButton::indicator {{
+            width: 14px;
+            height: 14px;
+            border: 1px solid {t["indicator_border"]};
+            background: {t["input_bg"]};
+        }}
+        QCheckBox::indicator {{
+            border-radius: {t["radius_sm"]};
+        }}
+        QRadioButton::indicator {{
+            border-radius: 7px;
+        }}
+        QCheckBox::indicator:checked {{
+            background: {t["accent"]};
+            border: 1px solid {t["accent"]};
+            image: url(resources/Img/check_indicator.svg);
+        }}
+        QRadioButton::indicator:checked {{
+            background: {t["accent"]};
+            border: 1px solid {t["accent"]};
+            image: url(resources/Img/radio_indicator.svg);
+        }}
+        QCheckBox::indicator:hover, QRadioButton::indicator:hover {{
+            border: 1px solid {t["accent"]};
+        }}
+        QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {{
+            border: 1px solid {t["border"]};
+            background: {t["surface_muted"]};
+        }}
+
+        /* ---- 提示气泡 ---- */
+        QToolTip {{
+            border: 1px solid {t["input_border"]};
+            border-radius: {t["radius_md"]};
+            background: {t["tooltip_bg"]};
+            color: {t["tooltip_text"]};
+            padding: 6px 10px;
+        }}
+
+        /* ---- 图标按钮 ---- */
+        {icon} {{
+            background-color: transparent;
+            border-radius: {t["radius_lg"]};
+            border: 0px solid {t["panel_border"]};
+        }}
+        {icon_hover} {{
+            background-color: {t["icon_button_hover"]};
+        }}
+        {icon_pressed} {{
+            background-color: {t["icon_button_pressed"]};
+        }}
+
+        /* ---- 灰底胶囊按钮 ---- */
+        {neutral} {{
+            /* 必须显式给前景色：不写会继承到偏淡的默认色，浅色下压不住 #DCDCDC 底 */
+            color: {t["text"]};
+            font-size: {t["font_md"]};
+            background-color: {t["button_neutral"]};
+            border-color: {t["button_neutral_border"]};
+            border-width: 8px;
+            border-radius: {t["radius_pill"]};
+            padding: {t["space_xs"]};
+        }}
+        {neutral_hover} {{
+            color: #FFFFFF;
+            background-color: {t["accent"]};
+            font-weight: bold;
+        }}
+        {neutral_pressed} {{
+            color: #FFFFFF;
+            background-color: {t["accent_pressed"]};
+            border-color: {t["button_neutral_border"]};
+            border-width: 14px;
+            font-weight: bold;
+        }}
+        {neutral_disabled} {{
+            color: {t["text_disabled"]};
+            background-color: {t["surface_muted"]};
+            border-color: {t["border"]};
+        }}
+
+        /* ---- 蓝底保存按钮 ---- */
+        {primary} {{
+            color: #FFFFFF;
+            font-size: {t["font_md"]};
+            background-color: {t["accent"]};
+            border-radius: {t["radius_pill"]};
+            padding: {t["space_xs"]};
+        }}
+        {primary_hover} {{
+            color: #FFFFFF;
+            background-color: {t["accent_hover"]};
+            font-weight: bold;
+        }}
+        {primary_pressed} {{
+            color: #FFFFFF;
+            background-color: {t["accent_pressed"]};
+            border-color: {t["button_neutral_border"]};
+            border-width: 14px;
+            font-weight: bold;
+        }}
+
+        /* ---- 蓝底强调按钮 ---- */
+        {start} {{
+            color: #FFFFFF;
+            font-size: {t["font_md"]};
+            background-color: {t["accent"]};
+            border-radius: {t["radius_pill"]};
+            padding: {t["space_xs"]};
+            font-weight: bold;
+        }}
+        {start_hover} {{
+            color: #FFFFFF;
+            background-color: {t["accent_hover"]};
+            font-weight: bold;
+        }}
+        {start_pressed} {{
+            color: #FFFFFF;
+            background-color: {t["accent_pressed"]};
+            border-color: {t["button_neutral_border"]};
+            border-width: 12px;
+            font-weight: bold;
+        }}
+
+        /* ---- 说明 / 字段提示按钮 ---- */
+        QPushButton#pushButton_field_tips_nfo, QPushButton#pushButton_scrape_note {{
+            color: {t["text"]};
+            background: {t["note_bg"]};
+            border: 1px solid {t["outline_border"]};
+            border-radius: {t["radius_md"]};
+            padding: 3px 10px;
+        }}
+        QPushButton:hover#pushButton_field_tips_nfo {{
+            color: #FFFFFF;
+            background: {t["accent"]};
+            border: 1px solid {t["accent"]};
+        }}
+        QPushButton:pressed#pushButton_field_tips_nfo {{
+            color: #FFFFFF;
+            background: {t["accent_pressed"]};
+            border: 1px solid {t["accent_pressed"]};
+        }}
+        QPushButton:hover#pushButton_scrape_note {{
+            color: {t["text"]};
+            background: {t["note_hover_bg"]};
+            border: 1px solid {t["note_hover_border"]};
+        }}
+        QPushButton:pressed#pushButton_scrape_note {{
+            color: {t["text"]};
+            background: {t["note_pressed_bg"]};
+            border: 1px solid {t["note_hover_border"]};
+        }}
+
+        /* ---- 滑块 ---- */
+        QSlider::groove:horizontal {{
+            height: 6px;
+            border-radius: 3px;
+            background: {t["slider_groove"]};
+        }}
+        QSlider::sub-page:horizontal {{
+            border-radius: 3px;
+            background: {t["accent"]};
+        }}
+        QSlider::add-page:horizontal {{
+            border-radius: 3px;
+            background: {t["slider_groove"]};
+        }}
+        QSlider::handle:horizontal {{
+            width: 16px;
+            height: 16px;
+            margin: -5px 0;
+            border-radius: 8px;
+            border: 2px solid {t["accent"]};
+            background: {t["slider_handle"]};
+        }}
+        QSlider::handle:horizontal:hover {{
+            border: 2px solid {t["accent_pressed"]};
+            background: {t["input_focus_bg"]};
+        }}
+        QSlider::handle:horizontal:disabled {{
+            border: 2px solid {t["border"]};
+            background: {t["surface_muted"]};
+        }}
+
+        {build_scrollbar_style(dark)}
+
+        QProgressBar::chunk {{
+            background-color: {t["progress_chunk"]};
             width: 3px; /*区块宽度*/
             margin: 0px;
         }}
-        """)
-    )
-    self.Ui.treeWidget_number.setStyleSheet(build_tree_widget_style(True))
+
+        {build_tree_widget_style(dark)}
+        """)  # noqa: E501
+
+
+def set_style(self: MyMAinWindow) -> None:
+    if self.dark_mode:
+        self.set_dark_style()
+        return
+
+    apply_application_palette(False)
+    _apply_log_document_style(self, False)
+    self.Ui.centralwidget.setStyleSheet(build_app_stylesheet(self, False))
+    apply_nfo_lib_top_button_style(self, False)
+
+
+def set_dark_style(self: MyMAinWindow) -> None:
+    apply_application_palette(True)
+    _apply_log_document_style(self, True)
+    self.Ui.centralwidget.setStyleSheet(build_app_stylesheet(self, True))
     apply_nfo_lib_top_button_style(self, True)

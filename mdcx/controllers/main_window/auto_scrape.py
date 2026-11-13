@@ -21,6 +21,12 @@ class AutoScrapeMixin:
             QTimer.singleShot(100, self._auto_scrape_do_work)
 
     def _auto_scrape_do_work(self):
+        # singleShot(100) 的这 100ms 里用户可能已手工点「开始」或点了「停止」。
+        # start_new_scrape() 会无条件清掉停止标志，直接开会让两份刮削并发
+        # （重复移动 / NFO 互相覆盖），或把刚发出的停止请求抵消。
+        if self.Ui.pushButton_start_cap.text() != "开始" or Flags.stop_requested:
+            signal_qt.show_log_text(" ⏭ 已跳过本次循环刮削：有任务在跑或已请求停止。")
+            return
         timed_interval = manager.config.timed_interval
         self.atuo_scrape_count += 1
         signal_qt.show_log_text(

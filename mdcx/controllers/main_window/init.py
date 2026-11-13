@@ -124,7 +124,7 @@ def _site_combo_item_tooltip(value: str, fallback_key: str = "") -> str:
     entry = _site_check_entry(value, fallback_key)
     if not entry:
         return ""
-    label = {"ok": "✅可连通", "warn": "⚠️有需关注项", "fail": "❌连不通", "skip": "⏭上次未测"}.get(
+    label = {"ok": "✅可连通", "warn": "⚠️有需关注项", "fail": "❌连不通", "skip": "⏭已跳过"}.get(
         str(entry.get("status") or ""), ""
     )
     when = str(entry.get("checked_at") or "")[:16].replace("T", " ")
