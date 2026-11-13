@@ -22,6 +22,7 @@
 - **本机没装 uv、也不要装**（用户 2026-10-24）：门禁命令直接用系统 Python `"C:/Program Files/Python315/python.exe" -m ruff format --check mdcx tests scripts`、`-m ruff check ...`、`-m mypy mdcx/`、`-m pytest -m "not network" -q`，不要写 `uv run`。
 - 改代码后跑快速门禁（`ruff format --check` + `ruff check` + `mypy mdcx/`），提交前加跑全量 `pytest -m "not network"`；命令见上一条。
 - 只改 `docs/*.md` 或本文件时只需 `git diff --check`。
+- **以下文件本地保留、默认不推送**（用户 2026-11-13 定，已写进 `.git/info/exclude`）：带日期的 `TODO-20*.md`、`docs/TODO-archive/`、`docs/Cloudflare-Bypass.md`、`mdcx/controllers/main_window/backup/`。提交前用 `git status` 复核，别用 `git add .` / `git add -A` 把它们带进去；用户明确说「连文档一起推」时才用 `git add -f <path>` 覆盖。
 - 全绿判定 = 退出码 0，且 `grep -E "\.py:[0-9]+: error|Found [0-9]+ error"` 无输出（mypy 输出可能被 tail 截断）。
 - `ruff check` 过 ≠ `ruff format --check` 过；改了 .py 必须 `ruff format` 落地。
 - 格式化必须用仓库锁定版 ruff（pyproject pin `ruff>=0.17.1,<0.18.0`，uv.lock 实锁 0.17.1）。裸 `ruff` 只在 pin 与本机版本一致时等价。
