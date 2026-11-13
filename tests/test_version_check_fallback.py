@@ -81,7 +81,7 @@ def _atom(*entries: tuple[str, str]) -> str:
     """按 (标题, tag) 组装一条 releases.atom；tag 传空串表示非纯数字 tag。"""
     items = []
     for title, tag in entries:
-        href = f"https://github.com/767939287/MDCx-333/releases/tag/{tag or title}"
+        href = f"https://github.com/767939287/MDCx-new/releases/tag/{tag or title}"
         items.append(
             f"""<entry>
   <id>tag:github.com,2008:Repository/{hash(title) % 10**8}</id>

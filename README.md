@@ -13,7 +13,7 @@ MDCx 是一个桌面工具，自动从 53 个网站抓取视频文件的元数�
 
 ## 快速安装
 
-从 [GitHub Releases](https://github.com/767939287/MDCx-333/releases) 下载对应系统的安装包或可执行文件。Linux 首次运行前执行 `chmod +x MDCx`，再运行 `./MDCx`。
+从 [GitHub Releases](https://github.com/767939287/MDCx-new/releases) 下载对应系统的安装包或可执行文件。Linux 首次运行前执行 `chmod +x MDCx`，再运行 `./MDCx`。
 
 详细安装说明：[docs/Install.md](docs/Install.md)
 
@@ -25,7 +25,7 @@ MDCx 是一个桌面工具，自动从 53 个网站抓取视频文件的元数�
 
 | 文档 | 适合谁看 | 内容 |
 |------|---------|------|
-| **[使用 Wiki](https://github.com/767939287/MDCx-333/wiki)** | **新用户先看这里** | 三分钟上手、常见问题 FAQ（90% 问题有答案） |
+| **[使用 Wiki](https://github.com/767939287/MDCx-new/wiki)** | **新用户先看这里** | 三分钟上手、常见问题 FAQ（90% 问题有答案） |
 | [QuickStart.md](docs/QuickStart.md) | 所有人 | 5 分钟上手，完成第一次刮削 |
 | [Install.md](docs/Install.md) | 需要安装的人 | 系统要求、Release/源码两种安装方式 |
 | [Features.md](docs/Features.md) | 想了解能做什么的人 | 全部功能、53 个网站列表、六种刮削模式 |
@@ -52,7 +52,7 @@ MDCx 是一个桌面工具，自动从 53 个网站抓取视频文件的元数�
 ## 开发者
 
 ```bash
-git clone https://github.com/767939287/MDCx-333.git
+git clone https://github.com/767939287/MDCx-new.git
 cd MDCx
 uv sync --dev
 uv run python main.py
