@@ -147,27 +147,27 @@ def test_to_emby_overview_drops_placeholder():
     assert to_emby_overview("正文\n无维基百科信息, 从 minnano-av 数据库补全女优信息\n尾段") == ("正文<br/><br/>尾段")
 
 
-def test_to_emby_overview_makes_section_titles_bold():
-    """写库时段标题转粗体：`===== 人物 =====` → `<b>人物</b>`（服务器端按 HTML 渲染）。
+def test_to_emby_overview_keeps_section_titles_plain():
+    """写库时段标题原样保留等号（用户 2026-11-13）。
 
-    库里的值仍保留等号（客户端 `setPlainText` 展示，不能带 HTML 标签字面量），
-    只有写库出口换成 `<b>`；旧存盘里跟在 `<br>` 后面的段标题同样要转。
+    服务器端要显示成 `===== 個人情報 =====` 的维基式写法，与客户端 `setPlainText`
+    展示的值一致；只把裸换行补成 `<br/>`，不再换成 `<b>`。
     """
-    assert to_emby_overview("===== 個人情報 =====\n別名: ぺち") == "<b>個人情報</b><br/>別名: ぺち"
-    assert to_emby_overview("正文<br>===== 人物 =====<br>段落") == "正文<br><b>人物</b><br>段落"
-    # 子标题（四个等号）缩进一个全角空格，层级照页面
+    assert to_emby_overview("===== 個人情報 =====\n別名: ぺち") == "===== 個人情報 =====<br/>別名: ぺち"
+    assert to_emby_overview("正文<br>===== 人物 =====<br>段落") == "正文<br>===== 人物 =====<br>段落"
+    # 子标题（四个等号）同样保留等号本身，不加全角缩进
     assert to_emby_overview("===== 小传 =====\n段落\n==== 人物 ====\n正文") == (
-        "<b>小传</b><br/>段落<br/>　<b>人物</b><br/>正文"
+        "===== 小传 =====<br/>段落<br/>==== 人物 ====<br/>正文"
     )
     # 正文里的等号（非整行标题）不动
     assert to_emby_overview("A = B 实测 2 == 2") == "A = B 实测 2 == 2"
 
 
 def test_dump_keeps_plain_section_titles():
-    """dump() 是客户端展示用的裸文本：段标题保留等号，不带 `<b>` 字面量。"""
+    """dump() 是客户端展示用的裸文本：段标题保留等号，写库出口也一致。"""
     info = EMbyActressInfo(name="音琴るい", server_id="s", id="i", overview="===== 人物 =====\n段落")
     assert info.dump()["Overview"] == "===== 人物 =====\n段落"
-    assert to_emby_overview(info.dump()["Overview"]) == "<b>人物</b><br/>段落"
+    assert to_emby_overview(info.dump()["Overview"]) == "===== 人物 =====<br/>段落"
 
 
 # --- 旧 wiki.py 路径（search_wiki / parse_detail，保留的老实现）同样要按 <br> 断行 ---
